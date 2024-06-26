@@ -49,5 +49,5 @@ def registrarme():
         except Exception as e:
             print(str(e))
             flash('Error durante el registro. Por favor, inténtalo de nuevo.', 'danger')
-            print('Error durante el registro')
+            print('Error durante el registro intentelo de nuevo')
             return redirect('/register')
