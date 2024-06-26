@@ -9,3 +9,8 @@ def index():
 @main.route('/login')
 def login():
     return render_template('Auth/Users/login.html')
+
+
+@main.route('/register')
+def register():
+    return render_template('Auth/Admin/Register.html')
