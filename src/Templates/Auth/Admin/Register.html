@@ -6,6 +6,18 @@
     <title>Register</title>
 </head>
 <body>
+    <div class="alert-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+
     <form action="/Authentication/register" method="POST">
         <div class="form-group">
             <label for="business_name">Nombre del Negocio</label>
