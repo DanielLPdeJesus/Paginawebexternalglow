@@ -14,3 +14,7 @@ def login():
 @main.route('/register')
 def register():
     return render_template('Auth/Admin/Register.html')
+
+@main.route('/dashboard')
+def dasboard():
+    return render_template('Admin/dashboard.html')

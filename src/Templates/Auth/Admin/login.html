@@ -6,17 +6,6 @@
 <br>
 <br>
 <div class="login-section">
-    <div class="alert-container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-        {% endwith %}
-    </div>
     <div class="login-left">
         <h1>Inicia Sesión</h1>
         <p>¿Aún no tienes cuenta? ¡No esperes más para impulsar tu negocio de belleza! Regístrate ahora haciendo clic aquí y únete a la comunidad de profesionales que ya están alcanzando el éxito.</p>
@@ -32,6 +21,19 @@
 
             <button type="submit" class="login-btn">Entrar</button>
             <a href="/forgot-password" class="forgot-password">¿Olvidaste tu contraseña?</a>
+
+
+            <div class="alert-container">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="custom-alert custom-alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                {% endwith %}
+            </div>
         </form>
     </div>
 </div>

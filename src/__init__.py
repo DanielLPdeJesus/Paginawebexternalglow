@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 
 # Routes
 from .routes import IndexRoutes
@@ -14,5 +14,10 @@ def init_app(config):
     # Blueprints
     app.register_blueprint(IndexRoutes.main, url_prefix='/')
     app.register_blueprint(Authentication.main, url_prefix='/Authentication')
+
     return app
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('Auth/Admin/pagenofount.html', error_message="La página que buscas no se encuentra"), 404
     
