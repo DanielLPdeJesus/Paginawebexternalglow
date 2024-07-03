@@ -8,7 +8,7 @@ def index():
 
 @main.route('/login')
 def login():
-    return render_template('Auth/Users/login.html')
+    return render_template('Auth/Admin/login.html')
 
 
 @main.route('/register')

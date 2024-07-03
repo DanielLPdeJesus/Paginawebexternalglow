@@ -45,7 +45,7 @@ def registrarme():
             db.child('Negousers').child(user['localId']).set(datos)
             flash('¡Registro exitoso! Se ha enviado un correo de verificación a tu dirección de correo electrónico.', 'success')
             print('Registro exitoso. Correo de verificación enviado.')
-            return redirect('/')
+            return redirect('/login')
         except Exception as e:
             print(str(e))
             flash('Error durante el registro. Por favor, inténtalo de nuevo.', 'danger')
