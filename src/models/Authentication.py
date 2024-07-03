@@ -51,3 +51,29 @@ def registrarme():
             flash('Error durante el registro. Por favor, inténtalo de nuevo.', 'danger')
             print('Error durante el registro intentelo de nuevo')
             return redirect('/register')
+        
+@main.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+
+        try:
+            user = auth.sign_in_with_email_and_password(email, password)
+            user_info = auth.get_account_info(user['idToken'])
+
+            if user_info['users'][0]['emailVerified']:
+                flash('Inicio de sesión exitoso. Correo electrónico verificado.', 'success')
+                return redirect('/')
+            else:
+                flash('¡Verifica tu correo electrónico antes de iniciar sesión!', 'warning')
+                return redirect('/login')
+
+        except Exception as e:
+            print(str(e))
+            flash('Error durante el inicio de sesión. Por favor, verifica tus credenciales y vuelve a intentarlo.', 'danger')
+            return redirect('/login')
+
+    return redirect('/login')
+
+            
