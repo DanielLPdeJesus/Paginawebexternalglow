@@ -18,3 +18,8 @@ def register():
 @main.route('/dashboard')
 def dasboard():
     return render_template('Admin/dashboard.html')
+
+
+@main.route('/resetpass')
+def resetpass():
+    return render_template('Auth/Admin/resetpass.html')

@@ -76,4 +76,18 @@ def login():
 
     return redirect('/login')
 
+@main.route('/recurpass', methods=['GET', 'POST'])
+def recurpass():
+    if request.method == 'POST':
+        email = request.form['email']
+        try:
+            auth.send_password_reset_email(email)
+            flash('Se ha enviado un enlace de restablecimiento de contraseña a tu correo electrónico.', 'success')
+        except Exception as e:
+            flash('Verifica que has ingresado un correo electrónico válido.', 'danger')
+        return redirect('/login')
+    else:
+        return redirect('/login')
+            
+
             
