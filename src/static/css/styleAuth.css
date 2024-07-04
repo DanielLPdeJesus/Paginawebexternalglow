@@ -423,3 +423,19 @@ form input {
     background-color: #f8d7da;
     color: #721c24;
 }
+
+/* Botón de cierre para alertas */
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    float: right;
+    margin-top: -10px;
+}
+
+.close-btn:hover {
+    color: #000;
+}

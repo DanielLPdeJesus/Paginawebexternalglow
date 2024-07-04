@@ -12,6 +12,7 @@
                 {% for category, message in messages %}
                     <div class="custom-alert custom-alert-{{ category }}">
                         {{ message }}
+                        <button class="close-btn">&times;</button>
                     </div>
                 {% endfor %}
             {% endif %}
@@ -78,4 +79,15 @@
         <img src="{{ url_for('static', filename='img/bannerregister.jpg') }}" alt="Imagen del Negocio">
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var closeButtons = document.querySelectorAll('.close-btn');
+        closeButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                this.parentElement.style.display = 'none';
+            });
+        });
+    });
+</script>
 {% endblock %}
