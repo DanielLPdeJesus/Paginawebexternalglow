@@ -42,3 +42,7 @@ def logout():
     session.clear()
     flash('Has cerrado sesión exitosamente.', 'info')
     return redirect('/login')
+
+@main.route('/test')
+def test():
+    return render_template('Users/test.html')

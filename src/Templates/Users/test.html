@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Reservación</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            max-width: 600px;
+        }
+        .container {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section h2 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .time-buttons button {
+            margin: 5px;
+        }
+        .image-preview {
+            max-width: 100%;
+            height: auto;
+        }
+        .submit-button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #000;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .submit-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Reservación</h1>
+        
+        <!-- Formulario -->
+        <form id="reservation-form" action="/Authentication/test" method="POST" enctype="multipart/form-data" onsubmit="return handleFormSubmit(event)">
+            <div class="section">
+                <h2>Selecciona Fecha y Hora</h2>
+                <label for="time">Hora:</label>
+                <div class="time-buttons">
+                    <button type="button" onclick="selectTime('09:00 AM')">09:00 AM</button>
+                    <button type="button" onclick="selectTime('10:00 AM')">10:00 AM</button>
+                    <button type="button" onclick="selectTime('11:00 AM')">11:00 AM</button>
+                    <button type="button" onclick="selectTime('12:00 PM')">12:00 PM</button>
+                </div>
+                <input type="hidden" id="selected-time" name="selected-time">
+                
+                <label for="date">Fecha:</label>
+                <input type="date" id="date" name="date">
+            </div>
+            
+            <div class="section">
+                <h2>Tipo de Servicio</h2>
+                <label for="service-type">Elige un servicio:</label>
+                <select id="service-type" name="service-type">
+                    <option value="Masaje">Masaje</option>
+                    <option value="Facial">Facial</option>
+                    <option value="Manicura">Manicura</option>
+                </select>
+            </div>
+            
+            <div class="section">
+                <h2>Petición</h2>
+                <label for="request">Proporciona un ejemplo de lo que deseas que te hagan:</label>
+                <textarea id="request" name="request" rows="4" placeholder="Describe tu solicitud"></textarea>
+            </div>
+            
+            <div class="section">
+                <h2>Subir Imágenes</h2>
+                <input type="file" id="image-upload" name="image-upload" accept="image/*" onchange="previewImage(event)">
+                <img id="image-preview" class="image-preview" src="#" alt="Vista previa de la imagen" style="display: none;">
+            </div>
+            
+            <div class="section">
+                <h2>Comentarios Extras</h2>
+                <label for="comments">Agrega comentarios adicionales:</label>
+                <textarea id="comments" name="comments" rows="2"></textarea>
+            </div>
+            
+            <div class="section">
+                <input type="checkbox" id="accept-terms" name="accept-terms" onchange="toggleSubmitButton()">
+                <label for="accept-terms">Aceptar Términos y Condiciones</label>
+                <button type="button" onclick="showTerms()">Leer Políticas</button>
+            </div>
+            
+            <button id="submit-button" type="submit" class="submit-button" disabled>Reservar</button>
+        </form>
+    </div>
+
+    <script>
+        function selectTime(time) {
+            document.getElementById('selected-time').value = time;
+            alert('Hora seleccionada: ' + time);
+        }
+        
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                const preview = document.getElementById('image-preview');
+                preview.src = reader.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+        
+        function toggleSubmitButton() {
+            const termsAccepted = document.getElementById('accept-terms').checked;
+            document.getElementById('submit-button').disabled = !termsAccepted;
+        }
+        
+        function showTerms() {
+            alert('Aquí puedes mostrar los términos y condiciones completos.');
+        }
+        
+        function handleFormSubmit(event) {
+            if (!document.getElementById('accept-terms').checked) {
+                alert('Debes aceptar los términos y condiciones para continuar.');
+                return false;  // Evita el envío del formulario
+            }
+            alert('Formulario enviado con éxito!');
+            return true;  // Permite el envío del formulario
+        }
+    </script>
+</body>
+</html>
