@@ -1,5 +1,7 @@
 import pyrebase
-from flask import Blueprint, redirect, request, flash
+from flask import Blueprint, redirect, request, flash, abort, session, url_for
+from functools import wraps
+import secrets
 
 config = {
     "apiKey": "AIzaSyAVFYsPs07a3GEar4dJz2G3BOfRmQO5ZPo",
@@ -63,16 +65,20 @@ def login():
             user_info = auth.get_account_info(user['idToken'])
 
             if user_info['users'][0]['emailVerified']:
+                session['user_id'] = user['localId']
+                session['token'] = secrets.token_hex(16) 
+                
                 flash('Inicio de sesión exitoso. Correo electrónico verificado.', 'success')
-                return redirect('/')
+                dashboard_url = url_for('index_blueprint.dashboard', token=session['token'])
+                return redirect(dashboard_url)
             else:
                 flash('¡Verifica tu correo electrónico antes de iniciar sesión!', 'warning')
                 return redirect('/login')
 
         except Exception as e:
-            print(str(e))
+            print(f"Error de login: {str(e)}")
             flash('Error durante el inicio de sesión. Por favor, verifica tus credenciales y vuelve a intentarlo.', 'danger')
-            return redirect('/login')
+            return redirect('/login')  
 
     return redirect('/login')
 
@@ -108,5 +114,15 @@ def contactinfo():
     db.child('contact').push(datos)  
 
     return redirect('/contact')
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect('/login')
+        return f(*args, **kwargs)
+    return decorated_function
+
+
 
             
