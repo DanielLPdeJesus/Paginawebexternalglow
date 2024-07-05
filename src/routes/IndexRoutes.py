@@ -23,3 +23,12 @@ def dasboard():
 @main.route('/resetpass')
 def resetpass():
     return render_template('Auth/Admin/resetpass.html')
+
+
+@main.route('/contact')
+def contact():
+    return render_template('Users/contact.html')
+
+@main.route('/services')
+def services():
+    return render_template('Users/services.html')

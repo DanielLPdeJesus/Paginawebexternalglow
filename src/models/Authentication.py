@@ -88,6 +88,25 @@ def recurpass():
         return redirect('/login')
     else:
         return redirect('/login')
-            
+
+@main.route('/contactinfo', methods=['POST'])
+def contactinfo():
+    nombre = request.form['nombre']
+    correo = request.form['correo']
+    telefono = request.form['telefono']
+    asunto = request.form['asunto']
+    mensaje_original = request.form['mensaje']
+
+    datos = {
+        "nombre": nombre,
+        "correo": correo,
+        "telefono": telefono,
+        "asunto": asunto,
+        "mensaje": mensaje_original
+    }
+
+    db.child('contact').push(datos)  
+
+    return redirect('/contact')
 
             
