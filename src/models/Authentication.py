@@ -2,18 +2,23 @@ import pyrebase
 from flask import Blueprint, redirect, request, flash, session, url_for
 from functools import wraps
 import secrets
+from dotenv import load_dotenv
+import os
 
-config = {
-    "apiKey": "AIzaSyAVFYsPs07a3GEar4dJz2G3BOfRmQO5ZPo",
-    "authDomain": "externalglow-a514c.firebaseapp.com",
-    "databaseURL": "https://externalglow-a514c-default-rtdb.firebaseio.com",
-    "projectId": "externalglow-a514c",
-    "storageBucket": "externalglow-a514c.appspot.com",
-    "messagingSenderId": "1096331594020",
-    "appId": "1:1096331594020:web:1f791ec166462fea544bb1"
-}
+load_dotenv()
+
 
 main = Blueprint('Authentication', __name__, url_prefix='/Authentication')
+
+config = {
+    "apiKey": os.getenv("API_KEY"),
+    "authDomain": os.getenv("AUTH_DOMAIN"),
+    "databaseURL": os.getenv("DATABASE_URL"),
+    "projectId": os.getenv("PROJECT_ID"),
+    "storageBucket": os.getenv("STORAGE_BUCKET"),
+    "messagingSenderId": os.getenv("MESSAGING_SENDER_ID"),
+    "appId": os.getenv("APP_ID")
+}
 
 firebase = pyrebase.initialize_app(config)
 auth = firebase.auth()

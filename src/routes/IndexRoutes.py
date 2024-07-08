@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template, session, abort, flash, redirect
-from src.models.Authentication import login_required
-import secrets
+from src.models.Authentication import login_required, db
 
 main = Blueprint('index_blueprint', __name__)
 
@@ -22,7 +21,14 @@ def register():
 def dashboard(token=None):
     if token and token != session.get('token'):
         abort(404)
-    return render_template('Admin/dashboard.html')
+    citas = db.child('reservaciones').get().val()
+    
+    if citas is None:
+        citas = {}
+    
+    citas_list = [{"id": id, **data} for id, data in citas.items()]
+    
+    return render_template('Admin/dashboard.html', citas=citas_list)
 
 @main.route('/resetpass')
 def resetpass():

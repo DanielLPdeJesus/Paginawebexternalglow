@@ -2,7 +2,7 @@ from flask import Flask, render_template
 
 # Routes
 from .routes import IndexRoutes
-from .models import Authentication
+from .models import Authentication, Services
 
 app = Flask(__name__)
 
@@ -14,6 +14,7 @@ def init_app(config):
     # Blueprints
     app.register_blueprint(IndexRoutes.main, url_prefix='/')
     app.register_blueprint(Authentication.main, url_prefix='/Authentication')
+    app.register_blueprint(Services.main, url_prefix='/Services')
 
     return app
 

@@ -151,12 +151,17 @@
         </div>
         <div class="agenda">
             <h2>Agenda</h2>
-            <!-- Aquí va la lista de citas o agendas -->
             <ul>
-                <li>Cita 1 - Detalles de la cita</li>
-                <li>Cita 2 - Detalles de la cita</li>
-                <li>Cita 3 - Detalles de la cita</li>
-                <!-- Puedes agregar más citas como li -->
+                {% for cita in citas %}
+                    <li>
+                        Fecha: {{ cita.fecha }} - Hora: {{ cita.hora_seleccionada }}<br>
+                        Servicio: {{ cita.tipo_de_servicio }}<br>
+                        Detalles: {{ cita.peticion }}<br>
+                        Comentarios: {{ cita.comentarios }}
+                    </li>
+                {% else %}
+                    <li>No hay citas programadas.</li>
+                {% endfor %}
             </ul>
         </div>
     </div>
