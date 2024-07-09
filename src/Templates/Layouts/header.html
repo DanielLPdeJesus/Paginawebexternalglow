@@ -1,0 +1,25 @@
+<header>
+    <div class="logo">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo de la Empresa">
+    </div>
+    <nav>
+        <ul>
+            <li><a href="/">Inicio</a></li>
+            <li><a href="{{ url_for('index_blueprint.contact') }}">Contacto</a></li>
+            <li><a href="{{ url_for('index_blueprint.services') }}">Servicios</a></li>
+            <li><a href="{{ url_for('index_blueprint.login') }}">Inicio de Sesión</a></li>
+            <li><a href="{{ url_for('index_blueprint.register') }}">Registro</a></li>
+
+            <div class="search-bar">
+                <input type="text" placeholder="Buscar en el Sitio">
+                <span class="search-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+                        <path d="M0 0h24v24H0z" fill="none" />
+                        <path d="M15.5 14h-.79l-.28-.27a6.518 6.518 0 0 0 1.48-5.34C14.82 5.33 12.06 3 8.82 3S2.82 5.33 2.82 8.39s2.76 5.39 5.99 5.39c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l4.99 4.98c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-4.99-4.99zm-6.69 0C6.16 14 4 11.94 4 8.99 4 6.06 6.16 4 8.82 4c2.67 0 4.82 2.06 4.82 4.99 0 2.95-2.15 5.01-4.82 5.01z"
+                            fill="#333" />
+                    </svg>
+                </span>
+            </div>
+        </ul>
+    </nav>
+</header>
