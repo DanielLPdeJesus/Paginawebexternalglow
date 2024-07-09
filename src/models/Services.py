@@ -44,6 +44,7 @@ def contactinfo():
 
 @main.route('/test', methods=['POST'])
 def test():
+    business_id = request.form.get('business_id')
     selected_time = request.form.get('selected-time')
     date = request.form.get('date')
     service_type = request.form.get('service-type')
@@ -51,11 +52,13 @@ def test():
     comments = request.form.get('comments')
     terms_accepted = request.form.get('accept-terms')
     image = request.files.get('image-upload')
+        
     
     if not terms_accepted:
         return "Debes aceptar los términos y condiciones", 400
     
     datos = {
+        "business_id": business_id,
         "hora_seleccionada": selected_time,
         "fecha": date,
         "tipo_de_servicio": service_type,
@@ -69,9 +72,9 @@ def test():
         storage.child(image_path).put(image)
         image_url = storage.child(image_path).get_url(None)
         datos['imagen_url'] = image_url
-    
+        
     db.child('reservaciones').push(datos)
-
+    #db.child('negocios').child(business_id).child('reservaciones').push(datos)
     return redirect('/')
 
 

@@ -151,18 +151,20 @@
         </div>
         <div class="agenda">
             <h2>Agenda</h2>
-            <ul>
-                {% for cita in citas %}
-                    <li>
-                        Fecha: {{ cita.fecha }} - Hora: {{ cita.hora_seleccionada }}<br>
-                        Servicio: {{ cita.tipo_de_servicio }}<br>
-                        Detalles: {{ cita.peticion }}<br>
-                        Comentarios: {{ cita.comentarios }}
-                    </li>
-                {% else %}
-                    <li>No hay citas programadas.</li>
-                {% endfor %}
-            </ul>
+            {% if reservaciones %}
+                <ul>
+                    {% for reservacion in reservaciones %}
+                        <li>
+                            Fecha: {{ reservacion.fecha }} - Hora: {{ reservacion.hora_seleccionada }}<br>
+                            Servicio: {{ reservacion.tipo_de_servicio }}<br>
+                            Detalles: {{ reservacion.peticion }}<br>
+                            Comentarios: {{ reservacion.comentarios }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No hay citas programadas.</p>
+            {% endif %}
         </div>
     </div>
     <div class="menu-icon-container">

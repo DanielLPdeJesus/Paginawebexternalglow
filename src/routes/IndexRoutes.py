@@ -21,14 +21,23 @@ def register():
 def dashboard(token=None):
     if token and token != session.get('token'):
         abort(404)
-    citas = db.child('reservaciones').get().val()
     
-    if citas is None:
-        citas = {}
+    business_id = session.get('user_id') 
+    print(f"Business ID: {business_id}")  # Imprime el ID del negocio
     
-    citas_list = [{"id": id, **data} for id, data in citas.items()]
+    todas_reservaciones = db.child('reservaciones').get().val()
+    print(f"Todas las reservaciones: {todas_reservaciones}")  # Imprime todas las reservaciones
     
-    return render_template('Admin/dashboard.html', citas=citas_list)
+    if todas_reservaciones is None:
+        todas_reservaciones = {}
+    
+    reservaciones_negocio = {id: data for id, data in todas_reservaciones.items() if str(data.get('business_id')) == str(business_id)}
+    print(f"Reservaciones del negocio: {reservaciones_negocio}")  # Imprime las reservaciones filtradas
+    
+    reservaciones_list = [{"id": id, **data} for id, data in reservaciones_negocio.items()]
+
+    return render_template('Admin/dashboard.html', reservaciones=reservaciones_list)
+    
 
 @main.route('/resetpass')
 def resetpass():
@@ -51,4 +60,10 @@ def logout():
 
 @main.route('/test')
 def test():
-    return render_template('Users/test.html')
+        negocios = db.child('Negousers').get().val()
+        if negocios is None:
+            negocios = {}
+        
+        negocios_list = [{"id": id, "nombre": data.get('business_name')} for id, data in negocios.items()]
+        
+        return render_template('Users/test.html', negocios=negocios_list)
