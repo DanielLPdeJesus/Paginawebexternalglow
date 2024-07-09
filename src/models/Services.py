@@ -2,6 +2,7 @@ import pyrebase
 from flask import Blueprint, jsonify, redirect, request
 from dotenv import load_dotenv
 import os
+from flask_cors import CORS, cross_origin
 
 load_dotenv()
 
@@ -41,7 +42,6 @@ def contactinfo():
 
     return redirect('/contact')
 
-
 @main.route('/test', methods=['POST'])
 def test():
     business_id = request.form.get('business_id')
@@ -77,6 +77,7 @@ def test():
     #db.child('negocios').child(business_id).child('reservaciones').push(datos)
     return redirect('/')
 
+@cross_origin
 @main.route('/api/businesses', methods=['GET'])
 def get_all_businesses():
     try:

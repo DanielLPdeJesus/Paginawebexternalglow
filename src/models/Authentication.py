@@ -1,9 +1,10 @@
 import pyrebase
-from flask import Blueprint, redirect, request, flash, session, url_for
+from flask import Blueprint, redirect, request, flash, session, url_for, jsonify
 from functools import wraps
 import secrets
 from dotenv import load_dotenv
 import os
+from flask_cors import CORS, cross_origin
 
 load_dotenv()
 
@@ -24,7 +25,7 @@ firebase = pyrebase.initialize_app(config)
 auth = firebase.auth()
 db = firebase.database()
 
-@main.route('/register', methods=['POST','GET'])
+@main.route('/register', methods=['POST'])
 def registrarme():
     if request.method == 'POST':
         business_name = request.form['business_name']
@@ -109,8 +110,7 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-from flask import jsonify
-
+@cross_origin
 @main.route('/api/register', methods=['POST'])
 def api_register():
     if request.method == 'POST':
@@ -137,6 +137,7 @@ def api_register():
                 "gender": gender,
                 "birth_date": birth_date,
                 "role": "usuario"
+                
             }
             
             db.child('Users').child(user['localId']).set(user_data)
