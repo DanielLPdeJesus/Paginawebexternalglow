@@ -155,7 +155,7 @@ def api_register():
                 "error": str(e)
             }), 400
 
-    return jsonify({"success": False, "message": "Método no permitido"}), 405
+    return jsonify({"success": False, "message": "Método no permitidoo"}), 405
 
 
 
