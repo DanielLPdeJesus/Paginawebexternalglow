@@ -1,5 +1,5 @@
 import pyrebase
-from flask import Blueprint, redirect, request
+from flask import Blueprint, jsonify, redirect, request
 from dotenv import load_dotenv
 import os
 
@@ -77,6 +77,18 @@ def test():
     #db.child('negocios').child(business_id).child('reservaciones').push(datos)
     return redirect('/')
 
+@main.route('/api/businesses', methods=['GET'])
+def get_all_businesses():
+    try:
+        businesses = db.child('Negousers').get()
+        business_list = []
+        if businesses.each():
+            for business in businesses.each():
+                business_list.append(business.val())
+        return jsonify({"success": True, "businesses": business_list}), 200
+    except Exception as e:
+        print(f"Error al obtener los negocios: {str(e)}")
+        return jsonify({"success": False, "message": "Error al obtener los negocios.", "error": str(e)}), 500
 
 
             
