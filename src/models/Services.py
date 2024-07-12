@@ -79,7 +79,7 @@ def test():
 
 
 @main.route('/api/businesses', methods=['GET'])
-@cross_origin
+@cross_origin()
 def get_all_businesses():
     try:
         businesses = db.child('Negousers').get()
