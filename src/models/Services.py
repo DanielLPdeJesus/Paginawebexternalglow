@@ -1,8 +1,13 @@
+import logging
 import pyrebase
 from flask import Blueprint, jsonify, redirect, request
 from dotenv import load_dotenv
 import os
 from flask_cors import CORS, cross_origin
+
+project_folder = os.path.expanduser('~/externalglow')
+logging.warning(project_folder)
+load_dotenv(os.path.join(project_folder, '.env'))
 
 load_dotenv()
 

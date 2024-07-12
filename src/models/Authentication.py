@@ -5,6 +5,11 @@ import secrets
 from dotenv import load_dotenv
 import os
 from flask_cors import CORS, cross_origin
+import logging
+
+project_folder = os.path.expanduser('~/externalglow')
+logging.warning(project_folder)
+load_dotenv(os.path.join(project_folder, '.env'))
 
 load_dotenv()
 
@@ -20,6 +25,8 @@ config = {
     "messagingSenderId": os.getenv("MESSAGING_SENDER_ID"),
     "appId": os.getenv("APP_ID")
 }
+
+logging.warning(config)
 
 firebase = pyrebase.initialize_app(config)
 auth = firebase.auth()
