@@ -77,8 +77,9 @@ def test():
     #db.child('negocios').child(business_id).child('reservaciones').push(datos)
     return redirect('/')
 
-@cross_origin
+
 @main.route('/api/businesses', methods=['GET'])
+@cross_origin
 def get_all_businesses():
     try:
         businesses = db.child('Negousers').get()
@@ -89,7 +90,7 @@ def get_all_businesses():
         return jsonify({"success": True, "businesses": business_list}), 200
     except Exception as e:
         print(f"Error al obtener los negocios: {str(e)}")
-        return jsonify({"success": False, "message": "Error al obtener los negocios.", "error": str(e)}), 500
+        return jsonify({"success": False, "message": "Error al obtener los negociossssss.", "error": str(e)}), 500
 
 
             

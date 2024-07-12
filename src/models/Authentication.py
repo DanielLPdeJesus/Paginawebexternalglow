@@ -110,8 +110,9 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-@cross_origin
+
 @main.route('/api/register', methods=['POST'])
+@cross_origin
 def api_register():
     if request.method == 'POST':
         data = request.json 
