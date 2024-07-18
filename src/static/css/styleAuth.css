@@ -71,36 +71,138 @@ main {
     flex: 1;
 }
 
+/*Inicio del footer*/
+/* Estilos generales para el footer */
 footer {
-    background-color: #ffffff;
-    padding: 20px;
-    text-align: center;
-    border-top: 1px solid #cfcece;
-    margin-top: auto;
+    background-color: #333;
+    color: #fff;
+    padding: 40px 0;
+    font-family: 'Arial', sans-serif;
 }
 
-footer ul {
+.footer-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 200px;
+    padding: 20px;
+}
+
+.footer-section h3 {
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #ffffff;
+}
+
+.footer-section ul {
     list-style: none;
     padding: 0;
-    margin: 0 0 10px 0;
-    display: flex;
-    justify-content: center;
 }
 
-footer ul li {
-    margin: 0 10px;
+.footer-section ul li {
+    margin-bottom: 10px;
 }
 
-footer ul li a {
+.footer-section ul li a {
+    color: #fff;
     text-decoration: none;
-    color: #333;
-    font-weight: 500;
+    transition: color 0.3s;
 }
 
-footer p {
-    margin: 0;
-    color: #666;
+.footer-section ul li a:hover {
+    color: #000000;
 }
+
+.footer-socials li {
+    display: inline;
+    margin-right: 10px;
+}
+
+.footer-socials li a {
+    color: #fff;
+    font-size: 20px;
+    transition: color 0.3s;
+}
+
+.footer-socials li a:hover {
+    color: #000000;
+}
+
+.footer-section form {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-section form input[type="email"] {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 5px;
+}
+
+.footer-section form button {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #ffffff;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.footer-section form button:hover {
+    background-color: #e2b007;
+}
+
+/* Estilos para la parte inferior del footer */
+.footer-bottom {
+    background-color: #222;
+    padding: 20px 0;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.footer-bottom p {
+    margin: 5px 0;
+}
+
+.footer-bottom .legal-info p a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.footer-bottom .legal-info p a:hover {
+    text-decoration: underline;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer-content {
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .footer-section {
+        min-width: 100%;
+        padding: 10px;
+    }
+}
+
+/*Fin del footer*/
 
 .login-section {
     display: flex;
