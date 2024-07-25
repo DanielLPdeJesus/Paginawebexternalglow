@@ -67,3 +67,7 @@ def test():
         negocios_list = [{"id": id, "nombre": data.get('business_name')} for id, data in negocios.items()]
         
         return render_template('/Users/test.html', negocios=negocios_list)
+    
+@main.route('/cover')
+def cover():
+    return render_template('/Admin/cover.html')
