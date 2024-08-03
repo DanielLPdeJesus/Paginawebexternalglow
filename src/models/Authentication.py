@@ -140,12 +140,21 @@ def login():
             user_info = auth.get_account_info(user['idToken'])
 
             if user_info['users'][0]['emailVerified']:
+                user_data = db.child('Negousers').child(user['localId']).get().val()
+                if not user_data.get('terms_accepted', False):
+                    flash('No has aceptado los términos y condiciones. Por favor, regístrate nuevamente.', 'warning')
+                    return redirect('/register')
+                
                 session['user_id'] = user['localId']
                 session['token'] = secrets.token_hex(16) 
                 
-                flash('Inicio de sesión exitoso. Correo electrónico verificado.', 'success')
-                dashboard_url = url_for('index_blueprint.dashboard', token=session['token'])
-                return redirect(dashboard_url)
+                if user_data.get('statusnego', False):
+                    if user_data.get('status', False):  
+                        return redirect(url_for('index_blueprint.dashboard_premium', token=session['token']))
+                    else:  
+                        return redirect(url_for('index_blueprint.dashboard_regular', token=session['token']))
+                else:
+                    return redirect(url_for('index_blueprint.cover',  token=session['token']))
             else:
                 flash('¡Verifica tu correo electrónico antes de iniciar sesión!', 'warning')
                 return redirect('/login')

@@ -4,6 +4,7 @@ from flask import Blueprint, jsonify, redirect, request
 from dotenv import load_dotenv
 import os
 from flask_cors import CORS, cross_origin
+from cryptography.fernet import Fernet
 
 project_folder = os.path.expanduser('~/externalglow')
 logging.warning(project_folder)
@@ -11,6 +12,8 @@ load_dotenv(os.path.join(project_folder, '.env'))
 
 load_dotenv()
 
+key = Fernet.generate_key()
+cipher_suite = Fernet(key)
 
 main = Blueprint('Services', __name__, url_prefix='/Services')
 
@@ -34,14 +37,18 @@ def contactinfo():
     telefono = request.form['telefono']
     asunto = request.form['asunto']
     mensaje_original = request.form['mensaje']
+    
+    telefono_encriptado = encrypt_data(telefono)
+    mensaje_encriptado = encrypt_data(mensaje_original)
 
     datos = {
         "nombre": nombre,
         "correo": correo,
-        "telefono": telefono,
+        "telefono": telefono_encriptado,
         "asunto": asunto,
-        "mensaje": mensaje_original
+        "mensaje": mensaje_encriptado
     }
+
 
     db.child('contact').push(datos)  
 
@@ -79,7 +86,6 @@ def test():
         datos['imagen_url'] = image_url
         
     db.child('reservaciones').push(datos)
-    #db.child('negocios').child(business_id).child('reservaciones').push(datos)
     return redirect('/')
 
 
@@ -96,6 +102,11 @@ def get_all_businesses():
     except Exception as e:
         print(f"Error al obtener los negocios: {str(e)}")
         return jsonify({"success": False, "message": "Error al obtener los negociossssss.", "error": str(e)}), 500
+    
+
+def encrypt_data(data):
+    return cipher_suite.encrypt(data.encode()).decode()
+
 
 
             

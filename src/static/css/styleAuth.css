@@ -90,7 +90,7 @@ footer {
 
 .footer-section {
     flex: 1;
-    min-width: 200px;
+    min-width: 100px;
     padding: 20px;
 }
 
@@ -162,14 +162,14 @@ footer {
 
 /* Estilos para la parte inferior del footer */
 .footer-bottom {
-    background-color: #222;
+    background-color: #333333;
     padding: 20px 0;
     text-align: center;
     margin-top: 20px;
 }
 
 .footer-bottom p {
-    margin: 5px 0;
+    margin: 1px 0;
 }
 
 .footer-bottom .legal-info p a {

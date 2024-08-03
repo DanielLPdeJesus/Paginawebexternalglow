@@ -16,9 +16,9 @@ def login():
 def register():
     return render_template('/Auth/Admin/Register.html')
 
-@main.route('/<path:token>/dashboard')
+@main.route('/<path:token>/dashboard_premium')
 @login_required
-def dashboard(token=None):
+def dashboard_premium(token=None):
     if token and token != session.get('token'):
         abort(404)
     
@@ -36,7 +36,7 @@ def dashboard(token=None):
     
     reservaciones_list = [{"id": id, **data} for id, data in reservaciones_negocio.items()]
 
-    return render_template('/Admin/dashboard.html', reservaciones=reservaciones_list)
+    return render_template('/Admin/dashboard_premium.html', reservaciones=reservaciones_list)
     
 
 @main.route('/resetpass')
@@ -68,6 +68,13 @@ def test():
         
         return render_template('/Users/test.html', negocios=negocios_list)
     
-@main.route('/cover')
-def cover():
+@main.route('/<path:token>/cover')
+@login_required
+def cover(token=None):
     return render_template('/Admin/cover.html')
+
+@main.route('/<path:token>/dashboard_regular')
+@login_required
+def dashboard_regular(token=None):
+    business_id = session.get('user_id')
+    return render_template('/Admin/dashboard_regular.html', business_id=business_id)
