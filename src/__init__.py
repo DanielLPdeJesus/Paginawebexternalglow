@@ -3,6 +3,7 @@ from flask import Flask, render_template
 # Routes
 from .routes import IndexRoutes
 from .models import Authentication, Services
+from .services import ServicesMovil
 from flask_cors import CORS
 
 
@@ -16,6 +17,7 @@ def init_app(config):
     app.register_blueprint(IndexRoutes.main, url_prefix='/')
     app.register_blueprint(Authentication.main, url_prefix='/Authentication')
     app.register_blueprint(Services.main, url_prefix='/Services')
+    app.register_blueprint(ServicesMovil.main, url_prefix='/ServicesMovil')
 
     return app
 

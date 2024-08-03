@@ -200,54 +200,5 @@ def login_required(f):
     return decorated_function
 
 
-@main.route('/api/register', methods=['POST'])
-@cross_origin()
-def api_register():
-    if request.method == 'POST':
-        data = request.json 
-        
-        full_name = data.get('fullName')
-        last_name = data.get('lastName')
-        email = data.get('email')
-        phone_number = data.get('phone')
-        gender = data.get('gender')
-        birth_date = data.get('birthDate')
-        password = data.get('password')
-
-        try:
-            user = auth.create_user_with_email_and_password(email, password)
-            
-            auth.send_email_verification(user['idToken'])
-            
-            user_data = {
-                "full_name": full_name,
-                "last_name": last_name,
-                "email": email,
-                "phone_number": phone_number,
-                "gender": gender,
-                "birth_date": birth_date,
-                "role": "usuario"
-                
-            }
-            
-            db.child('Users').child(user['localId']).set(user_data)
-            
-            return jsonify({
-                "success": True,
-                "message": "Registro exitoso. Se ha enviado un correo de verificación."
-            }), 200
-        
-        except Exception as e:
-            print(f"Error durante el registro: {str(e)}")
-            return jsonify({
-                "success": False,
-                "message": "Error durante el registro. Por favor, inténtalo de nuevo.",
-                "error": str(e)
-            }), 400
-
-    return jsonify({"success": False, "message": "Método no permitidoo"}), 405
-
-
-
 
             
