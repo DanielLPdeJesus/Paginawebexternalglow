@@ -43,6 +43,9 @@ def api_register():
         gender = data.get('gender')
         birth_date = data.get('birthDate')
         password = data.get('password')
+        
+        # URL de la imagen predefinida
+        default_image_url = "https://thumbs.dreamstime.com/b/perfil-de-usuario-vectorial-avatar-predeterminado-179376714.jpg"
 
         try:
             user = auth.create_user_with_email_and_password(email, password)
@@ -56,8 +59,10 @@ def api_register():
                 "phone_number": phone_number,
                 "gender": gender,
                 "birth_date": birth_date,
-                "role": "usuario"
-                
+                "role": "usuario",
+                "terms_accepted": True,
+                "profile_image": default_image_url,
+                "active": True
             }
             
             db.child('Users').child(user['localId']).set(user_data)
@@ -75,9 +80,74 @@ def api_register():
                 "error": str(e)
             }), 400
 
-    return jsonify({"success": False, "message": "Método no permitidoo"}), 405
+    return jsonify({"success": False, "message": "Método no permitido"}), 405
 
 
-
-
+@main.route('/api/login', methods=['POST'])
+@cross_origin()
+def api_login():
+    if request.method == 'POST':
+        data = request.json
+        
+        email = data.get('email')
+        password = data.get('password')
+        
+        try:
+            # Autenticar usuario con Firebase
+            user = auth.sign_in_with_email_and_password(email, password)
             
+            # Obtener información adicional del usuario
+            user_info = auth.get_account_info(user['idToken'])
+            
+            if not user_info['users'][0]['emailVerified']:
+                return jsonify({
+                    "success": False,
+                    "message": "Por favor, verifica tu correo electrónico antes de iniciar sesión."
+                }), 401
+            
+            # Obtener datos adicionales del usuario desde la base de datos
+            user_data = db.child('Users').child(user['localId']).get().val()
+            
+            response_data = {
+                "success": True,
+                "message": "Inicio de sesión exitoso",
+                "user": {
+                    "uid": user['localId'],
+                    "email": email,
+                    "full_name": user_data.get('full_name'),
+                    "last_name": user_data.get('last_name'),
+                    "phone_number": user_data.get('phone_number'),
+                    "gender": user_data.get('gender'),
+                    "birth_date": user_data.get('birth_date'),
+                    "role": user_data.get('role'),
+                    "profile_image": user_data.get('profile_image'),
+                    "active": user_data.get('active')
+                },
+                "id_token": user['idToken']
+            }
+            
+            return jsonify(response_data), 200
+        
+        except Exception as e:
+            print(f"Error durante el inicio de sesión: {str(e)}")
+            return jsonify({
+                "success": False,
+                "message": "Error durante el inicio de sesión. Por favor, verifica tus credenciales e inténtalo de nuevo.",
+            }), 401
+    
+    return jsonify({"success": False, "message": "Método no permitido"}), 405
+
+
+@main.route('/api/recuperar-password', methods=['POST'])
+def recuperar_password():
+    data = request.json
+    email = data.get('email')
+
+    if not email:
+        return jsonify({'error': 'Por favor, ingresa una dirección de correo electrónico.'}), 400
+
+    try:
+        auth.send_password_reset_email(email)
+        return jsonify({'message': 'Se ha enviado un enlace de restablecimiento de contraseña a tu correo electrónico.'}), 200
+    except Exception as e:
+        return jsonify({'error': 'Verifica que has ingresado un correo electrónico válido.'}), 400

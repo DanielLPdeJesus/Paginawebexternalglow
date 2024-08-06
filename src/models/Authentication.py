@@ -4,7 +4,6 @@ from functools import wraps
 import secrets
 from dotenv import load_dotenv
 import os
-from flask_cors import CORS, cross_origin
 import logging
 from validate_email import validate_email
 
@@ -34,7 +33,6 @@ auth = firebase.auth()
 db = firebase.database()
 
 
-#############################################################################
 @main.route('/register', methods=['POST'])
 def registrarme():
     if request.method == 'POST':
@@ -50,13 +48,11 @@ def registrarme():
 
         business_images = request.files.getlist('business-image-upload')
         service_images = request.files.getlist('service-image-upload')
-
-        # Verificar la aceptación de los términos
+        
         if not accept_terms:
             flash('Debes aceptar los términos y condiciones para registrarte.', 'danger')
             return redirect('/register')
 
-        # Verificar que se hayan enviado las imágenes y que haya al menos 3 en cada categoría
         if len(business_images) < 3 or len(service_images) < 3:
             flash('Debes subir al menos 3 imágenes para el negocio y 3 para los servicios.', 'danger')
             return redirect('/register')
@@ -82,7 +78,6 @@ def registrarme():
             business_image_urls = []
             service_image_urls = []
 
-            # Subir imágenes del negocio
             for image in business_images:
                 if image and image.filename:
                     storage = firebase.storage()
@@ -91,7 +86,6 @@ def registrarme():
                     image_url = storage.child(f"business_images/{image_name}").get_url(None)
                     business_image_urls.append(image_url)
 
-            # Subir imágenes de servicios
             for image in service_images:
                 if image and image.filename:
                     storage = firebase.storage()
@@ -100,7 +94,6 @@ def registrarme():
                     image_url = storage.child(f"service_images/{image_name}").get_url(None)
                     service_image_urls.append(image_url)
 
-            # Verificar que se hayan subido todas las imágenes
             if len(business_image_urls) < 3 or len(service_image_urls) < 3:
                 raise Exception("No se pudieron subir todas las imágenes requeridas.")
 
@@ -117,7 +110,7 @@ def registrarme():
             return redirect('/register')
 
     return redirect('/register')
-######################################################################################################################################################        
+     
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -167,7 +160,6 @@ def login():
     return redirect('/login')
 
 
-####################################################################################################################################
 @main.route('/recurpass', methods=['GET', 'POST'])
 def recurpass():
     if request.method == 'POST':
