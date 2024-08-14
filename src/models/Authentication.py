@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 import os
 import logging
 from validate_email import validate_email
+from datetime import datetime
+
 
 project_folder = os.path.expanduser('~/externalglow')
 logging.warning(project_folder)
@@ -48,18 +50,21 @@ def registrarme():
 
         business_images = request.files.getlist('business-image-upload')
         service_images = request.files.getlist('service-image-upload')
+        profile_images = request.files.getlist('profile-image-upload')
         
         if not accept_terms:
             flash('Debes aceptar los términos y condiciones para registrarte.', 'danger')
             return redirect('/register')
 
-        if len(business_images) < 3 or len(service_images) < 3:
-            flash('Debes subir al menos 3 imágenes para el negocio y 3 para los servicios.', 'danger')
+        if len(business_images) < 3 or len(service_images) < 3 or len(profile_images) < 1 :
+            flash('Debes subir al menos 3 imágenes para el negocio, 3 para los servicios y 1 Para la foto de perfil, Preferiblemente la foto del dueño del negocio.', 'danger')
             return redirect('/register')
 
         try:
             user = auth.create_user_with_email_and_password(email, password)
             auth.send_email_verification(user['idToken'])
+            
+            fecha_registro = datetime.now().isoformat()
 
             datos = {
                 "business_name": business_name,
@@ -72,11 +77,17 @@ def registrarme():
                 "role": "cliente",
                 "terms_accepted": True,
                 "status": False,
-                "statusnego": False
+                "statusnego": False,
+                "fecha_registro": fecha_registro,
+                "calificacion_promedio": 0,
+                "numero_resenas": 0,
+                "numero_gustas":0,
+                "postal_code": 29950,
             }
 
             business_image_urls = []
             service_image_urls = []
+            profile_images_urls = []
 
             for image in business_images:
                 if image and image.filename:
@@ -93,12 +104,21 @@ def registrarme():
                     storage.child(f"service_images/{image_name}").put(image)
                     image_url = storage.child(f"service_images/{image_name}").get_url(None)
                     service_image_urls.append(image_url)
+            
+            for image in profile_images:
+                if image and image.filename:
+                    storage = firebase.storage()
+                    image_name = f"{user['localId']}_profile_{image.filename}"
+                    storage.child(f"profile_images/{image_name}").put(image)
+                    image_url = storage.child(f"profile_images/{image_name}").get_url(None)
+                    profile_images_urls.append(image_url)
 
-            if len(business_image_urls) < 3 or len(service_image_urls) < 3:
+            if len(business_image_urls) < 3 or len(service_image_urls) < 3 or len(profile_images_urls) > 1:
                 raise Exception("No se pudieron subir todas las imágenes requeridas.")
 
             datos["business_images"] = business_image_urls
             datos["service_images"] = service_image_urls
+            datos["profile_images"] = profile_images_urls
 
             db.child('Negousers').child(user['localId']).set(datos)
 

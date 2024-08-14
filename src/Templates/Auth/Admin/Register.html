@@ -55,9 +55,9 @@
             <div class="form-group">
                 <label for="services_offered">Servicios Ofrecidos</label>
                 <select id="services_offered" name="services_offered" required>
-                    <option value="estetica">Estética</option>
-                    <option value="peluqueria">Peluquería</option>
-                    <option value="salon_belleza">Salón de Belleza</option>
+                    <option value="Estetica">Estética</option>
+                    <option value="Peluqueria">Peluquería</option>
+                    <option value="Salon">Salón de Belleza</option>
                 </select>   
             </div>
 
@@ -83,6 +83,16 @@
                 <input type="file" id="service-image-upload" name="service-image-upload" class="image-upload-input" accept="image/*" multiple required>
                 <div id="service-image-preview" class="image-preview-container"></div>
             </div>
+
+            <div class="note">
+                <p>Minimo una Imagen para foto del perfil del negocio</p>
+            </div>
+            <div class="image-upload-container">
+                <label for="service-image-upload" class="image-upload-label">Foto de Perfil </label>
+                <input type="file" id="service-image-upload" name="profile-image-upload" class="image-upload-input" accept="image/*" multiple required>
+                <div id="service-image-preview" class="image-preview-container"></div>
+            </div>
+
 
             <div class="note-register">
                 <p>Nota: Este negocio está registrado por Google Maps.</p>

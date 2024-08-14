@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import os
 from flask_cors import CORS, cross_origin
 import logging
+import uuid
 
 project_folder = os.path.expanduser('~/externalglow')
 logging.warning(project_folder)
@@ -44,7 +45,6 @@ def api_register():
         birth_date = data.get('birthDate')
         password = data.get('password')
         
-        # URL de la imagen predefinida
         default_image_url = "https://thumbs.dreamstime.com/b/perfil-de-usuario-vectorial-avatar-predeterminado-179376714.jpg"
 
         try:
@@ -93,10 +93,8 @@ def api_login():
         password = data.get('password')
         
         try:
-            # Autenticar usuario con Firebase
             user = auth.sign_in_with_email_and_password(email, password)
             
-            # Obtener información adicional del usuario
             user_info = auth.get_account_info(user['idToken'])
             
             if not user_info['users'][0]['emailVerified']:
@@ -139,6 +137,7 @@ def api_login():
 
 
 @main.route('/api/recuperar-password', methods=['POST'])
+@cross_origin()
 def recuperar_password():
     data = request.json
     email = data.get('email')
