@@ -97,11 +97,17 @@ def get_all_businesses():
         business_list = []
         if businesses.each():
             for business in businesses.each():
-                business_list.append(business.val())
+                business_data = business.val()
+                # Filtrar negocios con estatus `false`
+                if business_data.get('status', False) is True:
+                    # Incluir el ID del negocio en los datos
+                    business_data['id'] = business.key()
+                    business_list.append(business_data)
         return jsonify({"success": True, "businesses": business_list}), 200
     except Exception as e:
         print(f"Error al obtener los negocios: {str(e)}")
-        return jsonify({"success": False, "message": "Error al obtener los negociossssss.", "error": str(e)}), 500
+        return jsonify({"success": False, "message": "Error al obtener los negocios.", "error": str(e)}), 500
+
     
 
 def encrypt_data(data):

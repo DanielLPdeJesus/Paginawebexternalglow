@@ -5,6 +5,8 @@ import os
 from flask_cors import CORS, cross_origin
 import logging
 import uuid
+import base64
+from datetime import datetime
 
 project_folder = os.path.expanduser('~/externalglow')
 logging.warning(project_folder)
@@ -44,13 +46,24 @@ def api_register():
         gender = data.get('gender')
         birth_date = data.get('birthDate')
         password = data.get('password')
+        profile_image = data.get('profileImage')  
         
-        default_image_url = "https://thumbs.dreamstime.com/b/perfil-de-usuario-vectorial-avatar-predeterminado-179376714.jpg"
+        if not profile_image:
+            return jsonify({
+                "success": False,
+                "message": "La imagen de perfil es obligatoria."
+            }), 400
 
         try:
             user = auth.create_user_with_email_and_password(email, password)
             
             auth.send_email_verification(user['idToken'])
+            
+            image_data = base64.b64decode(profile_image.split(',')[1])
+            file_name = f"profile_images/{user['localId']}.jpg"
+            storage = firebase.storage()
+            storage.child(file_name).put(image_data)
+            profile_image_url = storage.child(file_name).get_url(None)
             
             user_data = {
                 "full_name": full_name,
@@ -61,7 +74,7 @@ def api_register():
                 "birth_date": birth_date,
                 "role": "usuario",
                 "terms_accepted": True,
-                "profile_image": default_image_url,
+                "profile_image": profile_image_url,
                 "active": True
             }
             
@@ -103,8 +116,13 @@ def api_login():
                     "message": "Por favor, verifica tu correo electrónico antes de iniciar sesión."
                 }), 401
             
-            # Obtener datos adicionales del usuario desde la base de datos
             user_data = db.child('Users').child(user['localId']).get().val()
+            
+            if not user_data.get('active', False):
+                return jsonify({
+                    "success": False,
+                    "message": "Tu cuenta está inactiva. Por favor, contacta al administrador."
+                }), 403
             
             response_data = {
                 "success": True,
@@ -125,7 +143,7 @@ def api_login():
             }
             
             return jsonify(response_data), 200
-        
+            
         except Exception as e:
             print(f"Error durante el inicio de sesión: {str(e)}")
             return jsonify({
@@ -150,3 +168,76 @@ def recuperar_password():
         return jsonify({'message': 'Se ha enviado un enlace de restablecimiento de contraseña a tu correo electrónico.'}), 200
     except Exception as e:
         return jsonify({'error': 'Verifica que has ingresado un correo electrónico válido.'}), 400
+
+
+@main.route('/api/reservation', methods=['POST'])
+@cross_origin()
+def api_reservation():
+    if request.method == 'POST':
+        data = request.json
+
+        business_id = data.get('businessId')
+        selected_time = data.get('selectedTime')
+        date = data.get('date')
+        service_type = data.get('serviceType')
+        request_details = data.get('requestDetails')
+        comments = data.get('comments')
+        terms_accepted = data.get('termsAccepted')
+        image = data.get('image')  
+        user_id = data.get('userId') 
+
+        if not terms_accepted:
+            return jsonify({
+                "success": False,
+                "message": "Debes aceptar los términos y condiciones."
+            }), 400
+
+        if not user_id:
+            return jsonify({
+                "success": False,
+                "message": "Usuario no autenticado."
+            }), 401
+
+        try:
+            reservation_data = {
+                "business_id": business_id,
+                "hora_seleccionada": selected_time,
+                "fecha": date,
+                "tipo_de_servicio": service_type,
+                "peticion": request_details,
+                "comentarios": comments,
+                "user_id": user_id,
+                "estado": "pendiente",
+                "fecha_creacion": datetime.now().isoformat(),
+                "fecha_actualizacion": datetime.now().isoformat()
+            }
+
+            if image:
+                image_data = base64.b64decode(image.split(',')[1])
+                file_name = f"reservation_images/{uuid.uuid4()}.jpg"
+                storage = firebase.storage()
+                storage.child(file_name).put(image_data)
+                image_url = storage.child(file_name).get_url(None)
+                reservation_data['imagen_url'] = image_url
+
+            new_reservation = db.child('reservaciones').push(reservation_data)
+
+            db.child('estadisticas').child('reservaciones_totales').transaction(lambda current_value: current_value + 1 if current_value else 1)
+            current_month = datetime.now().strftime('%Y-%m')
+            db.child('estadisticas').child('reservaciones_por_mes').child(current_month).transaction(lambda current_value: current_value + 1 if current_value else 1)
+
+            return jsonify({
+                "success": True,
+                "message": "Reservación realizada exitosamente.",
+                "reservation_id": new_reservation['name']
+            }), 200
+
+        except Exception as e:
+            print(f"Error durante la reservación: {str(e)}")
+            return jsonify({
+                "success": False,
+                "message": "Error durante la reservación. Por favor, inténtalo de nuevo.",
+                "error": str(e)
+            }), 400
+
+    return jsonify({"success": False, "message": "Método no permitido"}), 405

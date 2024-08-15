@@ -23,16 +23,16 @@ def dashboard_premium(token=None):
         abort(404)
     
     business_id = session.get('user_id') 
-    print(f"Business ID: {business_id}")  # Imprime el ID del negocio
+    print(f"Business ID: {business_id}") 
     
     todas_reservaciones = db.child('reservaciones').get().val()
-    print(f"Todas las reservaciones: {todas_reservaciones}")  # Imprime todas las reservaciones
+    print(f"Todas las reservaciones: {todas_reservaciones}") 
     
     if todas_reservaciones is None:
         todas_reservaciones = {}
     
     reservaciones_negocio = {id: data for id, data in todas_reservaciones.items() if str(data.get('business_id')) == str(business_id)}
-    print(f"Reservaciones del negocio: {reservaciones_negocio}")  # Imprime las reservaciones filtradas
+    print(f"Reservaciones del negocio: {reservaciones_negocio}")
     
     reservaciones_list = [{"id": id, **data} for id, data in reservaciones_negocio.items()]
 

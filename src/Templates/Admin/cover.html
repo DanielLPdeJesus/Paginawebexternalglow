@@ -1,12 +1,121 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Espera</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procesando Datos</title>
+    <style>
+         body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .header {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .header button {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 11px;
+        }
+
+        .header button:hover {
+            background-color: #ffffff;
+            color: black;
+        }
+
+
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 50px;
+            text-align: center;
+            width: 320px;
+    
+        }
+
+        .spinner {
+            margin: 0 auto 20px auto;
+            width: 50px;
+            height: 50px;
+            border: 6px solid #ccc;
+            border-top: 6px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .image-container {
+            margin-top: 20px;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+        }
+        .logout-button {
+          background-color: black;
+          color: white;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-size: 16px;
+      }
+      
+      .logout-button a {
+          color: white;
+          text-decoration: none;
+          display: block;
+      }
+      
+      .logout-button:hover {
+          background-color: #333;
+      }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+
+   
+
+    </style>
 </head>
 <body>
-  <h1>pantalla de Espera</h1>
-  <li><a href="{{ url_for('index_blueprint.logout') }}">Cerrar sesion</a></li>
+
+
+
+
+    <div class="container">
+        <div class="spinner"></div>
+        <p>Estamos procesando tus datos. 
+            Este proceso puede tardar hasta 24 horas. 
+            Agradecemos tu paciencia...</p>
+
+        <!-- Imagen centrada -->
+        <div class="image-container">
+            <img src="{{ url_for('static', filename='img/prosses.png') }}" alt="Imagen centrada">
+        </div>
+        <button class="logout-button">
+          <a href="{{ url_for('index_blueprint.logout') }}">Cerrar sesión</a>
+      </button>
+    </div>
 </body>
 </html>
