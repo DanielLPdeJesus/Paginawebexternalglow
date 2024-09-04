@@ -4,6 +4,47 @@
 
 {% block content %}
 <style>
+    .register-section {
+        display: flex;
+        flex-direction: row;
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+    .register-left {
+        flex: 1;
+    }
+    .register-right {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .register-right img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+    }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+    }
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+    .image-upload-container {
+        margin-bottom: 1.5rem;
+    }
     .image-preview-container {
         display: flex;
         flex-wrap: wrap;
@@ -26,8 +67,46 @@
     .error-border {
         border-color: red;
     }
+    .buttons-register {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    .btn-r {
+        padding: 0.5rem 1rem;
+        background-color: #000;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+    .btn-r:hover {
+        background-color: #000;
+    }
+    .terms-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    .note, .note-register {
+        margin-top: 1rem;
+        font-style: italic;
+        color: #666;
+    }
+
+    @media (max-width: 768px) {
+        .register-section {
+            flex-direction: column;
+        }
+        .register-right {
+            order: -1;
+            margin-bottom: 2rem;
+        }
+    }
 </style>
-<br>
+
 <div class="register-section">
     <div class="register-left">
         <div class="alert-container">

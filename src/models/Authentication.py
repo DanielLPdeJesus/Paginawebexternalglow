@@ -9,7 +9,7 @@ from validate_email import validate_email
 from datetime import datetime
 
 
-project_folder = os.path.expanduser('~/externalglow')
+project_folder = os.path.expanduser('~/external')
 logging.warning(project_folder)
 load_dotenv(os.path.join(project_folder, '.env'))
 

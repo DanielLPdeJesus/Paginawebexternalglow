@@ -22,11 +22,11 @@ def dashboard_premium(token=None):
     if token and token != session.get('token'):
         abort(404)
     
-    business_id = session.get('user_id') 
-    print(f"Business ID: {business_id}") 
+    business_id = session.get('user_id')
+    print(f"Business ID: {business_id}")
     
     todas_reservaciones = db.child('reservaciones').get().val()
-    print(f"Todas las reservaciones: {todas_reservaciones}") 
+    print(f"Todas las reservaciones: {todas_reservaciones}")
     
     if todas_reservaciones is None:
         todas_reservaciones = {}
@@ -35,9 +35,8 @@ def dashboard_premium(token=None):
     print(f"Reservaciones del negocio: {reservaciones_negocio}")
     
     reservaciones_list = [{"id": id, **data} for id, data in reservaciones_negocio.items()]
-
-    return render_template('/Admin/dashboard_premium.html', reservaciones=reservaciones_list)
     
+    return render_template('/Admin/dashboard_premium.html', reservaciones=reservaciones_list)
 
 @main.route('/resetpass')
 def resetpass():

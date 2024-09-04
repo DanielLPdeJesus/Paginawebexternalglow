@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Nabavr</title>
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css'><link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/navbar.css') }}">
+
+</head>
+<body>
+<div id="nav-bar">
+  <input id="nav-toggle" type="checkbox"/>
+  <div id="nav-header"><a id="nav-title" target="_blank">External</i>Glow</a>
+    <hr/>
+  </div>
+  <div id="nav-content">
+    <div class="nav-button"><i class="fas fa-home"></i><span>Inicio</span></div>
+    <div class="nav-button"><i class="fas fa-images"></i><span>Mi negocio</span></div>
+    <div class="nav-button"><i class="fas fa-thumbtack"></i><span>Promociones</span></div>
+    <div class="nav-button"><i class="fas fa-gem"></i><a href="{{ url_for('index_blueprint.logout') }}"><span>Cerrar Sesion</span></a></div>
+    <div id="nav-content-highlight"></div>
+  </div>
+</div>
+{% block content %}
+
+{% endblock %}
+</body>
+</html>
+

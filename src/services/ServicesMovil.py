@@ -6,9 +6,10 @@ from flask_cors import CORS, cross_origin
 import logging
 import uuid
 import base64
+from werkzeug.utils import secure_filename
 from datetime import datetime
 
-project_folder = os.path.expanduser('~/externalglow')
+project_folder = os.path.expanduser('~/external')
 logging.warning(project_folder)
 load_dotenv(os.path.join(project_folder, '.env'))
 
@@ -241,3 +242,137 @@ def api_reservation():
             }), 400
 
     return jsonify({"success": False, "message": "Método no permitido"}), 405
+
+
+@main.route('/api/update-profile', methods=['PUT'])
+@cross_origin()
+def update_profile():
+    if request.method == 'PUT':
+        data = request.json
+        user_id = data.get('userId')
+        
+        if not user_id:
+            return jsonify({
+                "success": False,
+                "message": "Usuario no autenticado."
+            }), 401
+
+        try:
+            current_user_data = db.child('Users').child(user_id).get().val()
+            
+            if not current_user_data:
+                return jsonify({
+                    "success": False,
+                    "message": "Usuario no encontrado."
+                }), 404
+
+            update_fields = ['full_name', 'last_name', 'phone_number', 'gender', 'birth_date']
+            user_data = {}
+            for field in update_fields:
+                if data.get(field) is not None:
+                    user_data[field] = data.get(field)
+                elif field in current_user_data:
+                    user_data[field] = current_user_data[field]
+            db.child('Users').child(user_id).update(user_data)
+            
+            return jsonify({
+                "success": True,
+                "message": "Perfil actualizado exitosamente."
+            }), 200
+        
+        except Exception as e:
+            print(f"Error al actualizar el perfil: {str(e)}")
+            return jsonify({
+                "success": False,
+                "message": "Error al actualizar el perfil. Por favor, inténtalo de nuevo.",
+                "error": str(e)
+            }), 400
+
+    return jsonify({"success": False, "message": "Método no permitido"}), 405
+
+@main.route('/api/update-profile-image', methods=['PUT'])
+@cross_origin()
+def update_profile_image():
+    if 'profileImage' not in request.files:
+        return jsonify({
+            "success": False,
+            "message": "No se encontró la imagen en la solicitud."
+        }), 400
+
+    user_id = request.form.get('userId')
+    if not user_id:
+        return jsonify({
+            "success": False,
+            "message": "Usuario no autenticado."
+        }), 401
+
+    file = request.files['profileImage']
+    if file.filename == '':
+        return jsonify({
+            "success": False,
+            "message": "No se seleccionó ningún archivo."
+        }), 400
+
+    if file:
+        try:
+            filename = secure_filename(f"{user_id}_profile_{uuid.uuid4()}.jpg")
+            
+            temp_path = os.path.join('/tmp', filename)
+            file.save(temp_path)
+            
+            storage = firebase.storage()
+            storage.child(f"profile_images/{filename}").put(temp_path)
+            profile_image_url = storage.child(f"profile_images/{filename}").get_url(None)
+            
+            db.child('Users').child(user_id).update({"profile_image": profile_image_url})
+            
+            os.remove(temp_path)
+            
+            return jsonify({
+                "success": True,
+                "message": "Imagen de perfil actualizada exitosamente.",
+                "profile_image_url": profile_image_url
+            }), 200
+        
+        except Exception as e:
+            print(f"Error al actualizar la imagen de perfil: {str(e)}")
+            return jsonify({
+                "success": False,
+                "message": "Error al actualizar la imagen de perfil. Por favor, inténtalo de nuevo.",
+                "error": str(e)
+            }), 500
+
+    return jsonify({
+        "success": False,
+        "message": "Ocurrió un error inesperado."
+    }), 500
+
+@main.route('/api/get-user-profile', methods=['GET'])
+@cross_origin()
+def get_user_profile():
+    user_id = request.args.get('userId')
+    if not user_id:
+        return jsonify({
+            "success": False,
+            "message": "Usuario no autenticado."
+        }), 401
+
+    try:
+        user_data = db.child('Users').child(user_id).get().val()
+        if user_data:
+            return jsonify({
+                "success": True,
+                "user": user_data
+            }), 200
+        else:
+            return jsonify({
+                "success": False,
+                "message": "Usuario no encontrado."
+            }), 404
+    except Exception as e:
+        print(f"Error al obtener el perfil del usuario: {str(e)}")
+        return jsonify({
+            "success": False,
+            "message": "Error al obtener el perfil del usuario.",
+            "error": str(e)
+        }), 500 

@@ -6,7 +6,7 @@ import os
 from flask_cors import CORS, cross_origin
 from cryptography.fernet import Fernet
 
-project_folder = os.path.expanduser('~/externalglow')
+project_folder = os.path.expanduser('~/external')
 logging.warning(project_folder)
 load_dotenv(os.path.join(project_folder, '.env'))
 
@@ -98,9 +98,7 @@ def get_all_businesses():
         if businesses.each():
             for business in businesses.each():
                 business_data = business.val()
-                # Filtrar negocios con estatus `false`
                 if business_data.get('status', False) is True:
-                    # Incluir el ID del negocio en los datos
                     business_data['id'] = business.key()
                     business_list.append(business_data)
         return jsonify({"success": True, "businesses": business_list}), 200
