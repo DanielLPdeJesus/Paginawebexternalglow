@@ -184,8 +184,8 @@ def api_reservation():
         request_details = data.get('requestDetails')
         comments = data.get('comments')
         terms_accepted = data.get('termsAccepted')
-        image = data.get('image')  
-        user_id = data.get('userId') 
+        image = data.get('image')
+        user_id = data.get('userId')
 
         if not terms_accepted:
             return jsonify({
@@ -223,10 +223,6 @@ def api_reservation():
 
             new_reservation = db.child('reservaciones').push(reservation_data)
 
-            db.child('estadisticas').child('reservaciones_totales').transaction(lambda current_value: current_value + 1 if current_value else 1)
-            current_month = datetime.now().strftime('%Y-%m')
-            db.child('estadisticas').child('reservaciones_por_mes').child(current_month).transaction(lambda current_value: current_value + 1 if current_value else 1)
-
             return jsonify({
                 "success": True,
                 "message": "Reservación realizada exitosamente.",
@@ -242,7 +238,6 @@ def api_reservation():
             }), 400
 
     return jsonify({"success": False, "message": "Método no permitido"}), 405
-
 
 @main.route('/api/update-profile', methods=['PUT'])
 @cross_origin()
