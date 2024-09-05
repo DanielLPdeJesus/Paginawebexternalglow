@@ -31,11 +31,25 @@ def dashboard_premium(token=None):
     if todas_reservaciones is None:
         todas_reservaciones = {}
     
-    reservaciones_negocio = {id: data for id, data in todas_reservaciones.items() if str(data.get('business_id')) == str(business_id)}
-    print(f"Reservaciones del negocio: {reservaciones_negocio}")
+    reservaciones_negocio = {id: data for id, data in todas_reservaciones.items() 
+                             if str(data.get('business_id')) == str(business_id) 
+                             and data.get('estado') == 'pendiente'}
+    print(f"Reservaciones pendientes del negocio: {reservaciones_negocio}")
     
-    reservaciones_list = [{"id": id, **data} for id, data in reservaciones_negocio.items()]
+    reservaciones_list = []
+    for id, data in reservaciones_negocio.items():
+        user_data = db.child('Users').child(data.get('user_id')).get().val()
+        reservacion = {
+            "id": id,
+            **data,
+            "user_name": user_data.get('full_name', 'N/A'),
+            "user_email": user_data.get('email', 'N/A'),
+            "user_phone": user_data.get('phone_number', 'N/A'),
+            "user_profile_image": user_data.get('profile_image', 'N/A')
+        }
+        reservaciones_list.append(reservacion)
     
+    print("Reservaciones pasadas a la plantilla:", reservaciones_list)
     return render_template('/Admin/dashboard_premium.html', reservaciones=reservaciones_list)
 
 @main.route('/resetpass')
@@ -57,15 +71,6 @@ def logout():
     flash('Has cerrado sesión exitosamente.', 'info')
     return redirect('/login')
 
-@main.route('/test')
-def test():
-        negocios = db.child('Negousers').get().val()
-        if negocios is None:
-            negocios = {}
-        
-        negocios_list = [{"id": id, "nombre": data.get('business_name')} for id, data in negocios.items()]
-        
-        return render_template('/Users/test.html', negocios=negocios_list)
     
 @main.route('/<path:token>/cover')
 @login_required

@@ -2,82 +2,70 @@
 {% block title %}Página Administrativa{% endblock %}
 
 {% block content %}
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dashpre.css') }}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 <div class="content">
     <div class="agenda">
-        <h2>Agenda</h2>
+        <h2>Agenda de Reservaciones Pendientes</h2>
         {% if reservaciones %}
             <ul class="reservations-list">
                 {% for reservacion in reservaciones %}
-                    <li class="reservation-item">
-                        <div class="reservation-date">Fecha: {{ reservacion.fecha }} - Hora: {{ reservacion.hora_seleccionada }}</div>
-                        <div class="reservation-service">Servicio: {{ reservacion.tipo_de_servicio }}</div>
-                        <div class="reservation-details">Detalles: {{ reservacion.peticion }}</div>
-                        <div class="reservation-comments">Comentarios: {{ reservacion.comentarios }}</div>
+                    <li class="reservation-item" data-reservation-id="{{ reservacion.id }}">
+                 <div>
+                    <h5 class="mb-1 arial-font">Usuario Reservando: {{ reservacion.user_name }}</h5>
+                    <h6 class="mb-1 arial-font">Tipo de Servicio: {{ reservacion.tipo_de_servicio }}</h6>
+                    <p class="mb-1 arial-font">Fecha: {{ reservacion.fecha }} - Hora: {{ reservacion.hora_seleccionada }}</p>
+                 </div>
+                        <div class="reservation-actions">
+                            <button onclick="showDetails('{{ reservacion.id }}')" class="btn btn-info">Ver Detalles</button>
+                            <button onclick="showAcceptModal('{{ reservacion.id }}')" class="btn btn-success">Aceptar</button>
+                            <button onclick="showRejectModal('{{ reservacion.id }}')" class="btn btn-danger">Rechazar</button>
+                        </div>
                     </li>
                 {% endfor %}
             </ul>
         {% else %}
-            <p class="no-reservations">No hay citas programadas.</p>
+            <p class="no-reservations">No hay citas pendientes.</p>
         {% endif %}
     </div>
 </div>
 
-<style>
-    .content {
-        position: absolute;
-        left: calc(var(--navbar-width) + 2vw);
-        top: 1vw;
-        right: 1vw;
-        bottom: 1vw;
-        background: var(--background);
-        border-radius: 16px;
-        padding: 20px;
-        box-sizing: border-box;
-        overflow-y: auto;
-        transition: left 0.2s;
-    }
-    
-    #nav-toggle:checked ~ .content {
-        left: calc(var(--navbar-width-min) + 2vw);
-    }
-    
-    .agenda {
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    
-    .reservations-list {
-        list-style-type: none;
-        padding: 0;
-    }
-    
-    .reservation-item {
-        margin-bottom: 20px;
-        padding: 15px;
-        background-color: #f9f9f9;
-        border-radius: 5px;
-    }
-    
-    .no-reservations {
-        text-align: center;
-        color: #666;
-    }
-    
-    @media (max-width: 768px) {
-        .content {
-            left: calc(var(--navbar-width-min) + 2vw);
-            padding: 10px;
-        }
-        
-        .agenda {
-            padding: 15px;
-        }
-        
-        .reservation-item {
-            padding: 10px;
-        }
-    }
-</style>
+<div id="detailsModal" class="modal" tabindex="-1">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="reservationDetails"></div>
+    </div>
+</div>
+
+<!-- Modal para Aceptar Reservación -->
+<div id="acceptModal" class="modal" tabindex="-1">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Confirmar Aceptación</h2>
+        <br>
+        <p>¿Está seguro que desea aceptar esta reservación?</p>
+        <button onclick="acceptReservation()" class="btn btn-success">Confirmar</button>
+        <br>
+        <button onclick="closeModal('acceptModal')" class="btn btn-secondary">Cancelar</button>
+    </div>
+</div>
+
+<!-- Modal para Rechazar Reservación -->
+<div id="rejectModal" class="modal" tabindex="-1">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Confirmar Rechazo</h2>
+        <br>
+        <p>¿Está seguro que desea rechazar esta reservación?</p>
+        <button onclick="rejectReservation()" class="btn btn-danger $red-600">Confirmar</button>
+        <br>
+        <button onclick="closeModal('rejectModal')" class="btn btn-secondary">Cancelar</button>
+    </div>
+</div>
+<script>
+    var reservacionesData = '{{ reservaciones | tojson | safe }}';
+</script>
+<script src="{{ url_for('static', filename='js/Creser.js') }}"></script>
+
 {% endblock %}

@@ -221,3 +221,12 @@ def login_required(f):
     return decorated_function
 
 
+@main.route('/update_reservation_status/<string:reservation_id>', methods=['POST'])
+@login_required
+def update_reservation_status(reservation_id):
+    data = request.json
+    new_status = data.get('status')
+    
+    db.child('reservaciones').child(reservation_id).update({'estado': new_status})
+    
+    return jsonify({'success': True})
