@@ -13,7 +13,7 @@
                 {% for reservacion in reservaciones %}
                     <li class="reservation-item" data-reservation-id="{{ reservacion.id }}">
                  <div>
-                    <h5 class="mb-1 arial-font">Usuario Reservando: {{ reservacion.user_name }}</h5>
+                    <h5 class="mb-1 arial-font">Usuario Reservando: {{ reservacion.user_name }} {{ reservacion.last_name }}</h5>
                     <h6 class="mb-1 arial-font">Tipo de Servicio: {{ reservacion.tipo_de_servicio }}</h6>
                     <p class="mb-1 arial-font">Fecha: {{ reservacion.fecha }} - Hora: {{ reservacion.hora_seleccionada }}</p>
                  </div>

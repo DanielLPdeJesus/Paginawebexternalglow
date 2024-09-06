@@ -43,6 +43,7 @@ def dashboard_premium(token=None):
             "id": id,
             **data,
             "user_name": user_data.get('full_name', 'N/A'),
+            "last_name":user_data.get('last_name','N/A'),
             "user_email": user_data.get('email', 'N/A'),
             "user_phone": user_data.get('phone_number', 'N/A'),
             "user_profile_image": user_data.get('profile_image', 'N/A')

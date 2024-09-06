@@ -113,6 +113,53 @@ def encrypt_data(data):
 
 
 
-
-
-            
+@main.route('/api/business/<string:business_id>', methods=['GET'])
+@cross_origin()
+def get_business_details(business_id):
+    try:
+        business = db.child('Negousers').child(business_id).get().val()
+        if business:
+            if business.get('status', False) is True:
+                # Añadir el ID del negocio a los datos
+                business['id'] = business_id
+                
+                # Crear un diccionario con los campos que necesitamos
+                business_details = {
+                    'id': business_id,
+                    'business_name': business.get('business_name'),
+                    'business_address': business.get('business_address'),
+                    'owner_name': business.get('owner_name'),
+                    'email': business.get('email'),
+                    'phone_number': business.get('phone_number'),
+                    'profile_image': business.get('profile_image'),
+                    'business_images': business.get('business_images', []),
+                    'services_offered': business.get('services_offered'),
+                    'opening_hours': business.get('opening_hours', {}),
+                    'calificacion_promedio': business.get('calificacion_promedio', 0),
+                    'numero_gustas': business.get('numero_gustas', 0),
+                    'numero_resenas': business.get('numero_resenas', 0)
+                }
+                
+                # Obtener reseñas del negocio
+                try:
+                    reviews = db.child('Reviews').order_by_child('business_id').equal_to(business_id).get().val()
+                    if reviews:
+                        business_details['reviews'] = list(reviews.values())
+                    else:
+                        business_details['reviews'] = []
+                        business_details['no_reviews_message'] = "No hay reseñas disponibles para este negocio."
+                except Exception as review_error:
+                    print(f"Error al obtener reseñas: {str(review_error)}")
+                    business_details['reviews'] = []
+                    business_details['no_reviews_message'] = "No se pudieron cargar las reseñas en este momento."
+                
+                return jsonify({"success": True, "business": business_details}), 200
+            else:
+                return jsonify({"success": False, "message": "El negocio no está activo."}), 404
+        else:
+            return jsonify({"success": False, "message": "Negocio no encontrado."}), 404
+    except Exception as e:
+        print(f"Error detallado al obtener los detalles del negocio: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"success": False, "message": "Error al obtener los detalles del negocio.", "error": str(e)}), 500
