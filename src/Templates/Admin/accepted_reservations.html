@@ -44,6 +44,7 @@
         <textarea id="cancelReason" rows="3" class="form-control" placeholder="Razón de la cancelación"></textarea>
         <br>
         <button onclick="cancelReservation()" class="btn btn-danger" id="confirmCancelButton">Confirmar Cancelación</button>
+        <br>
         <button onclick="closeModal('cancelModal')" class="btn btn-secondary">Cerrar</button>
     </div>
 </div>
@@ -51,5 +52,5 @@
 <script>
     var reservacionesData = '{{ reservaciones | tojson | safe }}';
 </script>
-<script src="{{ url_for('static', filename='js/Creser.js') }}"></script>
+<script src="{{ url_for('static', filename='js/AcepCreser.js') }}"></script>
 {% endblock %}

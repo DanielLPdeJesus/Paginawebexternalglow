@@ -78,17 +78,18 @@ def registrarme():
             fecha_registro = datetime.now().isoformat()
 
             datos = {
-                "business_name": business_name,
-                "owner_name": owner_name,
-                "email": email,
-                "phone_number": phone_number,
-                "business_address": business_address,
-                "services_offered": services_offered,
-                "opening_hours": opening_hours,
-                "role": "cliente",
-                "terms_accepted": True,
-                "status": False,
-                "statusnego": False,
+                "nombre_negocio": business_name,
+                "nombre_propietario": owner_name,
+                "correo": email,
+                "numero_telefono": phone_number,
+                "direccion_negocio": business_address,
+                "servicios_ofrecidos": services_offered,
+                "horas_trabajo": opening_hours,
+                "rol": "cliente",
+                "terminos_aceptados": True,
+                "pagado": False,
+                "negocio_aceptado": False,
+                "negocio_activo": False,
                 "fecha_registro": fecha_registro,
                 "calificacion_promedio": 0,
                 "numero_resenas": 0,
@@ -105,31 +106,31 @@ def registrarme():
             for image in business_images:
                 if image and image.filename:
                     storage = firebase.storage()
-                    image_name = f"{user['localId']}_business_{image.filename}"
-                    storage.child(f"business_images/{image_name}").put(image)
-                    image_url = storage.child(f"business_images/{image_name}").get_url(None)
+                    image_name = f"{user['localId']}_negocios_{image.filename}"
+                    storage.child(f"negocios_imagenes/{image_name}").put(image)
+                    image_url = storage.child(f"negocios_imagenes/{image_name}").get_url(None)
                     business_image_urls.append(image_url)
 
             for image in service_images:
                 if image and image.filename:
                     storage = firebase.storage()
-                    image_name = f"{user['localId']}_service_{image.filename}"
-                    storage.child(f"service_images/{image_name}").put(image)
-                    image_url = storage.child(f"service_images/{image_name}").get_url(None)
+                    image_name = f"{user['localId']}_servicios_{image.filename}"
+                    storage.child(f"servicios_imagenes/{image_name}").put(image)
+                    image_url = storage.child(f"servicios_imagenes/{image_name}").get_url(None)
                     service_image_urls.append(image_url)
             
             if profile_images and profile_images[0].filename:
                 storage = firebase.storage()
-                image_name = f"{user['localId']}_profile_{profile_images[0].filename}"
-                storage.child(f"profile_images/{image_name}").put(profile_images[0])
-                profile_image_url = storage.child(f"profile_images/{image_name}").get_url(None)
+                image_name = f"{user['localId']}_perfiles_{profile_images[0].filename}"
+                storage.child(f"perfiles_imagenes/{image_name}").put(profile_images[0])
+                profile_image_url = storage.child(f"perfiles_imagenes/{image_name}").get_url(None)
 
             if len(business_image_urls) < 3 or len(service_image_urls) < 3 or not profile_image_url:
                 raise Exception("No se pudieron subir todas las imágenes requeridas.")
 
-            datos["business_images"] = business_image_urls
-            datos["service_images"] = service_image_urls
-            datos["profile_image"] = profile_image_url
+            datos["negocios_imagenes"] = business_image_urls
+            datos["servicios_imagenes"] = service_image_urls
+            datos["perfiles_imagenes"] = profile_image_url
 
             db.child('Negousers').child(user['localId']).set(datos)
 
@@ -165,15 +166,15 @@ def login():
 
             if user_info['users'][0]['emailVerified']:
                 user_data = db.child('Negousers').child(user['localId']).get().val()
-                if not user_data.get('terms_accepted', False):
+                if not user_data.get('terminos_aceptados', False):
                     flash('No has aceptado los términos y condiciones. Por favor, regístrate nuevamente.', 'warning')
                     return redirect('/register')
                 
                 session['user_id'] = user['localId']
                 session['token'] = secrets.token_hex(16) 
                 
-                if user_data.get('statusnego', False):
-                    if user_data.get('status', False):  
+                if user_data.get('negocio_aceptado', False):
+                    if user_data.get('pagado', False):  
                         return redirect(url_for('index_blueprint.dashboard_premium', token=session['token']))
                     else:  
                         return redirect(url_for('index_blueprint.dashboard_regular', token=session['token']))
@@ -232,6 +233,27 @@ def update_reservation_status(reservation_id):
     db.child('reservaciones').child(reservation_id).update({'estado': new_status})
     
     return jsonify({'success': True})
+
+
+@main.route('/update_reservation_status_and_comment/<string:reservation_id>', methods=['POST'])
+@login_required
+def update_reservation_status_and_comment(reservation_id):
+    data = request.json
+    new_status = data.get('status')
+    business_comment = data.get('reason', '')
+    current_time = datetime.now().isoformat()
+    
+    # Actualizar la reservación
+    updates = {
+        'estado': new_status,
+        'comentario_negocio': business_comment,
+        'fecha_actualizacion': current_time
+    }
+    
+    db.child('reservaciones').child(reservation_id).update(updates)
+    
+    return jsonify({'success': True})
+
 
 
 

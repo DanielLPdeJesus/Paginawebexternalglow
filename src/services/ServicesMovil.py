@@ -61,25 +61,25 @@ def api_register():
             auth.send_email_verification(user['idToken'])
             
             image_data = base64.b64decode(profile_image.split(',')[1])
-            file_name = f"profile_images/{user['localId']}.jpg"
+            file_name = f"perfil_usuarios/{user['localId']}.jpg"
             storage = firebase.storage()
             storage.child(file_name).put(image_data)
             profile_image_url = storage.child(file_name).get_url(None)
             
             user_data = {
-                "full_name": full_name,
-                "last_name": last_name,
-                "email": email,
-                "phone_number": phone_number,
-                "gender": gender,
-                "birth_date": birth_date,
-                "role": "usuario",
-                "terms_accepted": True,
-                "profile_image": profile_image_url,
-                "active": True
+                "nombre_usuario": full_name,
+                "apellidos": last_name,
+                "correo": email,
+                "numero_telefono": phone_number,
+                "genero": gender,
+                "fecha_cumpleanos": birth_date,
+                "rol": "usuario",
+                "terminos_aceptados": True,
+                "perfil_usuarios": profile_image_url,
+                "activo": True
             }
             
-            db.child('Users').child(user['localId']).set(user_data)
+            db.child('Usuarios').child(user['localId']).set(user_data)
             
             return jsonify({
                 "success": True,
@@ -117,9 +117,9 @@ def api_login():
                     "message": "Por favor, verifica tu correo electrónico antes de iniciar sesión."
                 }), 401
             
-            user_data = db.child('Users').child(user['localId']).get().val()
+            user_data = db.child('Usuarios').child(user['localId']).get().val()
             
-            if not user_data.get('active', False):
+            if not user_data.get('activo', False):
                 return jsonify({
                     "success": False,
                     "message": "Tu cuenta está inactiva. Por favor, contacta al administrador."
@@ -131,14 +131,14 @@ def api_login():
                 "user": {
                     "uid": user['localId'],
                     "email": email,
-                    "full_name": user_data.get('full_name'),
-                    "last_name": user_data.get('last_name'),
-                    "phone_number": user_data.get('phone_number'),
-                    "gender": user_data.get('gender'),
-                    "birth_date": user_data.get('birth_date'),
-                    "role": user_data.get('role'),
-                    "profile_image": user_data.get('profile_image'),
-                    "active": user_data.get('active')
+                    "full_name": user_data.get('nombre_usuario'),
+                    "last_name": user_data.get('apellidos'),
+                    "phone_number": user_data.get('numero_telefono'),
+                    "gender": user_data.get('genero'),
+                    "birth_date": user_data.get('fecha_cumpleanos'),
+                    "role": user_data.get('rol'),
+                    "profile_image": user_data.get('perfil_usuarios'),
+                    "active": user_data.get('activo')
                 },
                 "id_token": user['idToken']
             }
@@ -201,13 +201,13 @@ def api_reservation():
 
         try:
             reservation_data = {
-                "business_id": business_id,
+                "id_negocio": business_id,
                 "hora_seleccionada": selected_time,
                 "fecha": date,
                 "tipo_de_servicio": service_type,
                 "peticion": request_details,
                 "comentarios": comments,
-                "user_id": user_id,
+                "id_usuario": user_id,
                 "estado": "pendiente",
                 "comentariosnego": "En proceso",
                 "fecha_creacion": datetime.now().isoformat(),
@@ -216,7 +216,7 @@ def api_reservation():
 
             if image:
                 image_data = base64.b64decode(image.split(',')[1])
-                file_name = f"reservation_images/{uuid.uuid4()}.jpg"
+                file_name = f"reservacion_imagenes/{uuid.uuid4()}.jpg"
                 storage = firebase.storage()
                 storage.child(file_name).put(image_data)
                 image_url = storage.child(file_name).get_url(None)
@@ -254,7 +254,7 @@ def update_profile():
             }), 401
 
         try:
-            current_user_data = db.child('Users').child(user_id).get().val()
+            current_user_data = db.child('Usuarios').child(user_id).get().val()
             
             if not current_user_data:
                 return jsonify({
@@ -262,14 +262,14 @@ def update_profile():
                     "message": "Usuario no encontrado."
                 }), 404
 
-            update_fields = ['full_name', 'last_name', 'phone_number', 'gender', 'birth_date']
+            update_fields = ['nombre_usuario', 'apellidos', 'numero_telefono', 'genero', 'fecha_cumpleanos']
             user_data = {}
             for field in update_fields:
                 if data.get(field) is not None:
                     user_data[field] = data.get(field)
                 elif field in current_user_data:
                     user_data[field] = current_user_data[field]
-            db.child('Users').child(user_id).update(user_data)
+            db.child('Usuarios').child(user_id).update(user_data)
             
             return jsonify({
                 "success": True,
@@ -311,16 +311,16 @@ def update_profile_image():
 
     if file:
         try:
-            filename = secure_filename(f"{user_id}_profile_{uuid.uuid4()}.jpg")
+            filename = secure_filename(f"{user_id}_perfil_{uuid.uuid4()}.jpg")
             
             temp_path = os.path.join('/tmp', filename)
             file.save(temp_path)
             
             storage = firebase.storage()
-            storage.child(f"profile_images/{filename}").put(temp_path)
-            profile_image_url = storage.child(f"profile_images/{filename}").get_url(None)
+            storage.child(f"perfil_usuarios/{filename}").put(temp_path)
+            profile_image_url = storage.child(f"perfil_usuarios/{filename}").get_url(None)
             
-            db.child('Users').child(user_id).update({"profile_image": profile_image_url})
+            db.child('Usuarios').child(user_id).update({"perfil_usuarios": profile_image_url})
             
             os.remove(temp_path)
             
@@ -354,7 +354,7 @@ def get_user_profile():
         }), 401
 
     try:
-        user_data = db.child('Users').child(user_id).get().val()
+        user_data = db.child('Usuarios').child(user_id).get().val()
         if user_data:
             return jsonify({
                 "success": True,
@@ -372,3 +372,71 @@ def get_user_profile():
             "message": "Error al obtener el perfil del usuario.",
             "error": str(e)
         }), 500 
+        
+        
+@main.route('/api/businesses', methods=['GET'])
+@cross_origin()
+def get_all_businesses():
+    try:
+        businesses = db.child('Negousers').get()
+        business_list = []
+        if businesses.each():
+            for business in businesses.each():
+                business_data = business.val()
+                if business_data.get('negocio_aceptado', False) is True:
+                    business_data['id'] = business.key()
+                    business_list.append(business_data)
+        return jsonify({"success": True, "businesses": business_list}), 200
+    except Exception as e:
+        print(f"Error al obtener los negocios: {str(e)}")
+        return jsonify({"success": False, "message": "Error al obtener los negocios.", "error": str(e)}), 500
+    
+
+@main.route('/api/business/<string:business_id>', methods=['GET'])
+@cross_origin()
+def get_business_details(business_id):
+    try:
+        business = db.child('Negousers').child(business_id).get().val()
+        if business:
+            if business.get('negocio_aceptado', False) is True:
+                business['id'] = business_id
+                
+                business_details = {
+                    'id': business_id,
+                    'business_name': business.get('nombre_negocio'),
+                    'business_address': business.get('direccion_negocio'),
+                    'owner_name': business.get('nombre_propietario'),
+                    'email': business.get('correo'),
+                    'phone_number': business.get('numero_telefono'),
+                    'profile_image': business.get('perfiles_imagenes'),
+                    'business_images': business.get('negocios_imagenes', []),
+                    'services_offered': business.get('servicios_imagenes'),
+                    'opening_hours': business.get('horas_trabajo', {}),
+                    'calificacion_promedio': business.get('calificacion_promedio', 0),
+                    'numero_gustas': business.get('numero_gustas', 0),
+                    'numero_resenas': business.get('numero_resenas', 0)
+                }
+                
+                try:
+                    reviews = db.child('Reviews').order_by_child('business_id').equal_to(business_id).get().val()
+                    if reviews:
+                        business_details['reviews'] = list(reviews.values())
+                    else:
+                        business_details['reviews'] = []
+                        business_details['no_reviews_message'] = "No hay reseñas disponibles para este negocio."
+                except Exception as review_error:
+                    print(f"Error al obtener reseñas: {str(review_error)}")
+                    business_details['reviews'] = []
+                    business_details['no_reviews_message'] = "No se pudieron cargar las reseñas en este momento."
+                
+                return jsonify({"success": True, "business": business_details}), 200
+            else:
+                return jsonify({"success": False, "message": "El negocio no está activo."}), 404
+        else:
+            return jsonify({"success": False, "message": "Negocio no encontrado."}), 404
+    except Exception as e:
+        print(f"Error detallado al obtener los detalles del negocio: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"success": False, "message": "Error al obtener los detalles del negocio.", "error": str(e)}), 500
+    

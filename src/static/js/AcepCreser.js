@@ -1,4 +1,5 @@
 let reservaciones = [];
+let currentReservationId = null;
 
 function cargarReservaciones() {
     if (typeof reservacionesData !== 'undefined' && reservacionesData) {
@@ -10,11 +11,7 @@ function cargarReservaciones() {
     }
 }
 
-cargarReservaciones();
-
 document.addEventListener('DOMContentLoaded', function() {
-    let currentReservationId = null;
-
     cargarReservaciones();
 
     window.showDetails = function(reservationId) {
@@ -50,27 +47,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    window.showCancelModal = function(reservationId, fecha, hora) {
+    window.showCancelModal = function(reservationId) {
         currentReservationId = reservationId;
         var modal = document.getElementById('cancelModal');
-        var warningElement = document.getElementById('cancelWarning');
-        var confirmButton = document.getElementById('confirmCancelButton');
-
         if (modal) {
             modal.style.display = 'block';
-            
-            var reservationTime = new Date(fecha + ' ' + hora);
-            var currentTime = new Date();
-            var timeDifference = reservationTime.getTime() - currentTime.getTime();
-            var hoursDifference = timeDifference / (1000 * 3600);
-
-            if (hoursDifference < 2) {
-                warningElement.textContent = 'No se puede cancelar menos de 2 horas antes de la reservación.';
-                confirmButton.disabled = true;
-            } else {
-                warningElement.textContent = '';
-                confirmButton.disabled = false;
-            }
         }
     }
 
@@ -89,15 +70,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateReservationStatus(reservationId, newStatus, reason = '') {
-        fetch('/Authentication/update_reservation_status/' + reservationId, {
+        console.log('Updating reservation status. ID:', reservationId, 'New status:', newStatus, 'Reason:', reason);
+        fetch('/Authentication/update_reservation_status_and_comment/' + reservationId, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ 
                 status: newStatus,
-                reason: reason,
-                cancellation_time: new Date().toISOString()
+                reason: reason
             }),
         })
         .then(function(response) { 
@@ -108,6 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(function(data) {
             if (data.success) {
+                console.log('Reservation updated successfully');
                 var reservationElement = document.querySelector('[data-reservation-id="' + reservationId + '"]');
                 if (reservationElement) {
                     reservationElement.remove();
@@ -121,10 +103,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             } else {
+                console.error('Error updating reservation:', data);
                 alert('Error al actualizar el estado de la reservación');
             }
         })
         .catch(function(error) {
+            console.error('Error:', error);
             alert('Error al actualizar el estado de la reservación');
         });
     }

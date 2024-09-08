@@ -32,24 +32,25 @@ def dashboard_premium(token=None):
         todas_reservaciones = {}
     
     reservaciones_negocio = {id: data for id, data in todas_reservaciones.items() 
-                             if str(data.get('business_id')) == str(business_id) 
-                             and data.get('estado') == 'pendiente'}
+                         if str(data.get('id_negocio')) == str(business_id) 
+                         and data.get('estado') == 'pendiente'}
     print(f"Reservaciones pendientes del negocio: {reservaciones_negocio}")
     
     reservaciones_list = []
     for id, data in reservaciones_negocio.items():
-        user_data = db.child('Users').child(data.get('user_id')).get().val()
+        user_data = db.child('Usuarios').child(data.get('id_usuario')).get().val()
         reservacion = {
             "id": id,
             **data,
-            "user_name": user_data.get('full_name', 'N/A'),
-            "last_name":user_data.get('last_name','N/A'),
-            "user_email": user_data.get('email', 'N/A'),
-            "user_phone": user_data.get('phone_number', 'N/A'),
-            "user_profile_image": user_data.get('profile_image', 'N/A')
+            "user_name": user_data.get('nombre_usuario', 'N/A'),
+            "last_name": user_data.get('apellidos', 'N/A'),
+            "user_email": user_data.get('correo', 'N/A'),
+            "user_phone": user_data.get('numero_telefono', 'N/A'),
+            "user_profile_image": user_data.get('perfil_usuarios', 'N/A')
         }
         reservaciones_list.append(reservacion)
-    
+        print(f"Reservación agregada: {reservacion}")
+        
     print("Reservaciones pasadas a la plantilla:", reservaciones_list)
     return render_template('/Admin/dashboard_premium.html', reservaciones=reservaciones_list)
 
@@ -97,29 +98,44 @@ def accepted_reservations(token=None):
         abort(404)
     
     business_id = session.get('user_id')
+    print(f"ID del negocio: {business_id}")
     
     todas_reservaciones = db.child('reservaciones').get().val()
     
     if todas_reservaciones is None:
+        print("No se encontraron reservaciones en la base de datos")
         todas_reservaciones = {}
+    else:
+        print(f"Total de reservaciones encontradas: {len(todas_reservaciones)}")
     
     reservaciones_negocio = {id: data for id, data in todas_reservaciones.items() 
-                             if data.get('business_id') == business_id 
-                             and data.get('estado') == 'aceptada'}
+                         if str(data.get('id_negocio')) == str(business_id) 
+                         and data.get('estado') == 'aceptada'}
+    
+    print(f"Reservaciones aceptadas para este negocio: {len(reservaciones_negocio)}")
     
     reservaciones_list = []
     for id, data in reservaciones_negocio.items():
-        user_data = db.child('Users').child(data.get('user_id')).get().val()
+        user_id = data.get('id_usuario')  # Asumiendo que el campo se llama 'id_usuario'
+        print(f"Procesando reservación {id} para usuario {user_id}")
+        
+        user_data = db.child('Usuarios').child(user_id).get().val()
+        if user_data is None:
+            print(f"No se encontraron datos para el usuario {user_id}")
+            user_data = {} 
+        
         reservacion = {
             "id": id,
             **data,
-            "user_name": user_data.get('full_name', 'N/A'),
-            "last_name":user_data.get('last_name','N/A'),
-            "user_email": user_data.get('email', 'N/A'),
-            "user_phone": user_data.get('phone_number', 'N/A'),
-            "user_profile_image": user_data.get('profile_image', 'N/A')
+            "user_name": user_data.get('nombre_usuario', 'N/A'),
+            "last_name": user_data.get('apellidos', 'N/A'),
+            "user_email": user_data.get('correo', 'N/A'),
+            "user_phone": user_data.get('numero_telefono', 'N/A'),
+            "user_profile_image": user_data.get('perfil_usuarios', 'N/A')
         }
         reservaciones_list.append(reservacion)
+        print(f"Reservación agregada: {reservacion}")
     
+    print(f"Total de reservaciones procesadas: {len(reservaciones_list)}")
     return render_template('/Admin/accepted_reservations.html', reservaciones=reservaciones_list)
 
