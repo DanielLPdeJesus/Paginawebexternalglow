@@ -1,12 +1,12 @@
 import pyrebase
-from flask import Blueprint, redirect, request, flash, session, url_for, jsonify
+from flask import Blueprint, app, redirect, request, flash, session, url_for, jsonify
 from functools import wraps
 import secrets
 from dotenv import load_dotenv
 import os
 import logging
 from validate_email import validate_email
-from datetime import datetime
+from datetime import datetime, time, timedelta
 
 
 project_folder = os.path.expanduser('~/external')
@@ -214,6 +214,17 @@ def recurpass():
         return redirect('/login')
  
 
+def premium_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        user_id = session.get('user_id')
+        user_data = db.child('Negousers').child(user_id).get().val()
+        if not user_data or user_data.get('pagado') != True:
+            flash('Esta función requiere una membresía premium.', 'warning')
+            return redirect('/dashboard_regular')
+        return f(*args, **kwargs)
+    return decorated_function
+
 
 def login_required(f):
     @wraps(f)
@@ -255,5 +266,18 @@ def update_reservation_status_and_comment(reservation_id):
     return jsonify({'success': True})
 
 
+@main.before_request
+def check_session_expiration():
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(minutes=30)  
+    session.modified = True
 
-
+@main.route('/check_session', methods=['POST'])
+def check_session():
+    if 'last_activity' in session:
+        last_activity = session['last_activity']
+        if time.time() - last_activity > 1800:  # 30 minutos
+            session.clear()
+            return jsonify({"status": "expired"}), 401
+    session['last_activity'] = time.time()
+    return jsonify({"status": "active"}), 200

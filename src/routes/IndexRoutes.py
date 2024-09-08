@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, session, abort, flash, redirect
-from src.models.Authentication import login_required, db
+from src.models.Authentication import login_required, db, premium_required
 
 main = Blueprint('index_blueprint', __name__, url_prefix='/')
 
@@ -18,6 +18,7 @@ def register():
 
 @main.route('/dashboard_premium')
 @login_required
+@premium_required
 def dashboard_premium(token=None):
     if token and token != session.get('token'):
         abort(404)
@@ -86,13 +87,17 @@ def cover(token=None):
 
 @main.route('/dashboard_regular')
 @login_required
-def dashboard_regular(token=None):
-    business_id = session.get('user_id')
-    return render_template('/Admin/dashboard_regular.html', business_id=business_id)
+def dashboard_regular():
+    user_id = session.get('user_id')
+    user_data = db.child('Negousers').child(user_id).get().val()
+    if user_data and user_data.get('pagado', False):
+        return redirect('/dashboard_premium')
+    return render_template('/Admin/dashboard_regular.html', business_id=user_id)
 
 
 @main.route('/accepted_reservations')
 @login_required
+@premium_required
 def accepted_reservations(token=None):
     if token and token != session.get('token'):
         abort(404)
