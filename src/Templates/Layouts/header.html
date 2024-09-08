@@ -3,7 +3,7 @@
         <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo de la Empresa">
     </div>
     <nav>
-        <ul>
+        <ul class="nav-links">
             <li><a href="/">Inicio</a></li>
             <li><a href="{{ url_for('index_blueprint.contact') }}">Contacto</a></li>
             <li><a href="{{ url_for('index_blueprint.services') }}">Servicios</a></li>
@@ -15,4 +15,22 @@
             </div>
         </ul>
     </nav>
+    <div class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+   </div> 
+
 </header>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+    
+        hamburger.addEventListener('click', function() {
+            navLinks.classList.toggle('open');
+            hamburger.classList.toggle('active');
+        });
+    });
+    </script>
