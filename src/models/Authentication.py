@@ -94,6 +94,8 @@ def registrarme():
                 "numero_resenas": 0,
                 "numero_gustas": 0,
                 "postal_code": 29950,
+                "reservaCancel": 0,
+                "reservaAcep": 0,
             }
 
             business_image_urls = []
@@ -230,3 +232,6 @@ def update_reservation_status(reservation_id):
     db.child('reservaciones').child(reservation_id).update({'estado': new_status})
     
     return jsonify({'success': True})
+
+
+

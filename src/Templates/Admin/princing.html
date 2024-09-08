@@ -1,0 +1,51 @@
+{% extends '/Layouts/navbar.html' %}
+
+{% block title %}Página Administrativa{% endblock %}
+
+{% block content %}
+
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/stylePricing.css') }}">
+{% endblock %}
+
+
+<div class="container">
+    <div class="header">
+        <h2>Plan de Precios</h2>
+        <p>Confia en nosotros y has crecer aun mas tu negocio</p>
+    </div>
+
+    <div class="pricing-table">
+        <!-- Plan Base -->
+        <div class="pricing-plan">
+            <div class="plan-name">Gratuito</div>
+            <div class="plan-price">$00.00 Mx</div>
+            <div class="plan-duration">/ Mes</div>
+            <p class="plan-description">Para la mayoría de los negocios que desean optimizar consultas web.</p>
+            <ul class="features">
+                <li>Acceso básico a la plataforma.</li>
+                <li>Gestión de reservas y perfil del negocio.</li>
+                <li>Visibilidad estándar en la aplicación.</li>
+            </ul>
+            <a href="{{ url_for('index_blueprint.dashboard_regular', token='tu_token_aqui') }}" class="button">Elegir plan</a>
+        </div>
+
+        <!-- Plan Popular -->
+        <div class="pricing-plan popular">
+            <div class="plan-name">Premium</div>
+            <div class="plan-price">$150.00 Mx</div>
+            <div class="plan-duration1">/ Mes</div>
+            <p class="description1">Para la mayoría de los negocios que desean optimizar consultas web.</p>
+            <ul class="features">
+                <li>Acceso a la plataforma.</li>
+                <li>Gestión de reservas y perfil del negocio.</li>
+                <li>Visibilidad estándar en la aplicación.</li>
+                <li>Mayor visibilidad en la aplicación móvil.</li>
+                <li>Acceso temprano a todas las nuevas funcionalidades.</li>
+                <li>Atención al cliente prioritaria.</li>
+            </ul>
+            <a href="" class="button">Elegir plan</a>
+        </div>
+    </div>
+
+{% endblock %}

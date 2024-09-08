@@ -209,6 +209,7 @@ def api_reservation():
                 "comentarios": comments,
                 "user_id": user_id,
                 "estado": "pendiente",
+                "comentariosnego": "En proceso",
                 "fecha_creacion": datetime.now().isoformat(),
                 "fecha_actualizacion": datetime.now().isoformat()
             }

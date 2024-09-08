@@ -16,7 +16,7 @@ def login():
 def register():
     return render_template('/Auth/Admin/Register.html')
 
-@main.route('/<path:token>/dashboard_premium')
+@main.route('/dashboard_premium')
 @login_required
 def dashboard_premium(token=None):
     if token and token != session.get('token'):
@@ -66,6 +66,11 @@ def contact():
 def services():
     return render_template('/Users/services.html')
 
+@main.route('/princing')
+@login_required
+def pricing(token=None):
+    return render_template('/Admin/princing.html')
+
 @main.route('/logout')
 def logout():
     session.clear()
@@ -73,13 +78,48 @@ def logout():
     return redirect('/login')
 
     
-@main.route('/<path:token>/cover')
+@main.route('/cover')
 @login_required
 def cover(token=None):
     return render_template('/Admin/cover.html')
 
-@main.route('/<path:token>/dashboard_regular')
+@main.route('/dashboard_regular')
 @login_required
 def dashboard_regular(token=None):
     business_id = session.get('user_id')
     return render_template('/Admin/dashboard_regular.html', business_id=business_id)
+
+
+@main.route('/accepted_reservations')
+@login_required
+def accepted_reservations(token=None):
+    if token and token != session.get('token'):
+        abort(404)
+    
+    business_id = session.get('user_id')
+    
+    todas_reservaciones = db.child('reservaciones').get().val()
+    
+    if todas_reservaciones is None:
+        todas_reservaciones = {}
+    
+    reservaciones_negocio = {id: data for id, data in todas_reservaciones.items() 
+                             if data.get('business_id') == business_id 
+                             and data.get('estado') == 'aceptada'}
+    
+    reservaciones_list = []
+    for id, data in reservaciones_negocio.items():
+        user_data = db.child('Users').child(data.get('user_id')).get().val()
+        reservacion = {
+            "id": id,
+            **data,
+            "user_name": user_data.get('full_name', 'N/A'),
+            "last_name":user_data.get('last_name','N/A'),
+            "user_email": user_data.get('email', 'N/A'),
+            "user_phone": user_data.get('phone_number', 'N/A'),
+            "user_profile_image": user_data.get('profile_image', 'N/A')
+        }
+        reservaciones_list.append(reservacion)
+    
+    return render_template('/Admin/accepted_reservations.html', reservaciones=reservaciones_list)
+
