@@ -5,27 +5,26 @@
 {% block content %}
 
 {% block styles %}
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/stylePricing.css') }}">
+
 {% endblock %}
 
-
-<div class="container">
-    <div class="header">
-        <h2>Plan de Precios</h2>
-        <p>Confia en nosotros y has crecer aun mas tu negocio</p>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/stylePricing.css') }}">
+<div class="md:container max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <div class="header text-center py-8 bg-gray-100 p-2 rounded">
+        <h2 class="text-4xl font-bold text-gray-800 mb-2">Plan de Precios</h2>
+        <p class="text-lg text-gray-600">Confía en nosotros y haz crecer aún más tu negocio</p>
     </div>
+    
 
     <div class="pricing-table">
-        <!-- Plan Base -->
         <div class="pricing-plan">
             <div class="plan-name">Gratuito</div>
             <div class="plan-price">$00.00 Mx</div>
-            <div class="plan-duration">/ Mes</div>
-            <p class="plan-description">Para la mayoría de los negocios que desean optimizar consultas web.</p>
+            <div class="plan-duration">/ Actual</div>
+            <p class="plan-description">Para la mayoría de los negocios que no desean ser exitosos.</p>
             <ul class="features">
                 <li>Acceso básico a la plataforma.</li>
-                <li>Gestión de reservas y perfil del negocio.</li>
-                <li>Visibilidad estándar en la aplicación.</li>
+                <li>Visibilidad estándar en la aplicación movil.</li>
             </ul>
             <a href="{{ url_for('index_blueprint.dashboard_regular', token='tu_token_aqui') }}" class="button">Elegir plan</a>
         </div>
@@ -35,11 +34,11 @@
             <div class="plan-name">Premium</div>
             <div class="plan-price">$150.00 Mx</div>
             <div class="plan-duration1">/ Mes</div>
-            <p class="description1">Para la mayoría de los negocios que desean optimizar consultas web.</p>
+            <p class="description1">Para la mayoría de los negocios que desean alcanzar el exito!!!.</p>
             <ul class="features">
                 <li>Acceso a la plataforma.</li>
                 <li>Gestión de reservas y perfil del negocio.</li>
-                <li>Visibilidad estándar en la aplicación.</li>
+                <li>Control de Promociones Personalizada</li>
                 <li>Mayor visibilidad en la aplicación móvil.</li>
                 <li>Acceso temprano a todas las nuevas funcionalidades.</li>
                 <li>Atención al cliente prioritaria.</li>

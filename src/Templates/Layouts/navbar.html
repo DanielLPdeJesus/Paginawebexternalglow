@@ -12,7 +12,6 @@
         <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
             <div class="relative flex items-center justify-between h-16">
                 <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
-                    <!-- Mobile menu button -->
                     <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
                         <span class="sr-only">Open main menu</span>
                         <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -23,19 +22,19 @@
                 <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
                     <div class="hidden sm:block sm:ml-6">
                         <div class="flex space-x-4">
-                            <a href="{{ url_for('index_blueprint.dashboard_premium') }}" class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium">
+                            <a href="{{ url_for('index_blueprint.dashboard_premium') }}" class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium no-underline">
                                 <i class="fas fa-home mr-2"></i>Inicio
                             </a>
-                            <a href="{{ url_for('index_blueprint.accepted_reservations') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                            <a href="{{ url_for('index_blueprint.accepted_reservations') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium no-underline">
                                 <i class="fas fa-images mr-2"></i>Mis Reservaciones
                             </a>
-                            <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                            <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium no-underline">
                                 <i class="fas fa-store mr-2"></i>Mi negocio
                             </a>
-                            <a href="{{ url_for('index_blueprint.promotions') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                            <a href="{{ url_for('index_blueprint.promotions') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium no-underline">
                                 <i class="fas fa-thumbtack mr-2"></i>Promociones
                             </a>
-                            <a href="{{ url_for('index_blueprint.logout') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                            <a href="{{ url_for('index_blueprint.logout') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium no-underline">
                                 <i class="fas fa-sign-out-alt mr-2"></i>Cerrar Sesión
                             </a>
                         </div>
@@ -46,19 +45,19 @@
 
         <div class="sm:hidden" id="mobile-menu">
             <div class="px-2 pt-2 pb-3 space-y-1">
-                <a href="{{ url_for('index_blueprint.dashboard_premium') }}" class="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium">
+                <a href="{{ url_for('index_blueprint.dashboard_premium') }}" class="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium no-underline">
                     <i class="fas fa-home mr-2"></i>Inicio
                 </a>
-                <a href="{{ url_for('index_blueprint.accepted_reservations') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+                <a href="{{ url_for('index_blueprint.accepted_reservations') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium no-underline">
                     <i class="fas fa-images mr-2"></i>Mis Reservaciones
                 </a>
-                <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+                <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium no-underline">
                     <i class="fas fa-store mr-2"></i>Mi negocio
                 </a>
-                <a href="{{ url_for('index_blueprint.promotions') }}"  class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+                <a href="{{ url_for('index_blueprint.promotions') }}"  class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium no-underline">
                     <i class="fas fa-thumbtack mr-2"></i>Promociones
                 </a>
-                <a href="{{ url_for('index_blueprint.logout') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+                <a href="{{ url_for('index_blueprint.logout') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium no-underline">
                     <i class="fas fa-sign-out-alt mr-2"></i>Cerrar Sesión
                 </a>
             </div>
@@ -66,19 +65,23 @@
     </nav>
 
     <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <!-- Replace with your content -->
         <div class="px-4 py-6 sm:px-0">
-            <div class="border-4 border-dashed border-gray-200 rounded-lg h-96">
+            <div class="border-4">
               {% block content %}
 
               {% endblock %}
             </div>
         </div>
-        <!-- /End replace -->
     </main>
 
+    <footer>
+
+  <div class="w-full bg-[#1f2937] p-4 text-center text-white fixed bottom-0 ">
+    © 2024 Copyright:
+    <a href="#" class="text-white no-underline">External Glow</a>
+  </div>
+    </footer>
     <script>
-        // Add toggle functionality for mobile menu
         const mobileMenuButton = document.querySelector('[aria-controls="mobile-menu"]');
         const mobileMenu = document.getElementById('mobile-menu');
 

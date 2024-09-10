@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (reservation) {
             var detailsHtml = 
                 '<div class="user-info">' +
-                    '<img src="' + (reservation.user_profile_image || '') + '" alt="Foto de perfil" class="user-profile-image">' +
+                    '<img src="' + (reservation.user_profile_image || '') + '" alt="Foto de perfil" class="w-32 h-32 rounded-full mx-auto">' +
                     '<p><strong>Nombre:</strong> ' + (reservation.user_name || 'N/A') + '</p>' +
                     '<p><strong>Email:</strong> ' + (reservation.user_email || 'N/A') + '</p>' +
                     '<p><strong>Teléfono:</strong> ' + (reservation.user_phone || 'N/A') + '</p>' +
@@ -40,12 +40,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     '<p><strong>Comentarios:</strong> ' + (reservation.comentarios || 'N/A') + '</p>' +
                 '</div>' +
                 '<div class="reservation-image">' +
-                    '<img src="' + (reservation.imagen_url || '') + '" alt="Imagen de la reservación" class="reservation-photo">' +
+                    '<img src="' + (reservation.imagen_url || '') + '" alt="Imagen de la reservación" class="w-full h-auto rounded-lg shadow">' +
                 '</div>';
             var detailsElement = document.getElementById('reservationDetails');
             if (detailsElement) {
                 detailsElement.innerHTML = detailsHtml;
-                document.getElementById('detailsModal').style.display = 'block';
+                document.getElementById('detailsModal').classList.remove('hidden');
             }
         }
     }
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
         currentReservationId = reservationId;
         var modal = document.getElementById('acceptModal');
         if (modal) {
-            modal.style.display = 'block';
+            modal.classList.remove('hidden');
         }
     }
 
@@ -62,14 +62,14 @@ document.addEventListener('DOMContentLoaded', function() {
         currentReservationId = reservationId;
         var modal = document.getElementById('rejectModal');
         if (modal) {
-            modal.style.display = 'block';
+            modal.classList.remove('hidden');
         }
     }
 
     window.closeModal = function(modalId) {
         var modal = document.getElementById(modalId);
         if (modal) {
-            modal.style.display = 'none';
+            modal.classList.add('hidden');
         }
     }
 
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (document.querySelectorAll('.reservation-item').length === 0) {
                     var agendaElement = document.querySelector('.agenda');
                     if (agendaElement) {
-                        agendaElement.innerHTML = '<p class="no-reservations">No hay citas pendientes.</p>';
+                        agendaElement.innerHTML = '<p class="text-center text-gray-600">No hay citas pendientes.</p>';
                     }
                 }
             } else {
@@ -126,14 +126,14 @@ document.addEventListener('DOMContentLoaded', function() {
         closeBtn.onclick = function() {
             var modal = this.closest('.modal');
             if (modal) {
-                modal.style.display = 'none';
+                modal.classList.add('hidden');
             }
         }
     });
 
     window.onclick = function(event) {
         if (event.target.classList.contains('modal')) {
-            event.target.style.display = 'none';
+            event.target.classList.add('hidden');
         }
     }
 });

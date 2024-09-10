@@ -23,26 +23,29 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         if (reservation) {
             var detailsHtml = 
-                '<div class="user-info">' +
-                    '<img src="' + (reservation.user_profile_image || '') + '" alt="Foto de perfil" class="user-profile-image">' +
-                    '<p><strong>Nombre:</strong> ' + (reservation.user_name || 'N/A') + '</p>' +
-                    '<p><strong>Email:</strong> ' + (reservation.user_email || 'N/A') + '</p>' +
-                    '<p><strong>Teléfono:</strong> ' + (reservation.user_phone || 'N/A') + '</p>' +
-                '</div>' +
-                '<div class="reservation-info">' +
-                    '<p><strong>Fecha:</strong> ' + (reservation.fecha || 'N/A') + '</p>' +
-                    '<p><strong>Hora:</strong> ' + (reservation.hora_seleccionada || 'N/A') + '</p>' +
-                    '<p><strong>Servicio:</strong> ' + (reservation.tipo_de_servicio || 'N/A') + '</p>' +
-                    '<p><strong>Detalles:</strong> ' + (reservation.peticion || 'N/A') + '</p>' +
-                    '<p><strong>Comentarios:</strong> ' + (reservation.comentarios || 'N/A') + '</p>' +
-                '</div>' +
-                '<div class="reservation-image">' +
-                    '<img src="' + (reservation.imagen_url || '') + '" alt="Imagen de la reservación" class="reservation-photo">' +
+                '<div class="bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden">' +
+                    '<div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">' +
+                        '<div class="user-info space-y-4">' +
+                            '<img src="' + (reservation.user_profile_image || '') + '" alt="Foto de perfil" class="w-24 h-24 rounded-full mx-auto">' +
+                            '<p class="text-gray-700"><span class="font-semibold">Nombre:</span> ' + (reservation.user_name || 'N/A') + '</p>' +
+                            '<p class="text-gray-700"><span class="font-semibold">Email:</span> ' + (reservation.user_email || 'N/A') + '</p>' +
+                            '<p class="text-gray-700"><span class="font-semibold">Teléfono:</span> ' + (reservation.user_phone || 'N/A') + '</p>' +
+                        '</div>' +
+                        '<div class="reservation-info space-y-4">' +
+                            '<p class="text-gray-700"><span class="font-semibold">Fecha:</span> ' + (reservation.fecha || 'N/A') + '</p>' +
+                            '<p class="text-gray-700"><span class="font-semibold">Hora:</span> ' + (reservation.hora_seleccionada || 'N/A') + '</p>' +
+                            '<p class="text-gray-700"><span class="font-semibold">Servicio:</span> ' + (reservation.tipo_de_servicio || 'N/A') + '</p>' +
+                            '<p class="text-gray-700"><span class="font-semibold">Detalles:</span> ' + (reservation.peticion || 'N/A') + '</p>' +
+                            '<p class="text-gray-700"><span class="font-semibold">Comentarios:</span> ' + (reservation.comentarios || 'N/A') + '</p>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="reservation-image mt-6 p-4">' +
+                        '<img src="' + (reservation.imagen_url || '') + '" alt="Imagen de la reservación" class="w-full h-auto rounded-lg shadow">' +
+                    '</div>' +
                 '</div>';
             var detailsElement = document.getElementById('reservationDetails');
             if (detailsElement) {
                 detailsElement.innerHTML = detailsHtml;
-                document.getElementById('detailsModal').style.display = 'block';
             }
         }
     }
@@ -96,10 +99,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 closeModal('cancelModal');
                 
+                // Clear details panel
+                var detailsElement = document.getElementById('reservationDetails');
+                if (detailsElement) {
+                    detailsElement.innerHTML = '<p>Seleccione una reservación para ver los detalles.</p>';
+                }
+                
                 if (document.querySelectorAll('.reservation-item').length === 0) {
-                    var agendaElement = document.querySelector('.agenda');
-                    if (agendaElement) {
-                        agendaElement.innerHTML = '<p class="no-reservations">No hay reservaciones aceptadas.</p>';
+                    var reservationsListElement = document.querySelector('.reservations-list');
+                    if (reservationsListElement) {
+                        reservationsListElement.innerHTML = '<p class="no-reservations">No hay reservaciones aceptadas.</p>';
                     }
                 }
             } else {
