@@ -281,3 +281,46 @@ def check_session():
             return jsonify({"status": "expired"}), 401
     session['last_activity'] = time.time()
     return jsonify({"status": "active"}), 200
+
+
+@main.route('/crear_promocion', methods=['POST'])
+@login_required
+@premium_required
+def crear_promocion():
+    user_id = session.get('user_id')
+    start_date = request.form['start_date']
+    start_time = request.form['start_time']
+    end_date = request.form['end_date']
+    end_time = request.form['end_time']
+    promotion = request.form['promotion']
+    terms_accepted = request.form.get('terms') == 'on'
+
+    if not terms_accepted:
+        flash('Debes aceptar los términos y condiciones para crear una promoción.', 'danger')
+        return redirect(url_for('index_blueprint.promotions'))
+
+    try:
+        negocio = db.child('Negousers').child(user_id).get().val()
+
+        if not negocio:
+            flash('No se encontró información del negocio.', 'danger')
+            return redirect(url_for('index_blueprint.promotions'))
+
+        nueva_promocion = {
+            'fecha_inicio': f"{start_date} {start_time}",
+            'fecha_fin': f"{end_date} {end_time}",
+            'descripcion': promotion,
+            'estado': 'inactiva',
+            'fecha_creacion': datetime.now().isoformat(),
+            'nombre_negocio': negocio.get('nombre_negocio', ''),
+            'servicios_ofrecidos': negocio.get('servicios_ofrecidos', '')
+        }
+
+        db.child('promociones').child(user_id).push(nueva_promocion)
+
+        flash('Promoción creada exitosamente.', 'success')
+    except Exception as e:
+        print(str(e))
+        flash('Error al crear la promoción. Por favor, inténtalo de nuevo.', 'danger')
+
+    return redirect(url_for('index_blueprint.promotions'))

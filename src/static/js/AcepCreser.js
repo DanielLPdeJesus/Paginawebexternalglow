@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 '<div class="bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden">' +
                     '<div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">' +
                         '<div class="user-info space-y-4">' +
-                            '<img src="' + (reservation.user_profile_image || '') + '" alt="Foto de perfil" class="w-24 h-24 rounded-full mx-auto">' +
+                            '<img src="' + (reservation.user_profile_image || '') + '" alt="Foto de perfil" class="w-32 h-32 rounded-full mx-auto">' +
                             '<p class="text-gray-700"><span class="font-semibold">Nombre:</span> ' + (reservation.user_name || 'N/A') + '</p>' +
                             '<p class="text-gray-700"><span class="font-semibold">Email:</span> ' + (reservation.user_email || 'N/A') + '</p>' +
                             '<p class="text-gray-700"><span class="font-semibold">Teléfono:</span> ' + (reservation.user_phone || 'N/A') + '</p>' +
@@ -46,15 +46,18 @@ document.addEventListener('DOMContentLoaded', function() {
             var detailsElement = document.getElementById('reservationDetails');
             if (detailsElement) {
                 detailsElement.innerHTML = detailsHtml;
+                document.getElementById('detailsModal').classList.remove('hidden');
             }
         }
     }
 
-    window.showCancelModal = function(reservationId) {
+    window.showCancelModal = function(reservationId, fecha, hora) {
         currentReservationId = reservationId;
         var modal = document.getElementById('cancelModal');
-        if (modal) {
-            modal.style.display = 'block';
+        var warningElement = document.getElementById('cancelWarning');
+        if (modal && warningElement) {
+            modal.classList.remove('hidden');
+            warningElement.textContent = 'Está por cancelar la reservación del ' + fecha + ' a las ' + hora + '.';
         }
     }
 
@@ -68,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.closeModal = function(modalId) {
         var modal = document.getElementById(modalId);
         if (modal) {
-            modal.style.display = 'none';
+            modal.classList.add('hidden');
         }
     }
 
@@ -98,17 +101,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     reservationElement.remove();
                 }
                 closeModal('cancelModal');
+                closeModal('detailsModal');
                 
-                // Clear details panel
-                var detailsElement = document.getElementById('reservationDetails');
-                if (detailsElement) {
-                    detailsElement.innerHTML = '<p>Seleccione una reservación para ver los detalles.</p>';
-                }
-                
-                if (document.querySelectorAll('.reservation-item').length === 0) {
-                    var reservationsListElement = document.querySelector('.reservations-list');
+                if (document.querySelectorAll('[data-reservation-id]').length === 0) {
+                    var reservationsListElement = document.querySelector('ul.space-y-4');
                     if (reservationsListElement) {
-                        reservationsListElement.innerHTML = '<p class="no-reservations">No hay reservaciones aceptadas.</p>';
+                        reservationsListElement.innerHTML = '<p class="text-gray-600">No hay reservaciones aceptadas.</p>';
                     }
                 }
             } else {
@@ -122,18 +120,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    document.querySelectorAll('.close').forEach(function(closeBtn) {
-        closeBtn.onclick = function() {
-            var modal = this.closest('.modal');
-            if (modal) {
-                modal.style.display = 'none';
-            }
-        }
-    });
-
+    // Event listener for modal background click
     window.onclick = function(event) {
         if (event.target.classList.contains('modal')) {
-            event.target.style.display = 'none';
+            event.target.classList.add('hidden');
         }
     }
 });
