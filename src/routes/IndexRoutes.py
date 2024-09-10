@@ -85,6 +85,13 @@ def logout():
 def cover(token=None):
     return render_template('/Admin/cover.html')
 
+    
+@main.route('/promotions')
+@login_required
+@premium_required
+def promotions():
+    return render_template('/Admin/promotions.html')
+
 @main.route('/dashboard_regular')
 @login_required
 def dashboard_regular():
