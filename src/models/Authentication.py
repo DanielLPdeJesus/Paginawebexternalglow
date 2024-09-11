@@ -1,10 +1,11 @@
 import pyrebase
-from flask import Blueprint, app, redirect, request, flash, session, url_for, jsonify
+from flask import Blueprint, abort, app, redirect, request, flash, session, url_for, jsonify
 from functools import wraps
 import secrets
 from dotenv import load_dotenv
 import os
 import logging
+import requests
 from validate_email import validate_email
 from datetime import datetime, time, timedelta
 
@@ -324,3 +325,29 @@ def crear_promocion():
         flash('Error al crear la promoción. Por favor, inténtalo de nuevo.', 'danger')
 
     return redirect(url_for('index_blueprint.promotions'))
+
+
+@main.route('/paypal_ipn', methods=['POST'])
+def handle_paypal_ipn():
+    payload = request.form.to_dict()
+    payload['cmd'] = '_notify-validate'
+    response = requests.post('https://ipnpb.paypal.com/cgi-bin/webscr', data=payload)
+    
+    if response.text != 'VERIFIED':
+        abort(400)
+    if payload.get('payment_status') != 'Completed':
+        return 'OK'
+
+    business_id = payload.get('custom')
+    if not business_id:
+        abort(400)
+
+    ipn_data = {
+        'timestamp': datetime.now().isoformat(),
+        'payload': payload
+    }
+    db.child('ipn_logs').push(ipn_data)
+
+    db.child('Negousers').child(business_id).update({'pagado': True})
+
+    return 'OK'
