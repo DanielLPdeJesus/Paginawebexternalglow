@@ -26,7 +26,7 @@
                 <li>Acceso básico a la plataforma.</li>
                 <li>Visibilidad estándar en la aplicación movil.</li>
             </ul>
-            <a href="{{ url_for('index_blueprint.dashboard_regular', token='tu_token_aqui') }}" class="button">Elegir plan</a>
+            <a href="{{ url_for('index_blueprint.dashboard_regular') }}" class="button">Elegir plan</a>
         </div>
 
         <!-- Plan Popular -->
@@ -43,7 +43,7 @@
                 <li>Acceso temprano a todas las nuevas funcionalidades.</li>
                 <li>Atención al cliente prioritaria.</li>
             </ul>
-            <a href="" class="button">Elegir plan</a>
+            <a href="{{ url_for('index_blueprint.pricing_paypal') }}" class="button">Elegir plan</a>
         </div>
     </div>
 

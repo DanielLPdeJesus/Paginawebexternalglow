@@ -73,6 +73,11 @@ def services():
 def pricing(token=None):
     return render_template('/Admin/princing.html')
 
+@main.route('/princing_paypal')
+@login_required
+def pricing_paypal(token=None):
+    return render_template('/Admin/pricing_paypal.html')
+
 @main.route('/logout')
 def logout():
     session.clear()
