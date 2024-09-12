@@ -5,6 +5,7 @@
   <title>Nabavr</title>
   <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css'><link rel="stylesheet" href="./style.css">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/navbar.css') }}">
+  
 
 </head>
 <body>
@@ -16,8 +17,8 @@
   <div id="nav-content">
     <div class="nav-button"><i class="fas fa-home"></i><a href="{{ url_for('index_blueprint.dashboard_premium') }}"><span>Inicio</span></div>
     <div class="nav-button"><i class="fas fa-images"></i><a href="{{ url_for('index_blueprint.accepted_reservations') }}"><span>Mis Reservaciones</span></div>
-    <div class="nav-button"><i class="fas fa-images"></i><span>Mi negocio</span></div>
-    <div class="nav-button"><i class="fas fa-thumbtack"></i><span>Promociones</span></div>
+    <div class="nav-button"><i class="fas fa-images"></i><a href="/Authentication/mi_perfil"><span>Mi negocio</span></div>
+    <div class="nav-button"><i class="fas fa-thumbtack"></i><a href="{{ url_for('index_blueprint.pricing') }}"><span>Promociones</span></div>
     <div class="nav-button"><i class="fas fa-gem"></i><a href="{{ url_for('index_blueprint.logout') }}"><span>Cerrar Sesion</span></a></div>
     <div id="nav-content-highlight"></div>
   </div>

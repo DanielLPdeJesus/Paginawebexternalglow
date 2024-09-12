@@ -8,7 +8,6 @@
     border-radius: 16px;
     padding: 20px;
     box-sizing: border-box;
-    overflow-y: auto;
     transition: left 0.2s;
 }
 

@@ -3,16 +3,98 @@
 {% block title %}login{% endblock %}
 
 {% block content %}
-{% block styles %}
+
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styleLogin.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styleAlert.css') }}">
-{% endblock %}
+<style>
+    /* Contenedor del input y el ícono de la contraseña */
+    .password-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+    /* Estilos para el input de email y password */
+    input[type="email"],
+    input[type="password"] {
+        width: 100%;
+        padding: 10px 40px 10px 10px;
+        /* Ajustar padding para dar espacio al ícono */
+        margin-bottom: 20px;
+        box-sizing: border-box;
+        font-size: 16px;
+        /* Tamaño de fuente consistente */
+        outline: none;
+        /* Elimina el borde al hacer clic */
+        border: 1px solid #ccc;
+        /* Borde uniforme */
+        border-radius: 5px;
+        /* Bordes redondeados */
+    }
+
+    input[type="text"] {
+        width: 100%;
+        padding: 10px 40px 10px 10px;
+        /* Ajustar padding también para input type="text" */
+        box-sizing: border-box;
+        font-size: 16px;
+        outline: none;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    /* Estilos para el ícono del ojo para mostrar/ocultar contraseña */
+    .eye-btn {
+        background: none;
+        border: none;
+        position: absolute;
+        right: 10px;
+        /* Ajuste de la posición del ícono */
+        top: 40%;
+        transform: translateY(-60%);
+        /* Centramos verticalmente */
+        cursor: pointer;
+    }
+
+    .eye-btn img {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* Cambiar el ícono cuando se muestra la contraseña */
+
+    .eye-btn.active img {
+        content: url("{{ url_for('static', filename='img/eye.png') }}");
+    }
+
+
+
+    /* Estilos para el ícono del correo */
+    .email-icon {
+        position: absolute;
+        right: 10px;
+        /* Alineación igual al ícono de contraseña */
+        top: 50%;
+        transform: translateY(-50%);
+        /* Centrado vertical */
+        cursor: pointer;
+    }
+
+    .email-icon img {
+        width: 20px;
+        height: 20px;
+    }
+</style>
+
+
 <br>
-<br>
+
 <div class="login-section">
     <div class="login-left">
         <h1>Inicia Sesión</h1>
-        <p>¿Aún no tienes cuenta? ¡No esperes más para impulsar tu negocio de belleza! Regístrate ahora haciendo clic aquí y únete a la comunidad de profesionales que ya están alcanzando el éxito.</p>
+        <p>¿Aún no tienes cuenta? ¡No esperes más para impulsar tu negocio de belleza! Regístrate ahora haciendo clic
+            aquí y únete a la comunidad de profesionales que ya están alcanzando el éxito.</p>
         <button class="register-btn" onclick="window.location.href='/register'">Registrarse</button>
     </div>
     <div class="login-right">
@@ -21,7 +103,12 @@
             <input type="email" id="email" placeholder="Introduzca su correo" name="email" required>
 
             <label for="password">Contraseña</label>
-            <input type="password" id="password" placeholder="Introduzca su contraseña" name="password">
+            <div class="password-container">
+                <input type="password" id="password" placeholder="Introduzca su contraseña" name="password">
+                <button type="button" id="togglePassword" class="eye-btn">
+                    <img src="{{ url_for('static', filename='img/eye-off.png') }}" alt="Mostrar contraseña" />
+                </button>
+            </div>
 
             <button type="submit" class="login-btn">Entrar</button>
             <a href="/resetpass" class="forgot-password">¿Olvidaste tu contraseña?</a>
@@ -30,12 +117,12 @@
             <div class="alert-container">
                 {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="custom-alert custom-alert-{{ category }}">
-                            {{ message }}
-                            <button class="close-btn">&times;</button>
-                        </div>
-                    {% endfor %}
+                {% for category, message in messages %}
+                <div class="custom-alert custom-alert-{{ category }}">
+                    {{ message }}
+                    <button class="close-btn">&times;</button>
+                </div>
+                {% endfor %}
                 {% endif %}
                 {% endwith %}
             </div>
@@ -48,5 +135,30 @@
     </div>
 </div>
 
-<script src="{{ url_for('static', filename='js/Alerts.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var closeButtons = document.querySelectorAll('.close-btn');
+        closeButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                this.parentElement.style.display = 'none';
+            });
+        });
+
+        // Mostrar/ocultar contraseña
+        const togglePassword = document.querySelector('#togglePassword');
+        const passwordInput = document.querySelector('#password');
+
+        togglePassword.addEventListener('click', function (e) {
+            // Alternar el tipo de input entre 'password' y 'text'
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+
+            // Cambiar el ícono del botón (opcional)
+            this.classList.toggle('active');
+        });
+
+    });
+</script>
+
+
 {% endblock %}

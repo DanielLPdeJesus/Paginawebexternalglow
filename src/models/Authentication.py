@@ -1,5 +1,5 @@
 import pyrebase
-from flask import Blueprint, app, redirect, request, flash, session, url_for, jsonify
+from flask import Blueprint, app, redirect, request, flash, session, url_for, jsonify, render_template
 from functools import wraps
 import secrets
 from dotenv import load_dotenv
@@ -281,3 +281,70 @@ def check_session():
             return jsonify({"status": "expired"}), 401
     session['last_activity'] = time.time()
     return jsonify({"status": "active"}), 200
+
+
+@main.route('/mi_perfil')
+@login_required
+def mi_perfil():
+    business_id = session.get('user_id')
+    user_data = db.child('Negousers').child(business_id).get().val()
+
+    if not business_id:
+        flash('No se ha encontrado el ID del negocio.', 'danger')
+        return redirect('/dashboard_regular')
+
+    session['nombre_negocio']= user_data.get('nombre_negocio')
+    session['negocio_activo']= user_data.get('negocio_activo')
+    session['nombre_propietario']= user_data.get('nombre_propietario')
+    session['direccion_negocio']= user_data.get('direccion_negocio')
+    session['horas_trabajo']= user_data.get('horas_trabajo')
+    session['correo']= user_data.get('correo')
+    session['servicios_ofrecidos']= user_data.get('servicios_ofrecidos')
+    session['pagado']= user_data.get('pagado')
+
+    session['calificacion_promedio']= f'{ user_data.get("calificacion_promedio")}'
+    session['numero_gustas']= f'{ user_data.get("numero_gustas")}'
+    session['numero_resenas']= f'{ user_data.get("numero_resenas")}'
+
+    session['reservaAcep']= f'{ user_data.get("reservaAcep")}'
+    session['reservaCancel']= f'{ user_data.get("reservaCancel")}'
+
+    session['numero_telefono']= f'{ user_data.get("numero_telefono")}'
+    session['postal_code']= f'{ user_data.get("postal_code")}'
+
+
+
+    session['perfiles_imagenes']= user_data.get('perfiles_imagenes')
+    session['negocios_imagenes']= user_data.get('negocios_imagenes')
+    session['servicios_imagenes']= user_data.get('servicios_imagenes')
+    
+    return redirect('/profile')
+
+                                  
+
+
+
+
+
+
+
+@main.route('/debug')
+@login_required
+def debug():
+    business_id = session.get('user_id')
+    if not business_id:
+        return "No business ID found in session", 400
+
+    try:
+        negocio_ref = db.child('Negousers').child(business_id)
+        negocio = negocio_ref.get().val()
+        return jsonify(negocio)  # Esto te permitirá ver los datos en formato JSON
+    except Exception as e:
+        return str(e), 500
+    
+
+@main.route('/editar_perfil')
+@login_required
+def editar_perfil():
+    return redirect(url_for('index_blueprint.editar_perfil'))
+

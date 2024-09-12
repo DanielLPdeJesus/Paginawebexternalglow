@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f0f2f5;
+    background-color: white;
     margin: 0;
     padding: 20px;
     display: flex;
@@ -39,7 +39,7 @@ body {
 .pricing-plan {
     background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     padding: 20px;
     margin: 10px;
     width: 300px;
@@ -82,12 +82,13 @@ body {
     border-radius: 8px;
     padding: 30px;
     width: 300px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 .pricing-plan.popular {
     background-color: #3a4046;
     color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.9);
 }
 
 .plan-name {
