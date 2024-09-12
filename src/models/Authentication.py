@@ -328,23 +328,10 @@ def mi_perfil():
 
 
 
-@main.route('/debug')
-@login_required
-def debug():
-    business_id = session.get('user_id')
-    if not business_id:
-        return "No business ID found in session", 400
 
-    try:
-        negocio_ref = db.child('Negousers').child(business_id)
-        negocio = negocio_ref.get().val()
-        return jsonify(negocio)  # Esto te permitirá ver los datos en formato JSON
-    except Exception as e:
-        return str(e), 500
     
 
 @main.route('/editar_perfil')
 @login_required
 def editar_perfil():
     return redirect(url_for('index_blueprint.editar_perfil'))
-
