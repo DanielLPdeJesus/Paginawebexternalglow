@@ -1,0 +1,38 @@
+/* Alertas personalizadas */
+.custom-alert {
+    border-radius: 10px;
+    padding: 20px;
+    font-size: 1.2em;
+    margin-top: 20px;
+}
+
+.custom-alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.custom-alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.custom-alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Botón de cierre para alertas */
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    float: right;
+    margin-top: -10px;
+}
+
+.close-btn:hover {
+    color: #000;
+}

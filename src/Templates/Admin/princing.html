@@ -1,0 +1,50 @@
+{% extends '/Layouts/navbar.html' %}
+
+{% block title %}Página Administrativa{% endblock %}
+
+{% block content %}
+
+{% block styles %}
+
+{% endblock %}
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/stylePricing.css') }}">
+<div class="md:container max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <div class="header text-center py-8 bg-gray-100 p-2 rounded">
+        <h2 class="text-4xl font-bold text-gray-800 mb-2">Plan de Precios</h2>
+        <p class="text-lg text-gray-600">Confía en nosotros y haz crecer aún más tu negocio</p>
+    </div>
+    
+
+    <div class="pricing-table">
+        <div class="pricing-plan">
+            <div class="plan-name">Gratuito</div>
+            <div class="plan-price">$00.00 Mx</div>
+            <div class="plan-duration">/ Actual</div>
+            <p class="plan-description">Para la mayoría de los negocios que no desean ser exitosos.</p>
+            <ul class="features">
+                <li>Acceso básico a la plataforma.</li>
+                <li>Visibilidad estándar en la aplicación movil.</li>
+            </ul>
+            <a href="{{ url_for('index_blueprint.dashboard_regular') }}" class="button">Elegir plan</a>
+        </div>
+
+        <!-- Plan Popular -->
+        <div class="pricing-plan popular">
+            <div class="plan-name">Premium</div>
+            <div class="plan-price">$150.00 Mx</div>
+            <div class="plan-duration1">/ Mes</div>
+            <p class="description1">Para la mayoría de los negocios que desean alcanzar el exito!!!.</p>
+            <ul class="features">
+                <li>Acceso a la plataforma.</li>
+                <li>Gestión de reservas y perfil del negocio.</li>
+                <li>Control de Promociones Personalizada</li>
+                <li>Mayor visibilidad en la aplicación móvil.</li>
+                <li>Acceso temprano a todas las nuevas funcionalidades.</li>
+                <li>Atención al cliente prioritaria.</li>
+            </ul>
+            <a href="{{ url_for('index_blueprint.pricing_paypal') }}" class="button">Elegir plan</a>
+        </div>
+    </div>
+
+{% endblock %}

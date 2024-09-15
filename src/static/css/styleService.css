@@ -1,0 +1,193 @@
+/* General */
+* {
+    box-sizing: border-box;
+}
+
+body,
+h1,
+h2,
+h3,
+p {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+/* Sección principal */
+.community-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 20px;
+}
+
+.community-section h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+.community-section .subtitle {
+    font-size: 1.2em;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+/* Publicidad de negocios */
+.business-publicity {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+
+.business-publicity .header-text {
+    flex: 1 1 100%;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.business-publicity h2 {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.business-publicity p {
+    font-size: 1em;
+    color: #666;
+}
+
+/* Servicios */
+.contenido {
+    text-align: center;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.servicios {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.servicio {
+    flex: 1 1 200px;
+    margin: 10px;
+    text-align: center;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+}
+
+.servicio .emoji {
+    font-size: 50px;
+}
+
+.servicio h3 {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.servicio p {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Tarjetas de negocio */
+.business-cards {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.business-card {
+    width: 370px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.business-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.business-card h3 {
+    margin: 15px 0 10px;
+    font-size: 1.2em;
+}
+
+.business-card .address {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.business-card .rating {
+    color: gold;
+    font-size: 1.2em;
+    margin: 10px 0;
+}
+
+/* Botones de acción */
+.actions {
+    display: flex;
+    justify-content: space-between;
+    margin: 15px 0;
+}
+
+.action-btn {
+    padding: 8px 15px;
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.action-btn:hover {
+    background-color: #e0e0e0;
+}
+
+/* Iconos de negocio */
+.owner {
+    display: flex;
+    align-items: center;
+    margin: 15px 0;
+}
+
+.owner-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .business-publicity {
+        flex-direction: column;
+    }
+
+    .servicios {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .business-card {
+        width: 100%;
+    }
+}
