@@ -36,23 +36,32 @@
         </div>
       </div>
 <br>
-        <div class="features">
-            <div class="feature">
-                <img src="{{ url_for('static', filename='img/imagen13.png') }}" alt="IA en tus manos">
-                <h3>IA en tus manos</h3>
-                <p>Descubre el poder de nuestra IA, que permite a los usuarios probar diferentes cortes de pelo. Como negocio, podrás saber con mayor certeza qué es lo que realmente desean tus clientes.</p>
-            </div>
-            <div class="feature">
-                <img src="{{ url_for('static', filename='img/imagen14.png') }}" alt="Reservaciones Automatizadas">
-                <h3>Reservaciones Automatizadas</h3>
-                <p>Alcanza más clientes con nuestra opción de reservaciones. Permite a los usuarios reservar fechas específicas para sus cortes de cabello, mejorando así tu organización y eficiencia como negocio.</p>
-            </div>
-            <div class="feature">
-                <img src="{{ url_for('static', filename='img/imagen15.png') }}" alt="Visibilidad en tu mano">
-                <h3>Visibilidad en tu mano</h3>
-                <p>Con nuestra aplicación móvil, alcanza nuevos usuarios y permite que conozcan tu negocio de una manera rápida y sencilla. Incrementa tu presencia y atracción en el mercado.</p>
-            </div>
+<div class="features">
+    <div class="feature">
+        <img src="{{ url_for('static', filename='img/imagen13.png') }}" alt="IA en tus manos">
+        <h3>IA en tus manos</h3>
+        <div class="feature-content">
+            <p>Descubre el poder de nuestra IA, que permite a los usuarios probar diferentes cortes de pelo. Como negocio, podrás saber con mayor certeza qué es lo que realmente desean tus clientes.</p>
         </div>
+        <button class="read-more">Leer más</button>
+    </div>
+    <div class="feature">
+        <img src="{{ url_for('static', filename='img/imagen14.png') }}" alt="Reservaciones Automatizadas">
+        <h3>Reservaciones Automatizadas</h3>
+        <div class="feature-content">
+            <p>Alcanza más clientes con nuestra opción de reservaciones. Permite a los usuarios reservar fechas específicas para sus cortes de cabello, mejorando así tu organización y eficiencia como negocio.</p>
+        </div>
+        <button class="read-more">Leer más</button>
+    </div>
+    <div class="feature">
+        <img src="{{ url_for('static', filename='img/imagen15.png') }}" alt="Visibilidad en tu mano">
+        <h3>Visibilidad en tu mano</h3>
+        <div class="feature-content">
+            <p>Con nuestra aplicación móvil, alcanza nuevos usuarios y permite que conozcan tu negocio de una manera rápida y sencilla. Incrementa tu presencia y atracción en el mercado.</p>
+        </div>
+        <button class="read-more">Leer más</button>
+    </div>
+</div>
 
         <div class="community-section">
             <h1>Unete a la comunidad</h1>
@@ -104,4 +113,19 @@
         </div>
     </div>
 </body>
+
+<Script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const readMoreButtons = document.querySelectorAll('.read-more');
+        
+        readMoreButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const content = this.previousElementSibling;
+                content.classList.toggle('expanded');
+                this.textContent = content.classList.contains('expanded') ? 'Leer menos' : 'Leer más';
+            });
+        });
+    });
+</Script>
+
 {% endblock %}

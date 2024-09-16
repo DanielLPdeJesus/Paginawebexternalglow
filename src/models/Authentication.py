@@ -5,7 +5,7 @@ import secrets
 from dotenv import load_dotenv
 import os
 import logging
-from validate_email import validate_email
+from validate_email_address import validate_email
 from datetime import datetime, time, timedelta
 
 
@@ -45,24 +45,24 @@ def registrarme():
         phone_number = request.form['phone_number']
         business_address = request.form['business_address']
         services_offered = request.form['services_offered']
-        
+
         # Nuevo manejo de horarios
         opening_time_1 = request.form['opening_time_1']
         closing_time_1 = request.form['closing_time_1']
         opening_time_2 = request.form.get('opening_time_2', '')
         closing_time_2 = request.form.get('closing_time_2', '')
-        
+
         opening_hours = {
             "turno_1": f"{opening_time_1} - {closing_time_1}",
             "turno_2": f"{opening_time_2} - {closing_time_2}" if opening_time_2 and closing_time_2 else None
         }
-        
-        accept_terms = request.form.get('accept-terms')  
+
+        accept_terms = request.form.get('accept-terms')
 
         business_images = request.files.getlist('business-image-upload')
         service_images = request.files.getlist('service-image-upload')
         profile_images = request.files.getlist('profile-image-upload')
-        
+
         if not accept_terms:
             flash('Debes aceptar los términos y condiciones para registrarte.', 'danger')
             return redirect('/register')
@@ -74,7 +74,7 @@ def registrarme():
         try:
             user = auth.create_user_with_email_and_password(email, password)
             auth.send_email_verification(user['idToken'])
-            
+
             fecha_registro = datetime.now().isoformat()
 
             datos = {
@@ -108,25 +108,31 @@ def registrarme():
                     storage = firebase.storage()
                     image_name = f"{user['localId']}_negocios_{image.filename}"
                     storage.child(f"negocios_imagenes/{image_name}").put(image)
-                    image_url = storage.child(f"negocios_imagenes/{image_name}").get_url(None)
+                    image_url = storage.child(
+                        f"negocios_imagenes/{image_name}").get_url(None)
                     business_image_urls.append(image_url)
 
             for image in service_images:
                 if image and image.filename:
                     storage = firebase.storage()
                     image_name = f"{user['localId']}_servicios_{image.filename}"
-                    storage.child(f"servicios_imagenes/{image_name}").put(image)
-                    image_url = storage.child(f"servicios_imagenes/{image_name}").get_url(None)
+                    storage.child(
+                        f"servicios_imagenes/{image_name}").put(image)
+                    image_url = storage.child(
+                        f"servicios_imagenes/{image_name}").get_url(None)
                     service_image_urls.append(image_url)
-            
+
             if profile_images and profile_images[0].filename:
                 storage = firebase.storage()
                 image_name = f"{user['localId']}_perfiles_{profile_images[0].filename}"
-                storage.child(f"perfiles_imagenes/{image_name}").put(profile_images[0])
-                profile_image_url = storage.child(f"perfiles_imagenes/{image_name}").get_url(None)
+                storage.child(
+                    f"perfiles_imagenes/{image_name}").put(profile_images[0])
+                profile_image_url = storage.child(
+                    f"perfiles_imagenes/{image_name}").get_url(None)
 
             if len(business_image_urls) < 3 or len(service_image_urls) < 3 or not profile_image_url:
-                raise Exception("No se pudieron subir todas las imágenes requeridas.")
+                raise Exception(
+                    "No se pudieron subir todas las imágenes requeridas.")
 
             datos["negocios_imagenes"] = business_image_urls
             datos["servicios_imagenes"] = service_image_urls
@@ -142,15 +148,17 @@ def registrarme():
             return redirect('/register')
 
     return redirect('/register')
-     
+
+
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
-        
+
         if not email or not password:
-            flash('Por favor, proporciona tanto el correo electrónico como la contraseña.', 'danger')
+            flash(
+                'Por favor, proporciona tanto el correo electrónico como la contraseña.', 'danger')
             return redirect('/login')
 
         if not validate_email(email):
@@ -165,29 +173,32 @@ def login():
             user_info = auth.get_account_info(user['idToken'])
 
             if user_info['users'][0]['emailVerified']:
-                user_data = db.child('Negousers').child(user['localId']).get().val()
+                user_data = db.child('Negousers').child(
+                    user['localId']).get().val()
                 if not user_data.get('terminos_aceptados', False):
-                    flash('No has aceptado los términos y condiciones. Por favor, regístrate nuevamente.', 'warning')
+                    flash(
+                        'No has aceptado los términos y condiciones. Por favor, regístrate nuevamente.', 'warning')
                     return redirect('/register')
-                
+
                 session['user_id'] = user['localId']
-                session['token'] = secrets.token_hex(16) 
-                
+                session['token'] = secrets.token_hex(16)
+
                 if user_data.get('negocio_aceptado', False):
-                    if user_data.get('pagado', False):  
+                    if user_data.get('pagado', False):
                         return redirect(url_for('index_blueprint.dashboard_premium', token=session['token']))
-                    else:  
+                    else:
                         return redirect(url_for('index_blueprint.dashboard_regular', token=session['token']))
                 else:
                     return redirect(url_for('index_blueprint.cover',  token=session['token']))
             else:
-                flash('¡Verifica tu correo electrónico antes de iniciar sesión!', 'warning')
+                flash(
+                    '¡Verifica tu correo electrónico antes de iniciar sesión!', 'warning')
                 return redirect('/login')
 
         except Exception as e:
             print(f"Error de login: {str(e)}")
             flash('Error durante el inicio de sesión. Por favor, verifica tus credenciales y vuelve a intentarlo.', 'danger')
-            return redirect('/login')  
+            return redirect('/login')
 
     return redirect('/login')
 
@@ -196,23 +207,25 @@ def login():
 def recurpass():
     if request.method == 'POST':
         email = request.form['email']
-        
+
         if not email:
             flash('Por favor, ingresa una dirección de correo electrónico.', 'danger')
             return redirect('/recurpass')
 
         if not validate_email(email):
-            flash('Por favor, ingresa una dirección de correo electrónico válida.', 'danger')
+            flash(
+                'Por favor, ingresa una dirección de correo electrónico válida.', 'danger')
             return redirect('/login')
         try:
             auth.send_password_reset_email(email)
-            flash('Se ha enviado un enlace de restablecimiento de contraseña a tu correo electrónico.', 'success')
+            flash(
+                'Se ha enviado un enlace de restablecimiento de contraseña a tu correo electrónico.', 'success')
         except Exception as e:
             flash('Verifica que has ingresado un correo electrónico válido.', 'danger')
         return redirect('/login')
     else:
         return redirect('/login')
- 
+
 
 def premium_required(f):
     @wraps(f)
@@ -240,9 +253,10 @@ def login_required(f):
 def update_reservation_status(reservation_id):
     data = request.json
     new_status = data.get('status')
-    
-    db.child('reservaciones').child(reservation_id).update({'estado': new_status})
-    
+
+    db.child('reservaciones').child(
+        reservation_id).update({'estado': new_status})
+
     return jsonify({'success': True})
 
 
@@ -253,24 +267,25 @@ def update_reservation_status_and_comment(reservation_id):
     new_status = data.get('status')
     business_comment = data.get('reason', '')
     current_time = datetime.now().isoformat()
-    
+
     # Actualizar la reservación
     updates = {
         'estado': new_status,
         'comentario_negocio': business_comment,
         'fecha_actualizacion': current_time
     }
-    
+
     db.child('reservaciones').child(reservation_id).update(updates)
-    
+
     return jsonify({'success': True})
 
 
 @main.before_request
 def check_session_expiration():
     session.permanent = True
-    app.permanent_session_lifetime = timedelta(minutes=30)  
+    app.permanent_session_lifetime = timedelta(minutes=30)
     session.modified = True
+
 
 @main.route('/check_session', methods=['POST'])
 def check_session():
@@ -296,7 +311,8 @@ def crear_promocion():
     terms_accepted = request.form.get('terms') == 'on'
 
     if not terms_accepted:
-        flash('Debes aceptar los términos y condiciones para crear una promoción.', 'danger')
+        flash(
+            'Debes aceptar los términos y condiciones para crear una promoción.', 'danger')
         return redirect(url_for('index_blueprint.promotions'))
 
     try:

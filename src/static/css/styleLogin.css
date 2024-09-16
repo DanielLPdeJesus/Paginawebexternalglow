@@ -1,11 +1,12 @@
+/* Estilos base */
 .login-section {
     display: flex;
     width: 100%;
-    max-width: 1200px; 
-    margin: 50px auto; 
-    justify-content: space-between; 
-    gap: 40px; 
-    padding: 20px; 
+    max-width: 1200px;
+    margin: 50px auto;
+    justify-content: space-between;
+    gap: 40px;
+    padding: 20px;
     background-color: transparent;
     border-radius: 10px;
 }
@@ -17,19 +18,19 @@
     background: #ffffff;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    max-width: none; 
+    max-width: none;
 }
 
 .login-left {
     border-right: 1px solid #ddd;
     display: flex;
     flex-direction: column;
-    justify-content: center; 
+    justify-content: center;
 }
 
 .login-left h1 {
     font-size: 36px;
-    margin-bottom: 20px; 
+    margin-bottom: 20px;
     color: #1a1919;
 }
 
@@ -42,21 +43,21 @@
 
 .register-btn,
 .login-btn {
-    background-color: #000; 
+    background-color: #000;
     color: #fff;
-    padding: 12px 25px; 
+    padding: 12px 25px;
     border: none;
     cursor: pointer;
     border-radius: 4px;
     font-family: 'Roboto', sans-serif;
     font-weight: 500;
     transition: background-color 0.3s ease;
-    margin-top: 10px; /* Añadir margen superior */
+    margin-top: 10px;
 }
 
 .register-btn:hover,
 .login-btn:hover {
-    background-color: #444; 
+    background-color: #444;
 }
 
 form {
@@ -71,7 +72,7 @@ form label {
 }
 
 form input {
-    padding: 12px; 
+    padding: 12px;
     margin-bottom: 15px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -88,7 +89,7 @@ form input {
 }
 
 .forgot-password:hover {
-    color: #000; /
+    color: #000;
 }
 
 .carousel-login {
@@ -101,16 +102,124 @@ form input {
 
 .carousel-images-login {
     display: flex;
-    transition: transform 0.5s ease-in-out;
-    height: 200px;
+    justify-content: center;
+    align-items: center;
+    height: auto;
 }
 
 .carousel-images-login img {
     width: 100%;
-    flex-shrink: 0;
+    height: auto;
+    max-width: 400px;
+    object-fit: contain;
     border-radius: 8px;
-    object-fit: cover;
+}
+
+/* Media queries para responsividad */
+@media screen and (max-width: 768px) {
+    .login-section {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .login-left,
+    .login-right {
+        width: 100%;
+        max-width: none;
+    }
+
+    .login-left {
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 20px;
+    }
+
+    .carousel-login {
+        max-width: 100%;
+    }
+
+    .carousel-images-login img {
+        max-height: 300px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+
+    .login-left,
+    .login-right {
+        padding: 20px;
+    }
+
+    .login-left h1 {
+        font-size: 28px;
+    }
+
+    .login-left p {
+        font-size: 16px;
+    }
+
+    .carousel-login {
+        display: none;
+        /* Oculta la imagen en pantallas muy pequeñas */
+    }
+
+    .carousel-images-login img {
+        max-height: 200px;
+    }
+
+    .register-btn,
+    .login-btn {
+        padding: 10px 20px;
+    }
+
+    form input {
+        padding: 10px;
+    }
+}
+
+/* Estilos para pantallas grandes */
+@media screen and (min-width: 2000px) {
+    .login-section {
+        max-width: 1800px;
+    }
+
+    .login-left,
+    .login-right {
+        padding: 60px;
+    }
+
+    .login-left h1 {
+        font-size: 48px;
+    }
+
+    .login-left p {
+        font-size: 24px;
+    }
+
+    .carousel-login {
+        max-width: 1200px;
+    }
+
+    .carousel-images-login {
+        height: 600px;
+    }
+
+    .register-btn,
+    .login-btn {
+        padding: 15px 30px;
+        font-size: 18px;
+    }
+
+    form input {
+        padding: 15px;
+        font-size: 16px;
+    }
 }
 
 
-
+@media screen and (min-width: 3000px) {
+    body {
+        max-width: 2800px;
+        margin: 0 auto;
+    }
+}

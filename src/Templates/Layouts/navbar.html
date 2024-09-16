@@ -6,6 +6,7 @@
     <title>Nabavr</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+
 </head>
 <body class="bg-gray-100">
     <nav class="bg-gray-800 text-white">
@@ -74,13 +75,17 @@
         </div>
     </main>
 
-    <footer>
-
-  <div class="w-full bg-[#1f2937] p-4 text-center text-white fixed bottom-0 ">
-    © 2024 Copyright:
-    <a href="#" class="text-white no-underline">External Glow</a>
-  </div>
+    <footer class="bg-white rounded-lg shadow dark:bg-gray-900 m-4">
+        <div class="w-full max-w-screen-xl mx-auto p-4 md:py-8">
+            <div class="relative flex items-center justify-center">
+                <hr class="w-full border-gray-200 dark:border-gray-700" />
+                <span class="absolute px-3 text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-900">
+                    © 2024 All Rights Reserved.
+                </span>
+            </div>
+        </div>
     </footer>
+    
     <script>
         const mobileMenuButton = document.querySelector('[aria-controls="mobile-menu"]');
         const mobileMenu = document.getElementById('mobile-menu');

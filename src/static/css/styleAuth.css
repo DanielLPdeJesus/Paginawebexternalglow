@@ -169,144 +169,87 @@ nav ul li a {
     pointer-events: none;
 }
 
+
 /* Footer optimizado */
-footer {
-    background-color: var(--primary-color);
-    color: var(--secondary-color);
-    padding: 40px 0 20px;
-    font-size: var(--font-size-base);
-}
-
-.footer-content {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    gap: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.footer-section {
-    min-width: 200px;
-    padding: 20px;
-}
-
-.footer-section h3 {
-    color: var(--secondary-color);
-    font-size: 18px;
-    margin-bottom: 15px;
-}
-
-.footer-section ul {
-    list-style: none;
-    padding: 0;
-}
-
-.footer-section ul li {
-    margin-bottom: 10px;
-}
-
-.footer-section ul li a {
-    color: var(--secondary-color);
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-.footer-section ul li a:hover {
-    color: var(--accent-color);
-}
-
-/* Estilos para los iconos de redes sociales */
-.footer-socials {
-    display: flex;
-    gap: 15px;
-}
-
-.footer-socials li a {
-    font-size: 24px;
-    color: var(--secondary-color);
-    transition: color 0.3s;
-}
-
-.footer-socials li a:hover {
-    color: var(--accent-color);
-}
-
-/* Estilos para el formulario de suscripción */
-.footer-section form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.footer-section form input[type="email"] {
-    padding: 10px;
-    border: none;
-    border-radius: 4px;
-}
-
-.footer-section form button {
-    padding: 10px;
-    background-color: var(--accent-color);
-    color: var(--secondary-color);
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.footer-section form button:hover {
-    background-color: darken(var(--accent-color), 10%);
-}
-
-/* Estilos para la parte inferior del footer */
-.footer-bottom {
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+.footer {
+    background: #353535;
+    padding: 30px 0;
+    font-family: 'Play', sans-serif;
     text-align: center;
-    font-size: 14px;
+    color: white;
 }
 
-.footer-bottom p {
-    margin-bottom: 10px;
+.footer .row {
+    width: 100%;
+    margin: 1% 0;
+    padding: 0.6% 0;
+    font-size: 0.8em;
 }
+
+.footer .row a i {
+    font-size: 2em;
+    margin: 0% 1%;
+}
+
+.footer .row p {
+    margin: 0;
+    padding-bottom: 10px;
+    color: rgb(255, 255, 255);
+}
+
+.footer .row ul {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+}
+
+.footer .row ul li {
+    display: inline-block;
+    margin: 0 30px;
+}
+
+.footer .row a {
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+    transition: color 0.5s;
+}
+
+.footer .row a:hover {
+    color: #fff;
+}
+
+@media (max-width: 720px) {
+    .footer {
+        text-align: left;
+        padding: 5%;
+    }
+
+    .footer .row ul {
+        padding-top: 10px;
+    }
+
+    .footer .row ul li {
+        display: block;
+        margin: 10px 0;
+    }
+
+    .footer .row p {
+        text-align: left;
+    }
+
+    .footer .row ul li a {
+        font-size: 1em;
+    }
+}
+
 
 .legal-info a {
     color: var(--secondary-color);
     text-decoration: none;
     transition: color 0.3s;
+    margin: 0 5px;
 }
 
 .legal-info a:hover {
     color: var(--accent-color);
-}
-
-/* Responsividad mejorada */
-@media (max-width: 768px) {
-    .footer-content {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .footer-socials {
-        justify-content: center;
-    }
-
-    .footer-section form {
-        align-items: center;
-    }
-}
-
-@media (max-width: 480px) {
-    .footer-section {
-        padding: 10px;
-    }
-}
-
-/* Base HTML */
-.container {
-    max-width: 1100px;
-    margin: 0 auto;
 }
