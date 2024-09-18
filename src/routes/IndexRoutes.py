@@ -169,3 +169,11 @@ def mi_perfil():
 @main.route('/update_profile')
 def editar_perfil():
     return render_template('Admin/update_profile.html')
+
+@main.route('/terms')
+def terms():
+    return render_template('laws/Terms.html')
+
+@main.route('/privacity')
+def privacity():
+    return render_template('laws/Privacity.html')

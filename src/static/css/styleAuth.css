@@ -88,26 +88,7 @@ nav ul li a {
     font-weight: 500;
 }
 
-/* Estilo para la barra de búsqueda */
-.search-bar {
-    position: relative;
-    margin-left: 20px;
-}
 
-.search-bar input {
-    padding: 5px 30px 5px 10px;
-    border-radius: 4px;
-    border: 1px solid var(--border-color);
-    font-size: var(--font-size-base);
-}
-
-.search-bar .search-icon {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-}
 
 /* Responsividad */
 @media (max-width: 768px) {
@@ -169,140 +150,43 @@ nav ul li a {
     pointer-events: none;
 }
 
-/* Footer optimizado */
-footer {
-    background-color: var(--primary-color);
-    color: var(--secondary-color);
-    padding: 40px 0 20px;
-    font-size: var(--font-size-base);
-}
 
 .footer-content {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    gap: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.footer-section {
-    min-width: 200px;
-    padding: 20px;
-}
-
-.footer-section h3 {
-    color: var(--secondary-color);
-    font-size: 18px;
-    margin-bottom: 15px;
-}
-
-.footer-section ul {
-    list-style: none;
-    padding: 0;
-}
-
-.footer-section ul li {
-    margin-bottom: 10px;
-}
-
-.footer-section ul li a {
-    color: var(--secondary-color);
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-.footer-section ul li a:hover {
-    color: var(--accent-color);
-}
-
-/* Estilos para los iconos de redes sociales */
-.footer-socials {
-    display: flex;
-    gap: 15px;
-}
-
-.footer-socials li a {
-    font-size: 24px;
-    color: var(--secondary-color);
-    transition: color 0.3s;
-}
-
-.footer-socials li a:hover {
-    color: var(--accent-color);
-}
-
-/* Estilos para el formulario de suscripción */
-.footer-section form {
-    display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-top: 15px;
+    align-items: center;
+    margin-top: 50px; /* Añade un margen superior al footer */
+    padding: 20px 0; /* Espaciado interno */
+    background-color: #333; /* Asegúrate de que el fondo se vea bien */
+    color: #fff; /* Color de texto */
 }
 
-.footer-section form input[type="email"] {
-    padding: 10px;
-    border: none;
-    border-radius: 4px;
+.social-icons {
+    margin: 10px 0;
 }
 
-.footer-section form button {
-    padding: 10px;
-    background-color: var(--accent-color);
-    color: var(--secondary-color);
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+.social-icons a {
+    margin: 0 10px;
+    color: #fff; /* Color de los íconos */
+    font-size: 24px; /* Tamaño de los íconos */
 }
 
-.footer-section form button:hover {
-    background-color: darken(var(--accent-color), 10%);
+.footer-links {
+    margin: 10px 0;
 }
 
-/* Estilos para la parte inferior del footer */
-.footer-bottom {
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    text-align: center;
-    font-size: 14px;
-}
-
-.footer-bottom p {
-    margin-bottom: 10px;
-}
-
-.legal-info a {
-    color: var(--secondary-color);
+.footer-links a {
+    color: #fff;
     text-decoration: none;
-    transition: color 0.3s;
 }
 
-.legal-info a:hover {
-    color: var(--accent-color);
+.footer-links span {
+    color: #fff;
 }
 
-/* Responsividad mejorada */
-@media (max-width: 768px) {
-    .footer-content {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .footer-socials {
-        justify-content: center;
-    }
-
-    .footer-section form {
-        align-items: center;
-    }
-}
-
-@media (max-width: 480px) {
-    .footer-section {
-        padding: 10px;
-    }
+/* Para que el footer siempre baje sin ser fijo */
+footer {
+    margin-top: 100px; /* Ajusta este valor para que no se pegue al contenido */
 }
 
 /* Base HTML */

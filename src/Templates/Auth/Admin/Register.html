@@ -144,7 +144,7 @@
                 <div class="terms-container">
                     <input type="checkbox" id="accept-terms" name="accept-terms" required>
                     <label for="accept-terms">Aceptar Términos y condiciones</label>
-                    <a href="#" class="terms-link">Leer Políticas</a>
+                    <a href="{{ url_for('index_blueprint.terms') }}"  class="terms-link">Leer Políticas</a>
                     <span id="error-accept-terms" class="error-message">Debe aceptar los términos y condiciones.</span>
                 </div>
             
