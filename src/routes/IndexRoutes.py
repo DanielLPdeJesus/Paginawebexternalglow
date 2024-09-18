@@ -90,7 +90,13 @@ def logout():
 def cover(token=None):
     return render_template('/Admin/cover.html')
 
-    
+@main.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
+
 @main.route('/promotions')
 @login_required
 @premium_required
@@ -156,3 +162,10 @@ def accepted_reservations(token=None):
     print(f"Total de reservaciones procesadas: {len(reservaciones_list)}")
     return render_template('/Admin/accepted_reservations.html', reservaciones=reservaciones_list)
 
+@main.route('/profile')
+def mi_perfil():
+    return render_template('Admin/profile.html')
+
+@main.route('/update_profile')
+def editar_perfil():
+    return render_template('Admin/update_profile.html')

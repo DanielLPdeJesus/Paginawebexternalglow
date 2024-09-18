@@ -6,6 +6,7 @@
 {% block styles %}
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styleLogin.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styleAlert.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styleViewpass.css') }}">
 {% endblock %}
 <br>
 <br>
@@ -21,7 +22,12 @@
             <input type="email" id="email" placeholder="Introduzca su correo" name="email" required>
 
             <label for="password">Contraseña</label>
-            <input type="password" id="password" placeholder="Introduzca su contraseña" name="password">
+            <div class="password-container">
+                <input type="password" id="password" placeholder="Introduzca su contraseña" name="password">
+                <button type="button" id="togglePassword" class="eye-btn">
+                    <img src="{{ url_for('static', filename='img/eye-off.png') }}" alt="Mostrar contraseña" />
+                </button>
+            </div>
 
             <button type="submit" class="login-btn">Entrar</button>
             <a href="/resetpass" class="forgot-password">¿Olvidaste tu contraseña?</a>
@@ -47,6 +53,6 @@
         <img src="{{ url_for('static', filename='img/imagen12.png') }}" alt="Imagen 1">
     </div>
 </div>
-
+<script src="{{ url_for('static', filename='js/viespass.js') }}"></script>
 <script src="{{ url_for('static', filename='js/Alerts.js') }}"></script>
 {% endblock %}

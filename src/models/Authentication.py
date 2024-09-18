@@ -277,7 +277,7 @@ def check_session_expiration():
 def check_session():
     if 'last_activity' in session:
         last_activity = session['last_activity']
-        if time.time() - last_activity > 1800:  # 30 minutos
+        if time.time() - last_activity > 1800: 
             session.clear()
             return jsonify({"status": "expired"}), 401
     session['last_activity'] = time.time()
@@ -351,3 +351,42 @@ def handle_paypal_ipn():
     db.child('Negousers').child(business_id).update({'pagado': True})
 
     return 'OK'
+
+@main.route('/mi_perfil')
+@login_required
+def mi_perfil():
+    business_id = session.get('user_id')
+    user_data = db.child('Negousers').child(business_id).get().val()
+
+    if not business_id:
+        flash('No se ha encontrado el ID del negocio.', 'danger')
+        return redirect('/dashboard_regular')
+
+    session['nombre_negocio']= user_data.get('nombre_negocio')
+    session['negocio_activo']= user_data.get('negocio_activo')
+    session['nombre_propietario']= user_data.get('nombre_propietario')
+    session['direccion_negocio']= user_data.get('direccion_negocio')
+    session['horas_trabajo']= user_data.get('horas_trabajo')
+    session['correo']= user_data.get('correo')
+    session['servicios_ofrecidos']= user_data.get('servicios_ofrecidos')
+    session['pagado']= user_data.get('pagado')
+
+    session['calificacion_promedio']= f'{ user_data.get("calificacion_promedio")}'
+    session['numero_gustas']= f'{ user_data.get("numero_gustas")}'
+    session['numero_resenas']= f'{ user_data.get("numero_resenas")}'
+
+    session['reservaAcep']= f'{ user_data.get("reservaAcep")}'
+    session['reservaCancel']= f'{ user_data.get("reservaCancel")}'
+
+    session['numero_telefono']= f'{ user_data.get("numero_telefono")}'
+    session['postal_code']= f'{ user_data.get("postal_code")}'
+
+
+
+    session['perfiles_imagenes']= user_data.get('perfiles_imagenes')
+    session['negocios_imagenes']= user_data.get('negocios_imagenes')
+    session['servicios_imagenes']= user_data.get('servicios_imagenes')
+    
+    return redirect('/profile')
+
+                                  
