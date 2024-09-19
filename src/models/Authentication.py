@@ -180,18 +180,24 @@ def login():
                     else:  
                         return redirect(url_for('index_blueprint.dashboard_regular', token=session['token']))
                 else:
-                    return redirect(url_for('index_blueprint.cover',  token=session['token']))
+                    return redirect(url_for('index_blueprint.cover', token=session['token']))
             else:
                 flash('¡Verifica tu correo electrónico antes de iniciar sesión!', 'warning')
                 return redirect('/login')
 
         except Exception as e:
-            print(f"Error de login: {str(e)}")
-            flash('Error durante el inicio de sesión. Por favor, verifica tus credenciales y vuelve a intentarlo.', 'danger')
-            return redirect('/login')  
+            error_message = str(e)
+            print(f"Error durante el inicio de sesión: {error_message}")
+            
+            if 'INVALID_PASSWORD' in error_message:
+                flash('Contraseña incorrecta. Por favor, verifica tus credenciales y vuelve a intentarlo.', 'danger')
+            elif 'TOO_MANY_ATTEMPTS_TRY_LATER' in error_message:
+                flash('Tu cuenta ha sido bloqueada temporalmente debido a demasiados intentos fallidos. Intenta nuevamente más tarde o restablece tu contraseña.', 'danger')
+            else:
+                flash('Error durante el inicio de sesión. Por favor, verifica tus credenciales y vuelve a intentarlo.', 'danger')
+            return redirect('/login')
 
     return redirect('/login')
-
 
 @main.route('/recurpass', methods=['GET', 'POST'])
 def recurpass():
