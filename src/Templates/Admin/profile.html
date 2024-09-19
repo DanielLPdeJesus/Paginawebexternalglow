@@ -21,8 +21,11 @@
                 <div class="profile-info">
                     <h2>{{ session['nombre_negocio'] }}</h2>
                     <span class="status {{ 'status-active' if session.get('negocio_activo') else 'status-inactive' }}">
-                        {{ 'true' if session['negocio_activo'] else 'false' }}
+                        {{ 'Activo' if session['negocio_activo'] else 'Inactivo' }}
                     </span>
+                </div>
+                <div class="edit-button">
+                    <button><a href="/" class="forgot-password">Editar</a></button>
                 </div>
             </div>
             <div class="business-info">
@@ -88,7 +91,7 @@
                     </div>
                     <div class="info-item">
                         <label>Estado del Pago</label>
-                            <p>{{ 'true' if session['pagado'] else 'false' }}</p>
+                            <p>{{ 'Premium' if session['pagado'] else 'Free' }}</p>
 
                     </div>
                 </div>

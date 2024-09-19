@@ -104,24 +104,7 @@
         transform: scale(1.05);
     }
 
-    .edit-button {
-        position: absolute;
-        top: 30px;
-        right: 30px;
-        padding: 10px 20px;
-        background-color: #3498db;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
 
-    .edit-button:hover {
-        background-color: #2980b9;
-    }
 
     .status {
         display: inline-block;
@@ -140,3 +123,33 @@
         background-color: #e74c3c;
         color: white;
     }
+
+    .profile-details {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .edit-button {
+        margin-left: auto;
+        text-decoration: #181818;
+        font-weight: bold;
+        
+    }
+    
+    .edit-button button {
+        border: solid;
+        border-radius: 20px;
+        padding: 10px 20px;
+        cursor: pointer;
+        
+    }
+    
+    .edit-button button:hover {
+        background-color: #181818;
+        color: white
+    }
+    
+
+
+
