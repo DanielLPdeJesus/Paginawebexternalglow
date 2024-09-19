@@ -15,4 +15,11 @@ document.addEventListener('DOMContentLoaded', function () {
         this.classList.toggle('active');
     });
 
+    const loginForm = document.querySelector('form');
+    const loginBtn = document.querySelector('.login-btn');
+
+    loginForm.addEventListener('submit', function (e) {
+        loginBtn.disabled = true;
+        loginBtn.innerText = 'Procesando...';
+    });
 });
