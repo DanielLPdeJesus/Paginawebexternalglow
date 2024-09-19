@@ -2,139 +2,222 @@
 {% block title %}Página Administrativa{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dashpre.css') }}">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            color: #000000;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
 
-        .profile-edit-container {
-            background-color: #000000;
-            border-radius: 8px;
-            padding: 20px;
-            max-width: 600px;
-            width: 100%;
-        }
+<style>
 
-        .profile-edit-box h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+    h2 {
+        text-align: center;
+        color: #444;
+        font-size: 1.8rem;
+        margin-bottom: 25px;
+    }
 
-        .form-group {
-            margin-bottom: 15px;
-        }
+    .form-group {
+        margin-bottom: 20px;
+        width: 100%;
+        padding: 10px;
+    }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-        }
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #070707;
+    }
 
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 8px;
-            border: none;
-            border-radius: 4px;
-            background-color: #fff7f7;
-            color: #fff;
-        }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        background-color: #f9f9f9;
+        transition: border-color 0.3s ease;
+        box-sizing: border-box;
+    }
 
-        .form-group small {
-            display: block;
-            margin-top: 5px;
-            font-size: 12px;
-            color: #888;
-        }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: #333;
+        outline: none;
+    }
 
-        .form-actions {
-            display: flex;
-            justify-content: space-between;
-        }
+    .form-actions {
+        display: flex;
+        justify-content: center;
+    }
 
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            background-color: #555;
-            color: #fff;
-            cursor: pointer;
-        }
+    button {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 6px;
+        background-color: #333;
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
 
-        button:hover {
-            background-color: #666;
-        }
+    button:hover {
+        background-color: #555;
+    }
 
-        .profile-info ul {
-            list-style-type: none;
-            padding: 0;
-        }
+    .turno-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+    }
 
-        .profile-info li {
-            margin-bottom: 10px;
-        }
+    .turno {
+        flex: 1;
+    }
 
-        .profile-info label {
-            display: block;
-            font-weight: bold;
-        }
+    .time-selection {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
 
-        .profile-info p {
-            margin: 5px 0;
-        }
+    .time-selection input[type="time"] {
+        flex: 1;
+    }
 
-        .map-container img {
-            max-width: 100%;
-            border-radius: 4px;
-        }
+    .note p,
+    .note-register p {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #070707;
+        text-align: center;
+    }
 
-        .form-group.input-container {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 15px;
-        }
-    </style>
+    .image-upload-container {
+        margin-top: 15px;
+    }
+
+    .image-preview-container img {
+        margin-top: 10px;
+        max-width: 100px;
+        height: auto;
+        border-radius: 8px;
+        margin-right: 10px;
+    }
+
+    .image-preview-container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .terms-container {
+        display: flex;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .terms-container label {
+        margin-left: 10px;
+        font-size: 0.9rem;
+    }
+
+    .terms-link {
+        margin-left: 15px;
+        font-size: 0.9rem;
+        color: #333;
+        text-decoration: underline;
+    }
+
+    .header {
+        background-color: #2c3e50;
+        color: white;
+        padding: 30px;
+        position: relative;
+    }
+
+    .header h1 {
+        font-size: 28px;
+        margin: 0;
+        font-weight: 500;
+    }
+    .content-wrapper {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 20px; /* Add margin to the bottom */
+
+    }
+
+    footer {
+        flex-shrink: 0;
+        background-color: #2c3e50; /* Match the header color */
+        color: white;
+        padding: 20px 0;
+        width: 100%;
+    }
+
+    .footer-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .social-icons a {
+        color: white;
+        margin-left: 10px;
+        font-size: 1.2em;
+    }
+</style>
+</style>
 
 <div class="content">
     <div class="agenda">
-        <form id="registro-form" action="" method="POST" enctype="multipart/form-data" onsubmit="return submitForm(event)">
-
+        <div class="content-wrapper">
+            <div class="header">
+                <h1>Editar Perfil del Negocio</h1>
+            </div>
+            <form id="registro-form" action="#" method="POST" enctype="multipart/form-data">
+                <!-- Nombre del Negocio -->
                 <div class="form-group">
                     <label for="business_name">Nombre del Negocio</label>
-                    <input type="text" id="business_name" placeholder="Nombre del Negocio" name="business_name" required
+                    <input type="text" id="business_name" name="business_name" placeholder="Nombre del Negocio" required
                         minlength="3" maxlength="100">
-                    <span id="error-business_name" class="error-message">Este campo es obligatorio.</span>
                 </div>
 
+                <!-- Estado del Negocio (Activar/Desactivar) -->
+                <div class="form-group">
+                    <label for="business_state">Estado del Negocio</label>
+                    <select id="business_state" name="business_state" required>
+                        <option value="activado">Activado</option>
+                        <option value="desactivado">Desactivado</option>
+                    </select>
+                </div>
+
+                <!-- Nombre del Propietario -->
                 <div class="form-group">
                     <label for="owner_name">Nombre del Propietario</label>
-                    <input type="text" id="owner_name" placeholder="Nombre del Propietario" name="owner_name" required
+                    <input type="text" id="owner_name" name="owner_name" placeholder="Nombre del Propietario" required
                         minlength="3" maxlength="100">
-                    <span id="error-owner_name" class="error-message">Este campo es obligatorio..</span>
                 </div>
 
-
+                <!-- Número de Teléfono -->
                 <div class="form-group">
                     <label for="phone_number">Número de Teléfono</label>
-                    <input type="tel" id="phone" placeholder="Número de Teléfono" name="phone_number" required
-                        pattern="[0-9]{10}">
-                    <small>Formato: 10 dígitos sin espacios ni guiones</small>
-                    <span id="error-phone" class="error-message">Formato de teléfono inválido.</span>
+                    <input type="tel" id="phone_number" name="phone_number" placeholder="+52" pattern="\+52[0-9]{10}"
+                        required>
                 </div>
 
+                <!-- Dirección del Negocio -->
                 <div class="form-group">
-                    <label for="business_address">Dirección del negocio</label>
-                    <input type="text" id="address" placeholder="Dirección" name="business_address" required
+                    <label for="business_address">Dirección del Negocio</label>
+                    <input type="text" id="business_address" name="business_address" placeholder="Dirección" required
                         minlength="5" maxlength="200">
-                    <span id="error-address" class="error-message">Este campo es obligatorio.</span>
                 </div>
 
+                <!-- Servicios Ofrecidos -->
                 <div class="form-group">
                     <label for="services_offered">Servicios Ofrecidos</label>
                     <select id="services_offered" name="services_offered" required>
@@ -143,85 +226,99 @@
                         <option value="Peluqueria">Peluquería</option>
                         <option value="Salon">Salón de Belleza</option>
                     </select>
-                    <span id="error-services_offered" class="error-message">Este campo es obligatorio.</span>
                 </div>
 
+                <!-- Horario de Servicio -->
                 <div class="form-group">
-                    <label>Horario de servicio</label>
+                    <label>Horario de Servicio</label>
                     <div class="turno-container">
                         <div class="turno">
-                            <h4>Primer Turno</h4>
+                            <label for="opening_time_1">Primer Turno:</label>
                             <div class="time-selection">
-                                <label for="opening_time_1">Hora de apertura:</label>
                                 <input type="time" id="opening_time_1" name="opening_time_1" required>
-                                <label for="closing_time_1">Hora de cierre:</label>
                                 <input type="time" id="closing_time_1" name="closing_time_1" required>
                             </div>
-                            <span id="error-turno_1" class="error-message">El horario no es válido.</span>
                         </div>
                         <div class="turno">
-                            <h4>Segundo Turno</h4>
+                            <label for="opening_time_2">Segundo Turno (opcional):</label>
                             <div class="time-selection">
-                                <label for="opening_time_2">Hora de apertura:</label>
                                 <input type="time" id="opening_time_2" name="opening_time_2">
-                                <label for="closing_time_2">Hora de cierre:</label>
                                 <input type="time" id="closing_time_2" name="closing_time_2">
                             </div>
-                            <span id="error-turno_2" class="error-message">El horario no es válido.</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="note">
-                    <p>Mínimo 3 imágenes del negocio</p>
-                </div>
-                <div class="image-upload-container">
-                    <label for="business-image-upload" class="image-upload-label">Imágenes de negocio</label>
-                    <input type="file" id="business-image-upload" name="business-image-upload"
+                <!-- Imágenes del Negocio -->
+                <div class="form-group">
+                    <label for="business-image-upload">Imágenes del negocio (Mínimo 3)</label>
+                    <input type="file" id="business-image-upload" name="business-image-upload[]"
                         class="image-upload-input" accept="image/*" multiple required>
-                    <div id="business-image-preview" class="image-preview-container"></div>
-                    <span id="error-business-images" class="error-message">Debe subir al menos 3 imágenes.</span>
+                    <div id="business-image-preview" class="image-preview-container">
+                        <!-- Las imágenes se mostrarían aquí -->
+                    </div>
                 </div>
 
-                <div class="note">
-                    <p>Mínimo 3 imágenes de Servicios</p>
-                </div>
-                <div class="image-upload-container">
-                    <label for="service-image-upload" class="image-upload-label">Imágenes de servicio</label>
-                    <input type="file" id="service-image-upload" name="service-image-upload" class="image-upload-input"
-                        accept="image/*" multiple required>
-                    <div id="service-image-preview" class="image-preview-container"></div>
-                    <span id="error-service-images" class="error-message">Debe subir al menos 3 imágenes.</span>
+                <!-- Imágenes de Servicios -->
+                <div class="form-group">
+                    <label for="service-image-upload">Imágenes de servicios (Mínimo 3)</label>
+                    <input type="file" id="service-image-upload" name="service-image-upload[]"
+                        class="image-upload-input" accept="image/*" multiple required>
+                    <div id="service-image-preview" class="image-preview-container">
+                        <!-- Las imágenes se mostrarían aquí -->
+                    </div>
                 </div>
 
-                <div class="note">
-                    <p>Mínimo una Imagen para foto del perfil del negocio</p>
-                </div>
-                <div class="image-upload-container">
-                    <label for="profile-image-upload" class="image-upload-label">Foto de Perfil</label>
+                <!-- Foto de Perfil del Negocio -->
+                <div class="form-group">
+                    <label for="profile-image-upload">Foto de Perfil</label>
                     <input type="file" id="profile-image-upload" name="profile-image-upload" class="image-upload-input"
-                        accept="image/*" required>
-                    <div id="profile-image-preview" class="image-preview-container"></div>
-                    <span id="error-profile-image" class="error-message">Debe subir una imagen de perfil.</span>
+                        accept="image/*">
+                    <div id="profile-image-preview" class="image-preview-container">
+                        <!-- La imagen de perfil se mostraría aquí -->
+                    </div>
                 </div>
 
-                <div class="note-register">
-                    <p>Nota: Este negocio está registrado por Google Maps.</p>
-                </div>
 
-                <div class="terms-container">
-                    <input type="checkbox" id="accept-terms" name="accept-terms" required>
-                    <label for="accept-terms">Aceptar Términos y condiciones</label>
-                    <a href="#" class="terms-link">Leer Políticas</a>
-                    <span id="error-accept-terms" class="error-message">Debe aceptar los términos y condiciones.</span>
+                <!-- Botón de Actualización -->
+                <div class="form-actions">
+                    <button type="submit">Actualizar</button>
                 </div>
+            </form>
 
-                <div class="buttons-register">
-                    <button type="submit" id="submit-btn" class="btn-r submit-btn-register">Actualizar</button>
-                </div>
-
-        </form>
+        </div>
     </div>
 </div>
+
+<script>
+    function previewImages(input, previewContainer) {
+        const files = input.files;
+        previewContainer.innerHTML = '';
+        if (files) {
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    previewContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+    }
+
+    document.getElementById('business-image-upload').addEventListener('change', function () {
+        previewImages(this, document.getElementById('business-image-preview'));
+    });
+
+    document.getElementById('service-image-upload').addEventListener('change', function () {
+        previewImages(this, document.getElementById('service-image-preview'));
+    });
+
+    document.getElementById('profile-image-upload').addEventListener('change', function () {
+        previewImages(this, document.getElementById('profile-image-preview'));
+    });
+</script>
+
 
 {% endblock %}
