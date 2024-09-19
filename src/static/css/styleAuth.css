@@ -1,42 +1,128 @@
-/* Estilos generales */
-body {
-    font-family: 'Roboto', sans-serif;
+/* Variables para colores y tamaños */
+:root {
+    --primary-color: #333;
+    --secondary-color: #fff;
+    --accent-color: #919191;
+    --text-color: #333;
+    --border-color: #ddd;
+    --font-family: 'Roboto', sans-serif;
+    --font-size-base: 16px;
+}
+
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    text-decoration: none;
+}
+
+body {
+    font-family: var(--font-family);
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    line-height: 1.6;
 }
 
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: rgb(255, 255, 255);
+    background-color: var(--secondary-color);
     padding: 10px 20px;
-    border-bottom: 1px solid #cfcece;
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+    z-index: 1000;
 }
+
+/* Estilo del menú de hamburguesa */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.hamburger span {
+    height: 3px;
+    width: 25px;
+    background-color: var(--text-color);
+    margin: 4px 0;
+    transition: 0.4s;
+}
+
+/* Animación del icono de hamburguesa */
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* Estilo para el menú de navegación */
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+}
+
+nav ul.nav-links {
+    display: flex;
+}
+
+/* Logo */
+.logo img {
+    height: 50px;
+}
+
+/* Estilo para enlaces del menú */
+nav ul li a {
+    text-decoration: none;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .hamburger {
+        display: flex;
+    }
+
+    nav ul.nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 70px;
+        right: 0;
+        background-color: var(--secondary-color);
+        width: 100%;
+        text-align: center;
+    }
+
+    nav ul.nav-links li {
+        margin: 10px 0;
+    }
+
+    nav ul.nav-links.open {
+        display: flex;
+        transform: translateX(0);
+    }
+}
+
 
 .logo img {
     height: 50px;
 }
 
-nav ul {
-    list-style: none;
-    display: flex;
-    margin: 0;
-    padding: 0;
-    align-items: center;
-}
-
-nav ul li {
-    margin: 0 10px;
-}
-
 nav ul li a {
     text-decoration: none;
-    color: #333;
+    color: var(--text-color);
     font-weight: 500;
 }
 
@@ -48,9 +134,8 @@ nav ul li a {
 .search-bar input {
     padding: 5px 30px 5px 10px;
     border-radius: 4px;
-    border: 1px solid #ddd;
-    font-family: 'Roboto', sans-serif;
-    font-size: 16px;
+    border: 1px solid var(--border-color);
+    font-size: var(--font-size-base);
 }
 
 .search-bar .search-icon {
@@ -58,384 +143,10 @@ nav ul li a {
     right: 10px;
     top: 50%;
     transform: translateY(-50%);
-    width: 24px;
-    height: 24px;
     pointer-events: none;
 }
 
-main {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    flex: 1;
-}
-
-footer {
-    background-color: #ffffff;
-    padding: 20px;
-    text-align: center;
-    border-top: 1px solid #cfcece;
-    margin-top: auto;
-}
-
-footer ul {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 10px 0;
-    display: flex;
-    justify-content: center;
-}
-
-footer ul li {
-    margin: 0 10px;
-}
-
-footer ul li a {
-    text-decoration: none;
-    color: #333;
-    font-weight: 500;
-}
-
-footer p {
-    margin: 0;
-    color: #666;
-}
-
-.login-section {
-    display: flex;
-    width: 100%;
-    max-width: 1200px; /* Ampliar el contenedor */
-    margin: 50px auto; /* Centrando la sección de login y añadiendo margen superior */
-    justify-content: space-between; /* Espaciar los elementos para aprovechar mejor el ancho */
-    gap: 40px; /* Más espacio entre los contenedores */
-    padding: 20px; /* Añadir padding para más espacio */
-    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Añadir una sombra, comenta si no es necesaria */
-    background-color: transparent; /* Establecer fondo transparente */
-    border-radius: 10px;
-}
-
-.login-left,
-.login-right {
-    flex: 1;
-    padding: 40px;
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    max-width: none; /* Eliminar la limitación de ancho */
-}
-
-.login-left {
-    border-right: 1px solid #ddd;
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* Centrar verticalmente el contenido */
-}
-
-.login-left h1 {
-    font-size: 36px;
-    margin-bottom: 20px; /* Aumentar margen inferior */
-    color: #1a1919;
-}
-
-.login-left p {
-    font-size: 18px;
-    margin-bottom: 20px;
-    color: #666;
-    line-height: 1.6; /* Mejorar la legibilidad */
-}
-
-.register-btn,
-.login-btn {
-    background-color: #000; /* Mantener negro */
-    color: #fff;
-    padding: 12px 25px; /* Aumentar padding */
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-    font-family: 'Roboto', sans-serif;
-    font-weight: 500;
-    transition: background-color 0.3s ease;
-    margin-top: 10px; /* Añadir margen superior */
-}
-
-.register-btn:hover,
-.login-btn:hover {
-    background-color: #444; /* Cambiar el color de hover */
-}
-
-form {
-    display: flex;
-    flex-direction: column;
-}
-
-form label {
-    margin-bottom: 5px;
-    font-weight: 500;
-    color: #333;
-}
-
-form input {
-    padding: 12px; /* Aumentar padding */
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-family: 'Roboto', sans-serif;
-}
-
-.forgot-password {
-    margin-top: 10px;
-    text-align: right;
-    font-size: 14px;
-    color: #666;
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.forgot-password:hover {
-    color: #000; /* Cambiar color al pasar el mouse */
-}
-
-/* Estilos responsivos para pantallas pequeñas */
-@media (max-width: 768px) {
-    .login-section {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .login-left,
-    .login-right {
-        width: 100%;
-        max-width: 600px; /* Limitar el ancho en pantallas pequeñas */
-        padding: 20px; /* Reducir padding en pantallas pequeñas */
-    }
-    
-    .login-left {
-        border-right: none;
-        border-bottom: 1px solid #ddd;
-    }
-}
-
-.register-section {
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    max-width: 1200px;
-    margin: 0 auto 20px;
-}
-
-.register-left {
-    flex: 1;
-    padding: 40px;
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.register-left h1 {
-    font-size: 36px;
-    margin-bottom: 10px;
-    color: #1a1919;
-}
-
-.register-left p {
-    font-size: 18px;
-    margin-bottom: 20px;
-    color: #2b2929;
-    line-height: 1.6;
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    margin-bottom: 5px;
-    font-weight: 500;
-    color: #333;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-family: 'Roboto', sans-serif;
-    font-size: 16px;
-    box-sizing: border-box;
-}
-
-.buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-}
-
-.cancel-btn,
-.submit-btn {
-    background-color: black;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-    font-family: 'Roboto', sans-serif;
-    font-weight: 500;
-    transition: background-color 0.3s ease;
-}
-
-.cancel-btn:hover,
-.submit-btn:hover {
-    background-color: #777676;
-}
-
-.register-right {
-    flex: 1;
-    padding: 40px;
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.register-right img {
-    width: 100%;
-    height: 100%;
-    border-radius: 10px;
-    object-fit: cover;
-}
-
-@media (max-width: 800px) {
-    .register-section {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .register-left,
-    .register-right {
-        width: 100%;
-        padding: 20px;
-        margin-bottom: 20px;
-    }
-
-    .buttons {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .cancel-btn,
-    .submit-btn {
-        width: 100%;
-        max-width: 200px;
-        margin-top: 10px;
-    }
-}
-
-.carousel-login {
-    width: 100%;
-    max-width: 800px;
-    margin: 20px auto;
-    overflow: hidden;
-    position: relative;
-}
-
-.carousel-images-login {
-    display: flex;
-    transition: transform 0.5s ease-in-out;
-    height: 200px;
-}
-
-.carousel-images-login img {
-    width: 100%;
-    flex-shrink: 0;
-    border-radius: 8px;
-    object-fit: cover;
-}
-
-@media (max-width: 800px) {
-    .carousel {
-        max-width: 100%;
-        height: auto;
-    }
-}
-
-#business_type {
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-family: 'Roboto', sans-serif;
-    background-color: #f9f9f9;
-    font-size: 16px;
-    box-sizing: border-box;
-}
-
-#business_type:focus {
-    border-color: #aaa;
-    outline: none;
-}
-
-#business_type option {
-    padding: 10px;
-    font-size: 16px;
-    color: #333;
-}
-
-
-#business_description {
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-family: 'Roboto', sans-serif;
-    height: 120px;
-    resize: vertical;
-}
-
-@media (max-width: 800px) {
-    #business_description {
-        height: 80px;
-        /* Ajusta la altura para dispositivos móviles */
-    }
-}
-
-/* Alertas personalizadas */
-.custom-alert {
-    border-radius: 10px;
-    padding: 20px;
-    font-size: 1.2em;
-    margin-top: 20px;
-}
-
-.custom-alert-success {
-    background-color: #d4edda;
-    color: #155724;
-}
-
-.custom-alert-warning {
-    background-color: #fff3cd;
-    color: #856404;
-}
-
-.custom-alert-danger {
-    background-color: #f8d7da;
-    color: #721c24;
-}
-
-/* Botón de cierre para alertas */
-.close-btn {
-    background: none;
-    border: none;
-    font-size: 1.5em;
-    font-weight: bold;
-    color: #333;
-    cursor: pointer;
-    float: right;
-    margin-top: -10px;
-}
-
-.close-btn:hover {
-    color: #000;
+.container-1 {
+    max-width: 1100px;
+    margin: 0 auto;
 }

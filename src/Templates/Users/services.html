@@ -1,173 +1,12 @@
-{% extends 'layouts/base.html' %}
+{% extends '/Layouts/base.html' %}
 
 {% block title %}Inicio{% endblock %}
 
 {% block content %}
-<style>
-      /*Segunda parte index*/
-.community-section {
-    max-width: 1200px;
-    margin: 0 auto;
-    text-align: center;
-    font-family: Arial, sans-serif;
-    padding: 20px;
-}
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styleService.css') }}">
+{% endblock %}
 
-h1 {
-    font-size: 2.5em;
-    margin-bottom: 10px;
-}
-
-.subtitle {
-    font-size: 1.2em;
-    color: #666;
-    margin-bottom: 30px;
-}
-
-.business-cards {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    flex-wrap: wrap;
-}
-
-.business-card {
-    width: 370px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 15px;
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.business-image {
-    width: 100%;
-    height: 250px;
-    object-fit: cover;
-    border-radius: 5px;
-}
-
-h3 {
-    margin: 15px 0 10px;
-    font-size: 1.2em;
-}
-
-.address {
-    font-size: 0.9em;
-    color: #666;
-    margin-bottom: 10px;
-}
-
-.rating {
-    color: gold;
-    font-size: 1.2em;
-    margin: 10px 0;
-}
-
-.actions {
-    display: flex;
-    justify-content: space-between;
-    margin: 15px 0;
-}
-
-.action-btn {
-    padding: 8px 15px;
-    background-color: #f0f0f0;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.action-btn:hover {
-    background-color: #e0e0e0;
-}
-
-.owner {
-    display: flex;
-    align-items: center;
-    margin: 15px 0;
-}
-
-.owner-image {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 10px;
-}
-
-.icons {
-    font-size: 1.2em;
-    display: flex;
-    justify-content: flex-start;
-    margin-top: auto;
-}
-
-.icon {
-    margin-right: 15px;
-    cursor: pointer;
-}
-.business-publicity {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 40px;
-}
-
-.logo-image {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 50%;
-    margin-right: 20px;
-}
-/*otro*/
-.contenedor {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f8f8f8;
-}
-.contenido {
-    text-align: center;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-.contenido h1 {
-    font-size: 24px;
-    margin-bottom: 10px;
-}
-.contenido p {
-    font-size: 16px;
-    margin-bottom: 20px;
-}
-.servicios {
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-}
-.servicio {
-    flex: 1 1 200px;
-    margin: 10px;
-    text-align: center;
-}
-.servicio .emoji {
-    font-size: 50px;
-}
-.servicio h3 {
-    font-size: 18px;
-    margin: 10px 0;
-}
-.servicio p {
-    font-size: 14px;
-    color: #666;
-}
-</style>
 <div class="community-section">
     <h1>¿Qué ofrecemos?</h1>
     <p class="subtitle">Te ofrecemos todo lo que necesitas en un solo lugar</p>
@@ -198,6 +37,7 @@ h3 {
             </div>
         </div>
     </div>
+    <br>
     <br>
     <br>
     

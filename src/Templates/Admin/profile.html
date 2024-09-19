@@ -1,0 +1,121 @@
+{% extends '/Layouts/navbar.html' %}
+{% block title %}Página Administrativa{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styleInfo.css') }}">
+<div class="content">
+    <div class="agenda">
+        <div class="content-wrapper">
+            <div class="header">
+                <h1>Información del Negocio</h1>
+            </div>
+            <div class="profile-details">
+                <div class="profile-pic">
+                    {% if session.get('perfiles_imagenes') %}
+                    <img src="{{ session['perfiles_imagenes'] }}" alt="Foto de perfil">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='img/default-profile.jpg') }}"
+                        alt="Foto de perfil por defecto">
+                    {% endif %}
+                </div>
+                <div class="profile-info">
+                    <h2>{{ session['nombre_negocio'] }}</h2>
+                    <span class="status {{ 'status-active' if session.get('negocio_activo') else 'status-inactive' }}">
+                        {{ 'true' if session['negocio_activo'] else 'false' }}
+                    </span>
+                </div>
+            </div>
+            <div class="business-info">
+                <div class="info-column">
+                    <div class="info-item">
+                        <label>Nombre del Propietario</label>
+                        <p>{{ session['nombre_propietario'] }}</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Dirección</label>
+                        <p>{{ session['direccion_negocio'] }}</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Servicios Ofertados</label>
+                        <p>{{ session['servicios_ofrecidos'] }}</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Correo</label>
+                        <p>{{ session['correo'] }}</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Código Postal</label>
+                        <p>{{ session['postal_code'] }}</p>
+                    </div>
+                </div>
+                <div class="info-column">
+                    <div class="info-item">
+                        <label>Número de Teléfono</label>
+                        <p>{{ session['numero_telefono'] }}</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Horario de Atención</label>
+                        <p>
+                            {% if session.get('horas_trabajo') %}
+                            Turno 1: {{ session['horas_trabajo'].get('turno_1') }}<br>
+                            Turno 2: {{ session['horas_trabajo'].get('turno_2') }}
+                            {% else %}
+                            No disponible
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="info-item">
+                        <label>Calificación Promedio</label>
+                        <p>{{ session['calificacion_promedio'] }}</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Número de Me Gusta</label>
+                        <p>{{ session['numero_gustas'] }}</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Número de Reseñas</label>
+                        <p>{{ session['numero_resenas'] }}</p>
+                    </div>
+                </div>
+                <div class="info-column">
+                    <div class="info-item">
+                        <label>Reservas Aceptadas</label>
+                        <p>{{ session['reservaAcep'] }}</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Reservas Canceladas</label>
+                        <p>{{ session['reservaCancel'] }}</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Estado del Pago</label>
+                            <p>{{ 'true' if session['pagado'] else 'false' }}</p>
+
+                    </div>
+                </div>
+            </div>
+            <div class="image-galleries">
+                <h3>Imágenes del Negocio</h3>
+                <div class="gallery">
+                    {% if session.get('negocios_imagenes') %}
+                    {% for imagen in session.get('negocios_imagenes') %}
+                    <img src="{{ imagen }}" alt="Imagen del Negocio">
+                    {% endfor %}
+                    {% else %}
+                    <p>No hay imágenes del negocio disponibles.</p>
+                    {% endif %}
+                </div>
+                <h3>Imágenes de Servicios</h3>
+                <div class="gallery">
+                    {% if session.get('servicios_imagenes') %}
+                    {% for imagen in session.get('servicios_imagenes') %}
+                    <img src="{{ imagen }}" alt="Imagen de Servicios">
+                    {% endfor %}
+                    {% else %}
+                    <p>No hay imágenes de servicios disponibles.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

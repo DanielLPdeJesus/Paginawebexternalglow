@@ -1,0 +1,60 @@
+
+    .password-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+        width: 100%;
+        padding: 10px 40px 10px 10px;
+        margin-bottom: 20px;
+        box-sizing: border-box;
+        font-size: 16px;
+        outline: none;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        padding: 10px 40px 10px 10px;
+        box-sizing: border-box;
+        font-size: 16px;
+        outline: none;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .eye-btn {
+        background: none;
+        border: none;
+        position: absolute;
+        right: 10px;
+        top: 40%;
+        transform: translateY(-60%);
+        cursor: pointer;
+    }
+
+    .eye-btn img {
+        width: 20px;
+        height: 20px;
+    }
+
+    .eye-btn.active img {
+        content: url("../img/eye.png");
+    }
+
+    .email-icon {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+    }
+
+    .email-icon img {
+        width: 20px;
+        height: 20px;
+    }

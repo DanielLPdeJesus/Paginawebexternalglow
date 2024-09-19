@@ -4,18 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Play&display=swap" rel="stylesheet"> 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styleAuth.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
 
 </head>
 <body>
 
-{% include 'layouts/header.html' %}
+{% include '/Layouts/header.html' %}
 
-<div class="container">
-    {% block content %}{% endblock %}
+<div class="container-1">
+    {% block content %}
+    {% endblock %}
 </div>
 
-{% include 'layouts/footer.html' %}
-{% block scripts %}{% endblock %}
+{% block footer %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styleFooter.css') }}">
+<footer id="footer" class="w-full p-4 fixed bottom-0" class="footer-content ">
+  <div class="container mx-auto flex flex-col justify-center items-center space-y-4">
+    <div class="text-center">
+      © 2024 ExternalGlow. Todos los derechos reservados.
+    </div>
+    <div class="flex space-x-4">
+      <a href="#" class="hover:text-gray-400"><i class="fab fa-facebook-f"></i></a>
+      <a href="#" class="hover:text-gray-400"><i class="fab fa-twitter"></i></a>
+      <a href="#" class="hover:text-gray-400"><i class="fab fa-instagram"></i></a>
+    </div>
+    <div class="text-center space-x-4">
+      <a href="{{ url_for('index_blueprint.privacity') }}" class="hover:text-gray-400">Aviso de privacidad</a> |
+      <a href="{{ url_for('index_blueprint.terms') }}" class="hover:text-gray-400">Términos y condiciones</a>
+    </div>
+  </div>
+</footer>
+
+
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}
 </body>
 </html>

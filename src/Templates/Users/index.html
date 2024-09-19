@@ -1,253 +1,11 @@
-{% extends 'layouts/base.html' %}
+{% extends '/Layouts/base.html' %}
 
 {% block title %}Inicio{% endblock %}
 
 {% block content %}
-    <style>
-     
-        .container {
-            max-width: 1300px;
-            margin: 0 auto;
-        }
-       h1 {
-            text-align: center;
-            line-height: 1.2;
-        }
-        .cta-button {
-            display: block;
-            width: 200px;
-            margin: 20px auto;
-            padding: 10px;
-            background-color: #000;
-            color: #fff;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-        .hero {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin: 40px 0;
-        }
-        .hero-text {
-            flex: 1;
-            padding-right: 20px;
-        }
-        .hero-image {
-            flex: 1;
-        }
-        .hero-image img {
-            max-width: 100%;
-        }
-        .services-section {
-          display: flex;
-          align-items: center;
-          margin: 40px 0;
-          gap: 30px;
-      }
-      
-      .service-icon {
-          flex-shrink: 0;
-      }
-      
-      .service-icon img {
-          width: 100px;
-          height: 100px;
-          background-color: #FFD1DC; /* Color rosa claro */
-          border-radius: 50%;
-          padding: 10px;
-      }
-      
-      .service-content {
-        max-width: 975px; /* Ajusta el ancho máximo según tu diseño */
-        margin: 0 auto; /* Centra el contenedor */
-        padding: 20px; /* Agrega un poco de relleno */
-      }
-      
-      .service-content h2 {
-          font-size: 24px;
-          margin-bottom: 10px;
-      }
-      
-      .service-content p {
-          font-size: 16px;
-          line-height: 1.5;
-      }
-        .features {
-          display: flex;
-          justify-content: space-between;
-          margin-top: 40px;
-          gap: 20px;
-      }
-      
-      .feature {
-          flex: 0 0 30%;
-          text-align: justify;
-          border: 1px solid #e5e5e5; 
-          border-radius: 10px; 
-          padding: 20px; 
-      }
-
-      .feature-title{
-          flex: 0 0 30%;
-          text-align: justify;
-          border: 1px solid #e5e5e5; 
-          border-radius: 10px; 
-          padding: 20px; 
-      }
-      
-      .feature img {
-          max-width: 100%;
-          height: auto;
-          border-radius: 10px;
-      }
-      
-        .center {
-            font-size: 1.5em; 
-            text-align: center;
-        }
-        .homeh1 {
-          font-size: 3em; 
-          font-weight: bold; 
-          line-height: 1.2;
-          text-align:start
-      }
-      .imaggenlo {
-        width: 110px; 
-        height: 110px; 
-        background-color: #FFD1DC;
-        border-radius: 50%; 
-        padding: 15px; 
-        display: block; 
-        margin: 0 auto; 
-    }
-
-    .punete {
-        font-size: 2em; 
-        text-align: justify;
-        font-weight: normal;
-        hyphens: auto;
-      }
-  
-  .titlepunete {
-      font-size: 2.5em; 
-      text-align: start;
-  }
-  /*Segunda parte index*/
-.community-section {
-    max-width: 1200px;
-    margin: 0 auto;
-    text-align: center;
-    font-family: Arial, sans-serif;
-    padding: 20px;
-}
-
-h1 {
-    font-size: 2.5em;
-    margin-bottom: 10px;
-}
-
-.subtitle {
-    font-size: 1.2em;
-    color: #666;
-    margin-bottom: 30px;
-}
-
-.business-cards {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    flex-wrap: wrap;
-}
-
-.business-card {
-    width: 370px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 15px;
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.business-image {
-    width: 100%;
-    height: 250px;
-    object-fit: cover;
-    border-radius: 5px;
-}
-
-h3 {
-    margin: 15px 0 10px;
-    font-size: 1.2em;
-}
-
-.address {
-    font-size: 0.9em;
-    color: #666;
-    margin-bottom: 10px;
-}
-
-.rating {
-    color: gold;
-    font-size: 1.2em;
-    margin: 10px 0;
-}
-
-.actions {
-    display: flex;
-    justify-content: space-between;
-    margin: 15px 0;
-}
-
-.action-btn {
-    padding: 8px 15px;
-    background-color: #f0f0f0;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.action-btn:hover {
-    background-color: #e0e0e0;
-}
-
-.owner {
-    display: flex;
-    align-items: center;
-    margin: 15px 0;
-}
-
-.owner-image {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 10px;
-}
-
-.icons {
-    font-size: 1.2em;
-    display: flex;
-    justify-content: flex-start;
-    margin-top: auto;
-}
-
-.icon {
-    margin-right: 15px;
-    cursor: pointer;
-}
-
-    .logo-image {
-        width: 100px;
-        height: 100px;
-        object-fit: cover;
-        border-radius: 50%;
-        margin-right: 20px;
-    }
-    </style>
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styleIndex.css') }}">
+{% endblock %}
 </head>
 <body>
     <div class="container">
@@ -256,7 +14,7 @@ h3 {
         <h1>Bienvenido a External Glow</h1>
         <p class="center">¡Únete a nuestra plataforma y lleva tu negocio de belleza a otro nivel! Miles de clientes potenciales te esperan para descubrir tus servicios.</p>
         <br>
-        <a href="#" class="cta-button">COMIENZA AHORA</a>
+        <a href="/login" class="cta-button">COMIENZA AHORA</a>
 <br>
         <div class="hero">
             <div class="hero-text">
@@ -269,20 +27,20 @@ h3 {
         </div>
         <br>
         <div class="services-section">
-          <div class="service-icon">
-            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Icono de loto" class="imaggenlo">
-        </div>
-        <div class="service-content">
-            <h1 class="titlepunete">Servicios que Benefician a tu Negocio</h1>
-            <p><h1 class="punete">Únete a nosotros y alcanza tus objetivos empresariales. Nuestro compromiso es ayudarte a florecer y a conectar con más personas.</h1></p>
-        </div>
-      </div>
+            <div class="service-icon">
+              <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Icono de loto" class="imaggenlo">
+            </div>
+            <div class="service-content">
+              <h1 class="titlepunete">Servicios que Benefician a tu Negocio</h1>
+              <p class="punete">Únete a nosotros y alcanza tus objetivos empresariales. Nuestro compromiso es ayudarte a florecer y a conectar con más personas.</p>
+            </div>
+          </div>
 <br>
         <div class="features">
             <div class="feature">
                 <img src="{{ url_for('static', filename='img/imagen13.png') }}" alt="IA en tus manos">
                 <h3>IA en tus manos</h3>
-                <p>Descubre el poder de nuestra IA, que permite a los usuarios probar diferentes cortes de pelo. Como negocio, podrás saber con mayor certeza qué es lo que realmente desean tus clientes.</p>
+                <p>Descubre el poder de nuestra IA, que permite a los usuarios probar diferentes cortes de cabello. Como negocio, podrás saber con mayor certeza qué es lo que realmente desean tus clientes.</p>
             </div>
             <div class="feature">
                 <img src="{{ url_for('static', filename='img/imagen14.png') }}" alt="Reservaciones Automatizadas">
@@ -297,14 +55,14 @@ h3 {
         </div>
 
         <div class="community-section">
-            <h1>Unete a la comunidad</h1>
+            <h1>Únete a la comunidad</h1>
             <p class="subtitle">Sé parte de la comunidad de negocios que confían en nosotros para transformar sus objetivos en realidades.</p>
             
             <div class="business-cards">
                 <div class="business-card">
                     <img src="{{ url_for('static', filename='img/empresa1.jpg') }}" alt="Centro Profecional De BellezaTzibana" class="business-image">
-                    <h3>Centro Profecional De BellezaTzibana</h3>
-                    <p class="address">Direccion: Primera avenida norte poniente sin número, 29950 Centro, Chis.</p>
+                    <h3>Centro Profesional De BellezaTzibana</h3>
+                    <p class="address">Dirección: Primera avenida norte poniente sin número, 29950 Centro, Chis.</p>
                     <div class="rating">
                         <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">☆</span>
                     </div>
@@ -324,7 +82,7 @@ h3 {
         
                 <div class="business-card">
                     <img src="{{ url_for('static', filename='img/empresa2.jpg') }}" alt="Peluqueria Un nuevo Cabello" class="business-image">
-                    <h3>Peluqueria Un nuevo Cabello</h3>
+                    <h3>Peluquería Un nuevo Cabello</h3>
                     <p class="address">Direccion: Primera avenida norte poniente sin número, 29950 Centro, Chis.</p>
                     <div class="rating">
                         <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>

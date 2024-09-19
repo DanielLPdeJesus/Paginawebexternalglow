@@ -1,86 +1,39 @@
-{% extends 'layouts/base.html' %}
+{% extends '/Layouts/base.html' %}
 
 {% block title %}Contacto{% endblock %}
 
 {% block content %}
-    <title>Contáctanos - Sport Siglo XXI</title>
-    <style>
-        .container45 {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            display: flex;
-        }
-        .info {
-            flex: 1;
-            padding-right: 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .form {
-            flex: 1;
-        }
-        h1 {
-            margin-top: 0;
-            text-align: center;
-        }
-        .tarecontac {
-            width: 100%;
-            padding: 1px;
-            margin-bottom: 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-            background-color: #f9f9f9;
-        } 
-        
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #333;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .logo23 {
-            width: 100px;
-            margin-bottom: 20px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .info p {
-            text-align: justify;
-            line-height: 1.5;
-        }
-    </style>
-</head>
-<br>
-<br>
-    <div class="container45">
-        <div class="info">
-            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="External Glow" class="logo23">
-            <h1>External Glow</h1>
-            <p>En ExternaGlow, nos apasiona la belleza y la excelencia. Queremos ser más que una aplicación de reservas; aspiramos a ser tu aliado confiable en el camino hacia la confianza y el bienestar personal. Ofrecemos herramientas innovadoras de personalización para que cada experiencia sea única y satisfactoria.</p>
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styleContact.css') }}">
+{% endblock %}
+<div class="container45">
+    <h1>Contáctanos</h1>
+    <p class="texti">Si tienes alguna pregunta, comentario o inquietud, por favor llena el formulario a continuación y nos pondremos en contacto contigo lo antes posible.</p>
+    
+    <form action="/Services/contactinfo" method="post" id="contactForm">
+        <div class="form-group">
+            <label for="nombre">Nombre (máximo 50 caracteres)</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required maxlength="50">
         </div>
-        <div class="form">
-            <h2>Contáctanos</h2>
-            <form action="/Services/contactinfo" method="post">
-                <input type="text" placeholder="Escribe tu nombre" name="nombre" required>
-                <input type="email" placeholder="Escribe tu correo" name="correo" required>
-                <input type="tel" placeholder="Escribe tu teléfono" name="telefono" required>
-                <input type="text" placeholder="Escribe un asunto" name="asunto" required>
-                <textarea placeholder="Deja aquí tu comentario..." rows="4" class="tarecontac" name="mensaje" required></textarea>
-                <br>
-                <button type="submit">Enviar</button>
-            </form>
+        <div class="form-group">
+            <label for="correo">Correo electrónico</label>
+            <input type="email" id="correo" name="correo" placeholder="Tu correo electrónico" required>
         </div>
-    </div>
+        <div class="form-group">
+            <label for="asunto">Asunto (máximo 30 caracteres)</label>
+            <input type="text" id="asunto" name="asunto" placeholder="Asunto" required maxlength="30">
+        </div>
+        <div class="form-group">
+            <label for="telefono">Teléfono</label>
+            <input type="tel" id="telefono" name="telefono" placeholder="Teléfono" required maxlength="10" pattern="[0-9]{10}">
+        </div>
+        <div class="form-group">
+            <label for="mensaje">Mensaje (máximo 75 palabras)</label>
+            <textarea id="mensaje" name="mensaje" placeholder="Escribe tu mensaje aquí" required></textarea>
+        </div>
+        <button type="submit">Enviar</button>
+    </form>
+</div>
+
+<script src="{{ url_for('static', filename='js/viewspasscontac.js') }}"></script>
 {% endblock %}

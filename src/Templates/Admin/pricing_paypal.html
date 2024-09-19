@@ -1,0 +1,29 @@
+{% extends '/Layouts/navbar.html' %}
+
+{% block title %}Página Administrativa{% endblock %}
+
+{% block content %}
+<div class="md:container max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
+    <div class="bg-gradient-to-r from-indigo-100 to-purple-100 p-6 rounded-lg shadow-inner mb-6">
+        <h3 class="text-xl font-semibold text-indigo-800 mb-4">Gracias de Antemano por tu compra</h3>
+        <p class="text-gray-700 mb-4">Estamos emocionados de que te unas a nosotros en este viaje. Tu apoyo nos permite seguir mejorando y ofreciendo el mejor servicio posible.</p>
+    </div>
+    <p class="text-center text-red-700 mb-6 px-4 py-2 bg-blue-20 border border-white-300 rounded-lg shadow-sm">
+        Recuerda que, si tu suscripción no se actualiza de inmediato, puede tardar hasta 10 minutos. Te pedimos disculpas por la demora, pero no te preocupes, tu suscripción está segura. Confía en nosotros como nosotros confiamos en ti.
+    </p>
+
+    <div class="text-center">
+        <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" class="inline-block">
+            <input type="hidden" name="cmd" value="_s-xclick" />
+            <input type="hidden" name="hosted_button_id" value="UXQLEPDYT9284" />
+            <input type="hidden" name="currency_code" value="MXN" />
+            <input type="hidden" name="custom" value="{{ session['user_id'] }}"/>
+            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105">
+                Suscribirse con PayPal
+            </button>
+        </form>
+    </div>
+
+    <p class="text-center text-sm text-gray-500 mt-4">PayPal es una forma segura y fácil de pagar en línea.</p>
+</div>
+{% endblock %}
