@@ -10,28 +10,30 @@
     <h1>Contáctanos</h1>
     <p class="texti">Si tienes alguna pregunta, comentario o inquietud, por favor llena el formulario a continuación y nos pondremos en contacto contigo lo antes posible.</p>
     
-    <form action="/Services/contactinfo" method="post">
+    <form action="/Services/contactinfo" method="post" id="contactForm">
         <div class="form-group">
-            <label for="nombre">Nombre</label>
-            <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
+            <label for="nombre">Nombre (máximo 50 caracteres)</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required maxlength="50">
         </div>
         <div class="form-group">
             <label for="correo">Correo electrónico</label>
             <input type="email" id="correo" name="correo" placeholder="Tu correo electrónico" required>
         </div>
         <div class="form-group">
-            <label for="asunto">Asunto</label>
-            <input type="text" id="asunto" name="asunto" placeholder="Asunto" required>
+            <label for="asunto">Asunto (máximo 30 caracteres)</label>
+            <input type="text" id="asunto" name="asunto" placeholder="Asunto" required maxlength="30">
         </div>
         <div class="form-group">
-            <label for="asunto">Teléfono</label>
-            <input type="tel" id="telefono" name="telefono" placeholder="Telefono" required>
+            <label for="telefono">Teléfono</label>
+            <input type="tel" id="telefono" name="telefono" placeholder="Teléfono" required maxlength="10" pattern="[0-9]{10}">
         </div>
         <div class="form-group">
-            <label for="mensaje">Mensaje</label>
+            <label for="mensaje">Mensaje (máximo 75 palabras)</label>
             <textarea id="mensaje" name="mensaje" placeholder="Escribe tu mensaje aquí" required></textarea>
         </div>
         <button type="submit">Enviar</button>
     </form>
 </div>
+
+<script src="{{ url_for('static', filename='js/viewspasscontac.js') }}"></script>
 {% endblock %}

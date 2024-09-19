@@ -26,7 +26,7 @@
         <h1>Registro de Negocio</h1>
         <p>Complete el formulario para registrar su negocio.</p>
       
-        <form id="registro-form" action="/Authentication/register" method="POST" enctype="multipart/form-data" onsubmit="return submitForm(event)">
+        <form id="registro-form"action="/Authentication/register" method="POST" enctype="multipart/form-data" onsubmit="return submitForm(event)">
             <div id="parte-1">
                 <div class="form-group">
                     <label for="business_name">Nombre del Negocio</label>
@@ -55,7 +55,7 @@
 
                 <div class="form-group">
                     <label for="phone_number">Número de Teléfono</label>
-                    <input type="tel" id="phone" placeholder="Número de Teléfono" name="phone_number" required pattern="[0-9]{10}">
+                    <input type="tel" id="phone" placeholder="Número de Teléfono" name="phone_number" required maxlength="10" pattern="[0-9]{10}">
                     <small>Formato: 10 dígitos sin espacios ni guiones</small>
                     <span id="error-phone" class="error-message">Formato de teléfono inválido.</span>
                 </div>

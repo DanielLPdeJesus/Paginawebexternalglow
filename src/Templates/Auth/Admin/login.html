@@ -23,7 +23,7 @@
 
             <label for="password">Contraseña</label>
             <div class="password-container">
-                <input type="password" id="password" placeholder="Introduzca su contraseña" name="password">
+                <input type="password" id="password" placeholder="Introduzca su contraseña" name="password" required maxlength="50" required>
                 <button type="button" id="togglePassword" class="eye-btn">
                     <img src="{{ url_for('static', filename='img/eye-off.png') }}" alt="Mostrar contraseña" />
                 </button>

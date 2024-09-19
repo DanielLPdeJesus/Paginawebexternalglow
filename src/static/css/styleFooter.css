@@ -1,86 +1,76 @@
-/* Estilos generales para el footer con ID #footer */
+
 footer {
     height: 100%;
     margin: 0;
 }
 
-/* Contenedor principal debe ocupar todo el viewport */
 .footer-content {
-    min-height: 100vh; /* Ocupa todo el viewport */
+    min-height: 100vh; 
     display: flex;
     flex-direction: column;
 }
 #footer {
     width: 100%;
-    background-color: #1f2937; /* Color de fondo oscuro */
-    padding: 1rem; /* Padding para el espacio alrededor del contenido */
-    color: white; /* Color del texto */
+    background-color: #333333; 
+    padding: 1rem; 
+    color: white; 
     position:relative;
     bottom: 0;
-    margin-top: auto; /* Para que el footer se "empuje" hacia abajo si el contenido es corto */
+    margin-top: auto; 
 }
 
 #footer .container {
-    max-width: 1200px; /* Tamaño máximo para la anchura del contenedor */
+    max-width: 1200px; 
     margin-left: auto;
     margin-right: auto;
     display: flex;
-    flex-direction: column; /* Cambiado para organizar en columnas */
-    justify-content: center; /* Centrar el contenido */
-    align-items: center; /* Alinear el contenido verticalmente */
-    text-align: center; /* Centrar el texto */
-    gap: 1rem; /* Espacio entre elementos */
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    text-align: center; 
+    gap: 1rem; 
 }
 
-/* Estilos para los enlaces en el footer */
 #footer a {
     color: white;
-    text-decoration: none; /* Quitar el subrayado */
+    text-decoration: none; 
 }
 
 #footer a:hover {
-    color: #d1d5db; /* Cambiar el color al hacer hover (gris claro) */
+    color: #d1d5db; 
 }
 
-/* Espaciado entre los íconos de redes sociales */
 #footer .space-x-4 > * + * {
-    margin-left: 1rem; /* Espacio de 1 rem entre los íconos */
+    margin-left: 1rem; 
 }
 
-/* Estilos para los íconos (Font Awesome) */
 #footer i {
-    font-size: 1.25rem; /* Tamaño de los íconos */
+    font-size: 1.25rem; 
 }
 
-/* Flexbox para iconos y texto */
 #footer .flex {
     display: flex;
-    justify-content: center; /* Centrar el contenido horizontalmente */
-    align-items: center; /* Alinear el contenido verticalmente */
-    gap: 1rem; /* Espacio entre los íconos y el texto */
+    justify-content: center; 
+    align-items: center; 
+    gap: 1rem; 
 }
 
-/* Justificación entre elementos */
 #footer .justify-between {
     justify-content: space-between;
 }
 
-/* Centrado de items */
 #footer .items-center {
     align-items: center;
 }
 
-/* Textos alineados a la izquierda */
 #footer .text-left {
     text-align: left;
 }
 
-/* Color de fondo para las clases adicionales en el footer */
 #footer .bg {
     background-color: #1f2937;
 }
 
-/* Color de texto blanco */
 #footer .text-white {
     color: white;
 }
