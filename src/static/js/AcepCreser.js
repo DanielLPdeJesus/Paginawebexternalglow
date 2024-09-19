@@ -53,19 +53,36 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.showCancelModal = function(reservationId, fecha, hora) {
         currentReservationId = reservationId;
-        var modal = document.getElementById('cancelModal');
-        var warningElement = document.getElementById('cancelWarning');
-        if (modal && warningElement) {
-            modal.classList.remove('hidden');
-            warningElement.textContent = 'Está por cancelar la reservación del ' + fecha + ' a las ' + hora + '.';
-        }
-    }
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: `Está por cancelar la reservación del ${fecha} a las ${hora}.`,
+            icon: 'warning',
+            input: 'textarea',
+            inputLabel: 'Razón de la cancelación',
+            inputPlaceholder: 'Escribe tu razón aquí...',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, cancelar',
+            cancelButtonText: 'No, mantener',
+            inputValidator: (value) => {
+                if (!value) {
+                    return '¡Debes escribir una razón!';
+                }
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var reason = result.value; 
 
-    window.cancelReservation = function() {
-        if (currentReservationId) {
-            var reason = document.getElementById('cancelReason').value;
-            updateReservationStatus(currentReservationId, 'cancelada', reason);
-        }
+                updateReservationStatus(currentReservationId, 'cancelada', reason);
+
+                Swal.fire(
+                    'Cancelada',
+                    'La reservación ha sido cancelada.',
+                    'success'
+                );
+            }
+        });
     }
 
     window.closeModal = function(modalId) {
@@ -119,8 +136,6 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Error al actualizar el estado de la reservación');
         });
     }
-
-    // Event listener for modal background click
     window.onclick = function(event) {
         if (event.target.classList.contains('modal')) {
             event.target.classList.add('hidden');

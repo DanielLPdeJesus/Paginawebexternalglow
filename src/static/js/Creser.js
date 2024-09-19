@@ -13,17 +13,15 @@ function cargarReservaciones() {
 cargarReservaciones();
 
 document.addEventListener('DOMContentLoaded', function() {
-    let currentReservationId = null;
-
+    // Cargar las reservaciones
     cargarReservaciones();
 
+    // Función para mostrar detalles de la reservación
     window.showDetails = function(reservationId) {
-        if (!Array.isArray(reservaciones)) {
-            return;
-        }
-        var reservation = reservaciones.find(function(r) { 
-            return String(r.id) === String(reservationId); 
+        var reservation = reservaciones.find(function(r) {
+            return String(r.id) === String(reservationId);
         });
+
         if (reservation) {
             var detailsHtml = 
                 '<div class="user-info">' +
@@ -42,48 +40,67 @@ document.addEventListener('DOMContentLoaded', function() {
                 '<div class="reservation-image">' +
                     '<img src="' + (reservation.imagen_url || '') + '" alt="Imagen de la reservación" class="w-full h-auto rounded-lg shadow">' +
                 '</div>';
+
             var detailsElement = document.getElementById('reservationDetails');
             if (detailsElement) {
                 detailsElement.innerHTML = detailsHtml;
                 document.getElementById('detailsModal').classList.remove('hidden');
             }
         }
-    }
+    };
 
-    window.showAcceptModal = function(reservationId) {
-        currentReservationId = reservationId;
-        var modal = document.getElementById('acceptModal');
-        if (modal) {
-            modal.classList.remove('hidden');
-        }
-    }
-
-    window.showRejectModal = function(reservationId) {
-        currentReservationId = reservationId;
-        var modal = document.getElementById('rejectModal');
-        if (modal) {
-            modal.classList.remove('hidden');
-        }
-    }
-
+    // Función para cerrar el modal de detalles
     window.closeModal = function(modalId) {
         var modal = document.getElementById(modalId);
         if (modal) {
             modal.classList.add('hidden');
         }
-    }
+    };
 
-    window.acceptReservation = function() {
-        if (currentReservationId) {
-            updateReservationStatus(currentReservationId, 'aceptada');
-        }
-    }
+    // Aceptar reservación con SweetAlert2
+    window.acceptReservation = function(reservationId) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¿Quieres aceptar esta reservación?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, aceptar',
+            cancelButtonText:'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                updateReservationStatus(reservationId, 'aceptada');
+                Swal.fire(
+                    '¡Aceptada!',
+                    'La reservación ha sido aceptada.',
+                    'success'
+                );
+            }
+        });
+    };
 
-    window.rejectReservation = function() {
-        if (currentReservationId) {
-            updateReservationStatus(currentReservationId, 'rechazada');
-        }
-    }
+    window.rejectReservation = function(reservationId) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¿Quieres rechazar esta reservación?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, rechazar',
+            cancelButtonText:'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                updateReservationStatus(reservationId, 'rechazada');
+                Swal.fire(
+                    '¡Rechazada!',
+                    'La reservación ha sido rechazada.',
+                    'success'
+                );
+            }
+        });
+    };
 
     function updateReservationStatus(reservationId, newStatus) {
         fetch('/Authentication/update_reservation_status/' + reservationId, {
@@ -95,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(function(response) { 
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                throw new Error('Error en la red');
             }
             return response.json(); 
         })
@@ -105,35 +122,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (reservationElement) {
                     reservationElement.remove();
                 }
-                closeModal(newStatus === 'aceptada' ? 'acceptModal' : 'rejectModal');
-                
-                if (document.querySelectorAll('.reservation-item').length === 0) {
-                    var agendaElement = document.querySelector('.agenda');
-                    if (agendaElement) {
-                        agendaElement.innerHTML = '<p class="text-center text-gray-600">No hay citas pendientes.</p>';
-                    }
-                }
             } else {
-                alert('Error al actualizar el estado de la reservación');
+                Swal.fire('Error', 'No se pudo actualizar el estado de la reservación.', 'error');
             }
         })
         .catch(function(error) {
-            alert('Error al actualizar el estado de la reservación');
+            Swal.fire('Error', 'Ocurrió un error al actualizar la reservación.', 'error');
         });
-    }
-
-    document.querySelectorAll('.close').forEach(function(closeBtn) {
-        closeBtn.onclick = function() {
-            var modal = this.closest('.modal');
-            if (modal) {
-                modal.classList.add('hidden');
-            }
-        }
-    });
-
-    window.onclick = function(event) {
-        if (event.target.classList.contains('modal')) {
-            event.target.classList.add('hidden');
-        }
     }
 });

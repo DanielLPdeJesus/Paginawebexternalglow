@@ -18,8 +18,8 @@
                                 </div>
                                 <div class="flex flex-wrap gap-2">
                                     <button onclick="showDetails('{{ reservacion.id }}')" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300">Ver Detalles</button>
-                                    <button onclick="showAcceptModal('{{ reservacion.id }}')" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition duration-300">Aceptar</button>
-                                    <button onclick="showRejectModal('{{ reservacion.id }}')" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-300">Rechazar</button>
+                                    <button onclick="acceptReservation('{{ reservacion.id }}')" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition duration-300">Aceptar</button>
+                                    <button onclick="rejectReservation('{{ reservacion.id }}')" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-300">Rechazar</button>
                                 </div>
                             </div>
                         </li>
@@ -41,35 +41,9 @@
             </button>
         </div>
         <div id="reservationDetails" class="space-y-4 max-h-[60vh] overflow-y-auto">
-            <!-- El contenido de los detalles se insertará aquí dinámicamente -->
         </div>
     </div>
 </div>
-
-<!-- Accept Modal -->
-<div id="acceptModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden p-4">
-    <div class="bg-white rounded-lg p-6 sm:p-8 max-w-md w-full mx-auto">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Confirmar Aceptación</h2>
-        <p class="text-gray-600 mb-6">¿Está seguro que desea aceptar esta reservación?</p>
-        <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4">
-            <button onclick="closeModal('acceptModal')" class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition duration-300">Cancelar</button>
-            <button onclick="acceptReservation()" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition duration-300">Confirmar</button>
-        </div>
-    </div>
-</div>
-
-<!-- Reject Modal -->
-<div id="rejectModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden p-4">
-    <div class="bg-white rounded-lg p-6 sm:p-8 max-w-md w-full mx-auto">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Confirmar Rechazo</h2>
-        <p class="text-gray-600 mb-6">¿Está seguro que desea rechazar esta reservación?</p>
-        <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4">
-            <button onclick="closeModal('rejectModal')" class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition duration-300">Cancelar</button>
-            <button onclick="rejectReservation()" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-300">Confirmar</button>
-        </div>
-    </div>
-</div>
-
 <script>
     var reservacionesData = '{{ reservaciones | tojson | safe }}';
 </script>

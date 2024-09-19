@@ -261,10 +261,9 @@ def update_reservation_status_and_comment(reservation_id):
     business_comment = data.get('reason', '')
     current_time = datetime.now().isoformat()
     
-    # Actualizar la reservación
     updates = {
         'estado': new_status,
-        'comentario_negocio': business_comment,
+        'comentariosnego': business_comment,
         'fecha_actualizacion': current_time
     }
     
