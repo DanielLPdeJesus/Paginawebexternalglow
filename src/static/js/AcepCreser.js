@@ -51,7 +51,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    window.showCancelModal = function(reservationId, fecha, hora) {
+    window.showCancelModal = function(reservationId, fecha, hora, reservationTime) {
+        const reservationDateTime = new Date(`${fecha}T${hora}`);
+        const currentDateTime = new Date();
+        
+        const diffInHours = (reservationDateTime - currentDateTime) / (1000 * 60 * 60);
+    
+        if (diffInHours < 2) {
+            Swal.fire({
+                title: 'No se puede cancelar',
+                text: 'No puedes cancelar la reservación menos de 2 horas antes de la hora programada.',
+                icon: 'warning',
+                confirmButtonText: 'Aceptar'
+            });
+            return; 
+        }
+    
         currentReservationId = reservationId;
         Swal.fire({
             title: '¿Estás seguro?',
@@ -72,10 +87,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }).then((result) => {
             if (result.isConfirmed) {
-                var reason = result.value; 
-
+                var reason = result.value;
+    
                 updateReservationStatus(currentReservationId, 'cancelada', reason);
-
+    
                 Swal.fire(
                     'Cancelada',
                     'La reservación ha sido cancelada.',

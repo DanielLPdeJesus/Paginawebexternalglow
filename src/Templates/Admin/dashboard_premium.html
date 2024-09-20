@@ -4,6 +4,10 @@
 {% block content %}
 <div class="container mx-auto px-4 py-8 bg-white">
     <div class="bg-white rounded-lg overflow-hidden">
+        <button type="button" onclick="location.reload()" class="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+            Refrescar Reservaciones
+        </button>
+        
         <div class="p-6">
             <h2 class="text-2xl font-bold text-gray-800 mb-6">Agenda de Reservaciones Pendientes</h2>
             {% if reservaciones %}
@@ -19,7 +23,7 @@
                                 <div class="flex flex-wrap gap-2">
                                     <button onclick="showDetails('{{ reservacion.id }}')" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300">Ver Detalles</button>
                                     <button onclick="acceptReservation('{{ reservacion.id }}')" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition duration-300">Aceptar</button>
-                                    <button onclick="rejectReservation('{{ reservacion.id }}')" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-300">Rechazar</button>
+                                    <button onclick="rejectReservation('{{ reservacion.id }}')" class="px-4 py-2 bg-red-500  text-white rounded hover:bg-red-600 transition duration-300">Rechazar</button>
                                 </div>
                             </div>
                         </li>

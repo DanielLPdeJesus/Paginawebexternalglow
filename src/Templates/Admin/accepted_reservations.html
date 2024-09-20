@@ -3,6 +3,9 @@
 
 {% block content %}
 <div class="container bg-white mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+    <button type="button" onclick="location.reload()" class="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+        Refrescar Reservaciones
+    </button>
     <h2 class="text-2xl font-bold mb-4">Reservaciones Aceptadas</h2>
     {% if reservaciones %}
         <ul class="space-y-4">
