@@ -382,13 +382,11 @@ def mi_perfil():
     session['numero_telefono']= f'{ user_data.get("numero_telefono")}'
     session['postal_code']= f'{ user_data.get("postal_code")}'
 
-
-
     session['perfiles_imagenes']= user_data.get('perfiles_imagenes')
     session['negocios_imagenes']= user_data.get('negocios_imagenes')
     session['servicios_imagenes']= user_data.get('servicios_imagenes')
     
-    return redirect('/profile')
+    return redirect('/perfil')
 
 
 
@@ -415,11 +413,7 @@ def update_business_profile():
     }
  
     try:
-        # Manejo de imágenes
-        business_images = request.files.getlist('business-image-upload')
-        service_images = request.files.getlist('service-image-upload')
-        profile_image = request.files.get('profile-image-upload')
-
+       
         # Función para subir imagen a Firebase Storage y obtener URL
         def upload_image_to_firebase(file, folder):
             if file and file.filename != '':
@@ -433,6 +427,11 @@ def update_business_profile():
                 url = storage.child(file_path).get_url(None)
                 return url
             return None
+        
+        # Manejo de imágenes
+        business_images = request.files.getlist('business-image-upload')
+        service_images = request.files.getlist('service-image-upload')
+        profile_image = request.files.get('profile-image-upload')
 
         # Subir y obtener URLs de imágenes
         business_image_urls = [upload_image_to_firebase(img, 'negocios_imagenes') for img in business_images if img.filename != '']
@@ -461,9 +460,9 @@ def update_business_profile():
         db.child('Negousers').child(user_id).update(update_data)
 
         flash('Perfil del negocio actualizado con éxito', 'success')
-        return redirect('/profile')
+        return redirect('/Authentication/mi_perfil')
     
     except Exception as e:
         print(f"Error al actualizar el perfil del negocio: {e}")
         flash('Error al actualizar el perfil del negocio', 'error')
-        return redirect(url_for('profile'))
+        return redirect('/profile')

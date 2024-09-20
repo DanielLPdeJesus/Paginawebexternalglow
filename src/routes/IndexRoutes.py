@@ -162,7 +162,7 @@ def accepted_reservations(token=None):
     print(f"Total de reservaciones procesadas: {len(reservaciones_list)}")
     return render_template('/Admin/accepted_reservations.html', reservaciones=reservaciones_list)
 
-@main.route('/profile')
+@main.route('/perfil')
 @login_required
 def perfil():
     return render_template('Admin/profile.html')
