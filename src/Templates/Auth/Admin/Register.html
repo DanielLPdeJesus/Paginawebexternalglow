@@ -6,6 +6,7 @@
 {% block styles %}
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styleRegister.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styleAlert.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styleViewpass.css') }}">
 {% endblock %}
 <br>
 <br>
@@ -48,10 +49,17 @@
 
                 <div class="form-group">
                     <label for="password">Contraseña</label>
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña" required minlength="8">
-                    <small>La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula, un número y un carácter especial.</small>
+                    <div style="position: relative;">
+                        <input type="password" class="form-control" id="password" name="password"
+                               placeholder="Contraseña" required minlength="8">
+                        <button type="button" id="togglePassword" class="eye-btn">
+                            <img  src="{{ url_for('static', filename='img/eye-off.png') }}" alt="Mostrar contraseña" />
+                        </button>
+                    </div>
+                    <small>La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula,
+                        un número y un carácter especial.</small>
                     <span id="error-password" class="error-message">La contraseña no cumple con los requisitos.</span>
-                </div>
+                    </div>
 
                 <div class="form-group">
                     <label for="phone_number">Número de Teléfono</label>
@@ -160,6 +168,7 @@
         <img src="{{ url_for('static', filename='img/bannerregister.jpg') }}" alt="Imagen del Negocio">
     </div>
 </div>
+<script src="{{ url_for('static', filename='js/viespass.js') }}"></script>
 <script src="{{ url_for('static', filename='js/registro.js') }}"></script>
 <script src="{{ url_for('static', filename='js/Alerts.js') }}"></script>
 {% endblock %}
