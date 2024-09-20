@@ -1,14 +1,15 @@
 import pyrebase
-from flask import Blueprint, abort, app, redirect, request, flash, session, url_for, jsonify
+from flask import Blueprint, abort, app, current_app, redirect, request, flash, session, url_for, jsonify
 from functools import wraps
 import secrets
 from dotenv import load_dotenv
 import os
+import uuid
 import logging
 import requests
 from validate_email import validate_email
 from datetime import datetime, time, timedelta
-
+from werkzeug.utils import secure_filename
 
 project_folder = os.path.expanduser('~/external')
 logging.warning(project_folder)
@@ -389,4 +390,80 @@ def mi_perfil():
     
     return redirect('/profile')
 
-                                  
+
+
+
+
+@main.route('/update_business_profile', methods=['POST'])
+@login_required
+def update_business_profile():
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+
+    # Obtener datos del formulario
+    data = {
+        'nombre_negocio': request.form.get('business_name'),
+        'negocio_activo': request.form.get('business_state') == 'activado',
+        'nombre_propietario': request.form.get('owner_name'),
+        'direccion_negocio': request.form.get('business_address'),
+        'servicios_ofrecidos': request.form.get('services_offered'),
+        'horas_trabajo': {
+                'turno_1': f"{request.form.get('opening_time_1')} - {request.form.get('closing_time_1')}",
+                'turno_2': f"{request.form.get('opening_time_2')} - {request.form.get('closing_time_2')}",
+        }    
+    }
+ 
+    try:
+        # Manejo de imágenes
+        business_images = request.files.getlist('business-image-upload')
+        service_images = request.files.getlist('service-image-upload')
+        profile_image = request.files.get('profile-image-upload')
+
+        # Función para subir imagen a Firebase Storage y obtener URL
+        def upload_image_to_firebase(file, folder):
+            if file and file.filename != '':
+                # Generar un nombre único con UUID
+                filename = secure_filename(f"{user_id}_{uuid.uuid4()}.jpg")
+                file_path = os.path.join(folder, filename)
+                # Subir a Firebase Storage
+                storage = firebase.storage()
+                storage.child(file_path).put(file)
+                # Obtener la URL de la imagen subida
+                url = storage.child(file_path).get_url(None)
+                return url
+            return None
+
+        # Subir y obtener URLs de imágenes
+        business_image_urls = [upload_image_to_firebase(img, 'negocios_imagenes') for img in business_images if img.filename != '']
+        service_image_urls = [upload_image_to_firebase(img, 'servicios_imagenes') for img in service_images if img.filename != '']
+        profile_image_url = upload_image_to_firebase(profile_image, 'perfiles_imagenes') if profile_image else None
+
+        # Actualizar solo si las URLs no son vacías o None
+        update_data = {
+            'nombre_negocio': data['nombre_negocio'],
+            'negocio_activo': data['negocio_activo'],
+            'nombre_propietario': data['nombre_propietario'],
+            'direccion_negocio': data['direccion_negocio'],
+            'servicios_ofrecidos': data['servicios_ofrecidos'],
+            'horas_trabajo': data['horas_trabajo']
+        }
+
+        # Verificar si hay imágenes nuevas y actualizarlas en la base de datos
+        if business_image_urls:
+            update_data['negocios_imagenes'] = business_image_urls
+        if service_image_urls:
+            update_data['servicios_imagenes'] = service_image_urls
+        if profile_image_url:
+            update_data['perfiles_imagenes'] = profile_image_url
+
+        # Actualizar en Firebase
+        db.child('Negousers').child(user_id).update(update_data)
+
+        flash('Perfil del negocio actualizado con éxito', 'success')
+        return redirect('/profile')
+    
+    except Exception as e:
+        print(f"Error al actualizar el perfil del negocio: {e}")
+        flash('Error al actualizar el perfil del negocio', 'error')
+        return redirect(url_for('profile'))

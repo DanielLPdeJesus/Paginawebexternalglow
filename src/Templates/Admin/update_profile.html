@@ -179,14 +179,16 @@
             <div class="header">
                 <h1>Editar Perfil del Negocio</h1>
             </div>
-            <form id="registro-form" action="#" method="POST" enctype="multipart/form-data">
+            <form id="registro-form" action="/Authentication/update_business_profile" method="POST" enctype="multipart/form-data">
+                <!-- ID del Negocio (oculto) -->
+                <input type="hidden" id="business_id" name="business_id" value="{{ business_id }}">
+            
                 <!-- Nombre del Negocio -->
                 <div class="form-group">
                     <label for="business_name">Nombre del Negocio</label>
-                    <input type="text" id="business_name" name="business_name" placeholder="Nombre del Negocio" required
-                        minlength="3" maxlength="100">
+                    <input type="text" id="business_name" name="business_name" placeholder="Nombre del Negocio" required minlength="3" maxlength="100">
                 </div>
-
+            
                 <!-- Estado del Negocio (Activar/Desactivar) -->
                 <div class="form-group">
                     <label for="business_state">Estado del Negocio</label>
@@ -195,28 +197,19 @@
                         <option value="desactivado">Desactivado</option>
                     </select>
                 </div>
-
+            
                 <!-- Nombre del Propietario -->
                 <div class="form-group">
                     <label for="owner_name">Nombre del Propietario</label>
-                    <input type="text" id="owner_name" name="owner_name" placeholder="Nombre del Propietario" required
-                        minlength="3" maxlength="100">
-                </div>
-
-                <!-- Número de Teléfono -->
-                <div class="form-group">
-                    <label for="phone_number">Número de Teléfono</label>
-                    <input type="tel" id="phone_number" name="phone_number" placeholder="+52" pattern="\+52[0-9]{10}"
-                        required>
+                    <input type="text" id="owner_name" name="owner_name" placeholder="Nombre del Propietario" required minlength="3" maxlength="100">
                 </div>
 
                 <!-- Dirección del Negocio -->
                 <div class="form-group">
                     <label for="business_address">Dirección del Negocio</label>
-                    <input type="text" id="business_address" name="business_address" placeholder="Dirección" required
-                        minlength="5" maxlength="200">
+                    <input type="text" id="business_address" name="business_address" placeholder="Dirección" required minlength="5" maxlength="200">
                 </div>
-
+            
                 <!-- Servicios Ofrecidos -->
                 <div class="form-group">
                     <label for="services_offered">Servicios Ofrecidos</label>
@@ -227,7 +220,7 @@
                         <option value="Salon">Salón de Belleza</option>
                     </select>
                 </div>
-
+            
                 <!-- Horario de Servicio -->
                 <div class="form-group">
                     <label>Horario de Servicio</label>
@@ -248,48 +241,43 @@
                         </div>
                     </div>
                 </div>
-
+            
                 <!-- Imágenes del Negocio -->
                 <div class="form-group">
                     <label for="business-image-upload">Imágenes del negocio (Mínimo 3)</label>
-                    <input type="file" id="business-image-upload" name="business-image-upload[]"
-                        class="image-upload-input" accept="image/*" multiple required>
+                    <input type="file" id="business-image-upload" name="business-image-upload[]" class="image-upload-input" accept="image/*" multiple required>
                     <div id="business-image-preview" class="image-preview-container">
-                        <!-- Las imágenes se mostrarían aquí -->
+                        <!-- Las imágenes se mostrarán aquí -->
                     </div>
                 </div>
-
+            
                 <!-- Imágenes de Servicios -->
                 <div class="form-group">
                     <label for="service-image-upload">Imágenes de servicios (Mínimo 3)</label>
-                    <input type="file" id="service-image-upload" name="service-image-upload[]"
-                        class="image-upload-input" accept="image/*" multiple required>
+                    <input type="file" id="service-image-upload" name="service-image-upload[]" class="image-upload-input" accept="image/*" multiple required>
                     <div id="service-image-preview" class="image-preview-container">
-                        <!-- Las imágenes se mostrarían aquí -->
+                        <!-- Las imágenes se mostrarán aquí -->
                     </div>
                 </div>
-
+            
                 <!-- Foto de Perfil del Negocio -->
                 <div class="form-group">
                     <label for="profile-image-upload">Foto de Perfil</label>
-                    <input type="file" id="profile-image-upload" name="profile-image-upload" class="image-upload-input"
-                        accept="image/*">
+                    <input type="file" id="profile-image-upload" name="profile-image-upload" class="image-upload-input" accept="image/*" multiple required>
                     <div id="profile-image-preview" class="image-preview-container">
-                        <!-- La imagen de perfil se mostraría aquí -->
+                        <!-- La imagen de perfil se mostrará aquí -->
                     </div>
                 </div>
-
-
+            
                 <!-- Botón de Actualización -->
                 <div class="form-actions">
                     <button type="submit">Actualizar</button>
                 </div>
             </form>
-
+            
         </div>
     </div>
 </div>
-
 <script>
     function previewImages(input, previewContainer) {
         const files = input.files;

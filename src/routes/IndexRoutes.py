@@ -163,12 +163,9 @@ def accepted_reservations(token=None):
     return render_template('/Admin/accepted_reservations.html', reservaciones=reservaciones_list)
 
 @main.route('/profile')
-def mi_perfil():
+@login_required
+def perfil():
     return render_template('Admin/profile.html')
-
-@main.route('/update_profile')
-def editar_perfil():
-    return render_template('Admin/update_profile.html')
 
 @main.route('/terms')
 def terms():
@@ -177,3 +174,11 @@ def terms():
 @main.route('/privacity')
 def privacity():
     return render_template('laws/Privacity.html')
+
+
+
+@main.route('/update_profile')
+@login_required
+
+def editar_perfil():
+    return render_template('Admin/update_profile.html')

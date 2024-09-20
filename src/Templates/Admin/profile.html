@@ -12,10 +12,7 @@
             <div class="profile-details">
                 <div class="profile-pic">
                     {% if session.get('perfiles_imagenes') %}
-                    <img src="{{ session['perfiles_imagenes'] }}" alt="Foto de perfil">
-                    {% else %}
-                    <img src="{{ url_for('static', filename='img/default-profile.jpg') }}"
-                        alt="Foto de perfil por defecto">
+                    <img src="{{ session['perfiles_imagenes'] }}" alt="+">
                     {% endif %}
                 </div>
                 <div class="profile-info">
