@@ -291,42 +291,84 @@ def check_session():
     return jsonify({"status": "active"}), 200
 
 
+
 @main.route('/crear_promocion', methods=['POST'])
-@login_required
-@premium_required
 def crear_promocion():
     user_id = session.get('user_id')
     start_date = request.form['start_date']
     start_time = request.form['start_time']
     end_date = request.form['end_date']
     end_time = request.form['end_time']
+    discount = request.form['discount']
     promotion = request.form['promotion']
     terms_accepted = request.form.get('terms') == 'on'
+    promo_accepted = request.form.get('aceptar_promo') == 'on'
 
-    if not terms_accepted:
-        flash('Debes aceptar los términos y condiciones para crear una promoción.', 'danger')
+    # Validaciones
+    if not all([start_date, start_time, end_date, end_time, discount, promotion, terms_accepted, promo_accepted]):
+        flash('Todos los campos son obligatorios.', 'danger')
         return redirect(url_for('index_blueprint.promotions'))
 
     try:
-        negocio = db.child('Negousers').child(user_id).get().val()
+        start_datetime = datetime.strptime(f"{start_date} {start_time}", "%Y-%m-%d %H:%M")
+        end_datetime = datetime.strptime(f"{end_date} {end_time}", "%Y-%m-%d %H:%M")
+        current_datetime = datetime.now()
+        
+        if start_datetime < current_datetime:
+            flash('La fecha de inicio no puede ser anterior a la fecha actual.', 'danger')
+            return redirect(url_for('index_blueprint.promotions'))
 
+        if end_datetime <= start_datetime:
+            flash('La fecha de finalización debe ser posterior a la fecha de inicio.', 'danger')
+            return redirect(url_for('index_blueprint.promotions'))
+
+        if (end_datetime - start_datetime) > timedelta(days=3):
+            flash('La promoción no puede durar más de 3 días.', 'danger')
+            return redirect(url_for('index_blueprint.promotions'))
+
+        discount = int(discount)
+        if not (1 <= discount <= 100):
+            flash('El porcentaje de descuento debe estar entre 1 y 100.', 'danger')
+            return redirect(url_for('index_blueprint.promotions'))
+
+        promociones_usuario = db.child('promociones').child(user_id).get().val()
+        if promociones_usuario:
+            promociones_activas = [promo for promo in promociones_usuario.values() 
+                                   if datetime.fromisoformat(promo['fecha_fin']) > current_datetime]
+            if promociones_activas:
+                flash('Ya tienes una promoción activa. No puedes crear otra hasta que finalice la actual.', 'warning')
+                return redirect(url_for('index_blueprint.promotions'))
+
+            ultima_promocion = max(promociones_usuario.values(), key=lambda x: x['fecha_creacion'])
+            fecha_ultima_promocion = datetime.fromisoformat(ultima_promocion['fecha_creacion'])
+            if (current_datetime - fecha_ultima_promocion) < timedelta(days=3):
+                flash('Debes esperar 3 días hábiles desde tu última promoción para crear una nueva.', 'warning')
+                return redirect(url_for('index_blueprint.promotions'))
+
+        negocio = db.child('Negousers').child(user_id).get().val()
+        
         if not negocio:
             flash('No se encontró información del negocio.', 'danger')
             return redirect(url_for('index_blueprint.promotions'))
 
         nueva_promocion = {
-            'fecha_inicio': f"{start_date} {start_time}",
-            'fecha_fin': f"{end_date} {end_time}",
+            'fecha_inicio': start_datetime.isoformat(),
+            'fecha_fin': end_datetime.isoformat(),
+            'porcentaje_descuento': discount,
             'descripcion': promotion,
-            'estado': 'inactiva',
-            'fecha_creacion': datetime.now().isoformat(),
+            'estado': 'activa',
+            'fecha_creacion': current_datetime.isoformat(),
             'nombre_negocio': negocio.get('nombre_negocio', ''),
-            'servicios_ofrecidos': negocio.get('servicios_ofrecidos', '')
+            'servicios_ofrecidos': negocio.get('servicios_ofrecidos', ''),
+            'aceptada_movil': promo_accepted,
+            'activa_movil':'false'
         }
 
         db.child('promociones').child(user_id).push(nueva_promocion)
 
         flash('Promoción creada exitosamente.', 'success')
+    except ValueError as e:
+        flash(f'Error en el formato de los datos: {str(e)}', 'danger')
     except Exception as e:
         print(str(e))
         flash('Error al crear la promoción. Por favor, inténtalo de nuevo.', 'danger')

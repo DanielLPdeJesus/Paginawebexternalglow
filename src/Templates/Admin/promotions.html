@@ -2,57 +2,86 @@
 {% block title %}Página Administrativa{% endblock %}
 
 {% block content %}
-    <script src="https://cdn.tailwindcss.com"></script>
+<div class="container mx-auto mt-10">
+    <!-- Bloque para mensajes flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="mb-6">
+            {% for category, message in messages %}
+                <div class="p-4 mb-4 text-sm text-white rounded-lg shadow-lg
+                     {% if category == 'success' %}bg-green-500 
+                     {% elif category == 'error' %}bg-red-500 
+                     {% else %}bg-gray-500 {% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
 
-    <div class="md:container max-w-2xl mx-auto bg-white p-9 rounded-lg shadow-md">
-        <h1 class="text-2xl font-bold mb-6 text-center">Promociones de tu Negocio</h1>
-        
-        <form method="POST" action="{{ url_for('Authentication.crear_promocion') }}" class="space-y-10">
-            <div class="grid grid-cols-2 gap-4">
+    <div class="bg-white p-8 rounded-xl shadow-xl border-t-4 border-indigo-500">
+        <h2 class="text-xl font-bold text-gray-800 mb-6 text-center">Crear Nueva Promoción</h2>
+
+        <form action="{{ url_for('Authentication.crear_promocion') }}" method="POST" class="space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                     <label for="start_date" class="block text-sm font-medium text-gray-700">Fecha de Inicio</label>
-                    <input type="date" id="start_date" name="start_date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                    <input type="date" class="mt-2 block w-full placeholder-gray-400/70 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" id="start_date" name="start_date" value="{{ request.form.get('start_date', '') }}" required>
                 </div>
                 <div>
                     <label for="start_time" class="block text-sm font-medium text-gray-700">Hora de Inicio</label>
-                    <input type="time" id="start_time" name="start_time" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                    <input type="time" class="mt-2 block w-full placeholder-gray-400/70 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" id="start_time" name="start_time" value="{{ request.form.get('start_time', '') }}" required>
                 </div>
             </div>
-            
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label for="end_date" class="block text-sm font-medium text-gray-700">Fecha de finalización</label>
-                    <input type="date" id="end_date" name="end_date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
-                </div>
-                <div>
-                    <label for="end_time" class="block text-sm font-medium text-gray-700">Hora de finalización</label>
-                    <input type="time" id="end_time" name="end_time" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
-                </div>
-            </div>
-            
-            <div>
-                <label for="promotion" class="block text-sm font-medium text-gray-700">Promoción</label>
-                <input type="text" id="promotion" name="promotion" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
-            </div>
-            
-            <div class="bg-gray-50 p-4 rounded-md">
-                <p class="text-sm text-gray-600"></p>
-                <p class="font-semibold"></p>
-                <button type="submit" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Crear Promoción</button>
-            </div>
-            
-            <p class="text-sm text-gray-600 mt-4">
-                Recuerda que las Promociones no deben exceder de los 2 días, al Terminar una promoción o cancelarla tendrás que esperar 3 días Hábiles para publicar una nueva, en caso de tener dudas consultar los términos y condiciones.
-            </p>
-            
-            <div class="flex items-center">
-                <input type="checkbox" id="terms" name="terms" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
-                <label for="terms" class="ml-2 block text-sm text-gray-900">
-                    Acepto Términos y condiciones
-                </label>
-            </div>
-            <button type="submit" class="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">Leer Politicas</button>
 
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label for="end_date" class="block text-sm font-medium text-gray-700">Fecha de Finalización</label>
+                    <input type="date" class="mt-2 block w-full placeholder-gray-400/70 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" id="end_date" name="end_date" value="{{ request.form.get('end_date', '') }}" required>
+                </div>
+                <div>
+                    <label for="end_time" class="block text-sm font-medium text-gray-700">Hora de Finalización</label>
+                    <input type="time" class="mt-2 block w-full placeholder-gray-400/70 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" id="end_time" name="end_time" value="{{ request.form.get('end_time', '') }}" required>
+                </div>
+            </div>
+
+            <div>
+                <label for="discount" class="block text-sm font-medium text-gray-700">Porcentaje de Descuento</label>
+                <input type="number" class="mt-2 block w-full placeholder-gray-400/70 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" id="discount" name="discount" min="1" max="100" value="{{ request.form.get('discount', '') }}" required>
+            </div>
+
+            <div>
+                <label for="promotion" class="block text-sm font-medium text-gray-700">Texto de la Promoción</label>
+                <textarea class="mmt-2 block w-full placeholder-gray-400/70 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" id="promotion" name="promotion" rows="3" required>{{ request.form.get('promotion', '') }}</textarea>
+            </div>
+
+            <div class="flex items-start">
+                <div class="flex items-center h-5">
+                    <input id="terms" name="terms" type="checkbox" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" {% if request.form.get('terms') %}checked{% endif %} required>
+                </div>
+                <div class="ml-3 text-sm">
+                    <label for="terms" class="font-medium text-gray-700">Acepto Términos y condiciones</label>
+                </div>
+            </div>
+
+            <div class="flex items-start">
+                <div class="flex items-center h-5">
+                    <input id="aceptar_promo" name="aceptar_promo" type="checkbox" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" {% if request.form.get('aceptar_promo') %}checked{% endif %} required>
+                </div>
+                <div class="ml-3 text-sm">
+                    <label for="aceptar_promo" class="font-medium text-gray-700">Acepto que esta promoción aparezca en la aplicación móvil</label>
+                </div>
+            </div>
+
+            <div>
+                <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-indigo-500 text-white font-bold py-3 px-6 rounded-lg hover:from-indigo-700 hover:to-indigo-600 transition focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">Crear Promoción</button>
+            </div>
         </form>
+
+        <div class="mt-6 text-sm text-gray-600 text-center">
+            <p>Recuerda que las promociones no deben exceder los 3 días. Al terminar una promoción o cancelarla, tendrás que esperar 3 días hábiles para publicar una nueva.</p>
+            <a href="{{ url_for('index_blueprint.terms') }}" class="text-indigo-600 hover:underline">Leer Políticas</a>
+        </div>
     </div>
+</div>
 {% endblock %}
