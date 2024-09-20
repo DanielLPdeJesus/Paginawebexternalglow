@@ -2,224 +2,118 @@
 {% block title %}Página Administrativa{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dashpre.css') }}">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            color: #000000;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-gray-800 text-white p-8 mb-0 rounded-lg">
+            <h1 class="text-2xl font-medium">Editar Perfil del Negocio</h1>
+        </div>
+        
+        <form id="registro-form" action="/Authentication/update_business_profile" method="POST" enctype="multipart/form-data" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <input type="hidden" id="business_id" name="business_id" value="{{ business_id }}">
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="business_name">
+                    Nombre del Negocio
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="business_name" name="business_name" type="text" placeholder="Nombre del Negocio" value="{{ session.get('nombre_negocio', '') }}" required minlength="3" maxlength="100">
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="business_state">
+                    Estado del Negocio
+                </label>
+                <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="business_state" name="business_state" required>
+                    <option value="activado" {% if session.get('negocio_activo') %}selected{% endif %}>Activado</option>
+                    <option value="desactivado" {% if not session.get('negocio_activo') %}selected{% endif %}>Desactivado</option>
+                </select>
+            </div>
 
-        .profile-edit-container {
-            background-color: #000000;
-            border-radius: 8px;
-            padding: 20px;
-            max-width: 600px;
-            width: 100%;
-        }
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="owner_name">
+                    Nombre del Propietario
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="owner_name" name="owner_name" type="text" placeholder="Nombre del Propietario" value="{{ session.get('nombre_propietario', '') }}" required>
+            </div>
 
-        .profile-edit-box h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="business_address">
+                    Dirección del Negocio
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="business_address" name="business_address" type="text" placeholder="Dirección del Negocio" value="{{ session.get('direccion_negocio', '') }}" required>
+            </div>
 
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 8px;
-            border: none;
-            border-radius: 4px;
-            background-color: #fff7f7;
-            color: #fff;
-        }
-
-        .form-group small {
-            display: block;
-            margin-top: 5px;
-            font-size: 12px;
-            color: #888;
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            background-color: #555;
-            color: #fff;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #666;
-        }
-
-        .profile-info ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .profile-info li {
-            margin-bottom: 10px;
-        }
-
-        .profile-info label {
-            display: block;
-            font-weight: bold;
-        }
-
-        .profile-info p {
-            margin: 5px 0;
-        }
-
-        .map-container img {
-            max-width: 100%;
-            border-radius: 4px;
-        }
-
-        .form-group.input-container {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 15px;
-        }
-    </style>
-
-<div class="content">
-    <div class="agenda">
-        <form id="registro-form" action="" method="POST" enctype="multipart/form-data" onsubmit="return submitForm(event)">
-
-                <div class="form-group">
-                    <label for="business_name">Nombre del Negocio</label>
-                    <input type="text" id="business_name" placeholder="Nombre del Negocio" name="business_name" required
-                        minlength="3" maxlength="100">
-                    <span id="error-business_name" class="error-message">Este campo es obligatorio.</span>
-                </div>
-
-                <div class="form-group">
-                    <label for="owner_name">Nombre del Propietario</label>
-                    <input type="text" id="owner_name" placeholder="Nombre del Propietario" name="owner_name" required
-                        minlength="3" maxlength="100">
-                    <span id="error-owner_name" class="error-message">Este campo es obligatorio..</span>
-                </div>
-
-
-                <div class="form-group">
-                    <label for="phone_number">Número de Teléfono</label>
-                    <input type="tel" id="phone" placeholder="Número de Teléfono" name="phone_number" required
-                        pattern="[0-9]{10}">
-                    <small>Formato: 10 dígitos sin espacios ni guiones</small>
-                    <span id="error-phone" class="error-message">Formato de teléfono inválido.</span>
-                </div>
-
-                <div class="form-group">
-                    <label for="business_address">Dirección del negocio</label>
-                    <input type="text" id="address" placeholder="Dirección" name="business_address" required
-                        minlength="5" maxlength="200">
-                    <span id="error-address" class="error-message">Este campo es obligatorio.</span>
-                </div>
-
-                <div class="form-group">
-                    <label for="services_offered">Servicios Ofrecidos</label>
-                    <select id="services_offered" name="services_offered" required>
-                        <option value="">Seleccione un servicio</option>
-                        <option value="Estetica">Estética</option>
-                        <option value="Peluqueria">Peluquería</option>
-                        <option value="Salon">Salón de Belleza</option>
-                    </select>
-                    <span id="error-services_offered" class="error-message">Este campo es obligatorio.</span>
-                </div>
-
-                <div class="form-group">
-                    <label>Horario de servicio</label>
-                    <div class="turno-container">
-                        <div class="turno">
-                            <h4>Primer Turno</h4>
-                            <div class="time-selection">
-                                <label for="opening_time_1">Hora de apertura:</label>
-                                <input type="time" id="opening_time_1" name="opening_time_1" required>
-                                <label for="closing_time_1">Hora de cierre:</label>
-                                <input type="time" id="closing_time_1" name="closing_time_1" required>
-                            </div>
-                            <span id="error-turno_1" class="error-message">El horario no es válido.</span>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="services_offered">
+                    Servicios Ofrecidos
+                </label>
+                <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="services_offered" name="services_offered" required>
+                    <option value="">Seleccione un servicio</option>
+                    <option value="Estetica" {% if session.get('servicios_ofrecidos') == 'Estetica' %}selected{% endif %}>Estética</option>
+                    <option value="Peluqueria" {% if session.get('servicios_ofrecidos') == 'Peluqueria' %}selected{% endif %}>Peluquería</option>
+                    <option value="Salon" {% if session.get('servicios_ofrecidos') == 'Salon' %}selected{% endif %}>Salón de Belleza</option>
+                </select>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">
+                    Horario de Servicio
+                </label>
+                <div class="flex flex-wrap -mx-2">
+                    <div class="w-full md:w-1/2 px-2 mb-4 md:mb-0">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="opening_time_1">
+                            Primer Turno:
+                        </label>
+                        <div class="flex">
+                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-2" type="time" id="opening_time_1" name="opening_time_1" value="{{ session.get('horas_trabajo', {}).get('turno_1', '').split(' - ')[0] }}" required>
+                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="time" id="closing_time_1" name="closing_time_1" value="{{ session.get('horas_trabajo', {}).get('turno_1', '').split(' - ')[1] }}" required>
                         </div>
-                        <div class="turno">
-                            <h4>Segundo Turno</h4>
-                            <div class="time-selection">
-                                <label for="opening_time_2">Hora de apertura:</label>
-                                <input type="time" id="opening_time_2" name="opening_time_2">
-                                <label for="closing_time_2">Hora de cierre:</label>
-                                <input type="time" id="closing_time_2" name="closing_time_2">
-                            </div>
-                            <span id="error-turno_2" class="error-message">El horario no es válido.</span>
+                    </div>
+                    <div class="w-full md:w-1/2 px-2">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="opening_time_2">
+                            Segundo Turno (opcional):
+                        </label>
+                        <div class="flex">
+                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-2" type="time" id="opening_time_2" name="opening_time_2" value="{{ session.get('horas_trabajo', {}).get('turno_2', '').split(' - ')[0] }}">
+                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="time" id="closing_time_2" name="closing_time_2" value="{{ session.get('horas_trabajo', {}).get('turno_2', '').split(' - ')[1] }}">
                         </div>
                     </div>
                 </div>
+            </div>
+            
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="profile-image-upload">
+                    Foto de Perfil
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="file" id="profile-image-upload" name="profile-image-upload" accept="image/*">
+                <div id="profile-image-preview" class="flex flex-wrap mt-2">
+                    {% if session.get('perfiles_imagenes') %}
+                        <img src="{{ session.get('perfiles_imagenes') }}" alt="Foto de perfil actual" class="w-24 h-24 object-cover rounded mr-2 mb-2">
+                    {% endif %}
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="business-image-upload">
+                        Imágenes del negocio (Proximamente)
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight bg-gray-200 cursor-not-allowed" type="file" id="business-image-upload" name="business-image-upload[]" accept="image/*" multiple disabled>
+                    <p class="text-sm text-gray-500 mt-1">La carga de imágenes está actualmente deshabilitada.</p>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="service-image-upload">
+                        Imágenes de servicios (Proximamente)
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight bg-gray-200 cursor-not-allowed" type="file" id="service-image-upload" name="service-image-upload[]" accept="image/*" multiple disabled>
+                    <p class="text-sm text-gray-500 mt-1">La carga de imágenes está actualmente deshabilitada.</p>
+                </div>
+            </div>
 
-                <div class="note">
-                    <p>Mínimo 3 imágenes del negocio</p>
-                </div>
-                <div class="image-upload-container">
-                    <label for="business-image-upload" class="image-upload-label">Imágenes de negocio</label>
-                    <input type="file" id="business-image-upload" name="business-image-upload"
-                        class="image-upload-input" accept="image/*" multiple required>
-                    <div id="business-image-preview" class="image-preview-container"></div>
-                    <span id="error-business-images" class="error-message">Debe subir al menos 3 imágenes.</span>
-                </div>
-
-                <div class="note">
-                    <p>Mínimo 3 imágenes de Servicios</p>
-                </div>
-                <div class="image-upload-container">
-                    <label for="service-image-upload" class="image-upload-label">Imágenes de servicio</label>
-                    <input type="file" id="service-image-upload" name="service-image-upload" class="image-upload-input"
-                        accept="image/*" multiple required>
-                    <div id="service-image-preview" class="image-preview-container"></div>
-                    <span id="error-service-images" class="error-message">Debe subir al menos 3 imágenes.</span>
-                </div>
-
-                <div class="note">
-                    <p>Mínimo una Imagen para foto del perfil del negocio</p>
-                </div>
-                <div class="image-upload-container">
-                    <label for="profile-image-upload" class="image-upload-label">Foto de Perfil</label>
-                    <input type="file" id="profile-image-upload" name="profile-image-upload" class="image-upload-input"
-                        accept="image/*" required>
-                    <div id="profile-image-preview" class="image-preview-container"></div>
-                    <span id="error-profile-image" class="error-message">Debe subir una imagen de perfil.</span>
-                </div>
-
-                <div class="note-register">
-                    <p>Nota: Este negocio está registrado por Google Maps.</p>
-                </div>
-
-                <div class="terms-container">
-                    <input type="checkbox" id="accept-terms" name="accept-terms" required>
-                    <label for="accept-terms">Aceptar Términos y condiciones</label>
-                    <a href="#" class="terms-link">Leer Políticas</a>
-                    <span id="error-accept-terms" class="error-message">Debe aceptar los términos y condiciones.</span>
-                </div>
-
-                <div class="buttons-register">
-                    <button type="submit" id="submit-btn" class="btn-r submit-btn-register">Actualizar</button>
-                </div>
-
+            <div class="flex items-center justify-between">
+                <button class="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                    Actualizar
+                </button>
+                <a href="/perfil" class="bg-red-500 hover:bg-red-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Regresar
+                </a>
+            </div>
         </form>
     </div>
 </div>

@@ -8,6 +8,8 @@ import logging
 import requests
 from validate_email import validate_email
 from datetime import datetime, time, timedelta
+from werkzeug.utils import secure_filename
+import uuid
 
 
 project_folder = os.path.expanduser('~/external')
@@ -357,6 +359,7 @@ def handle_paypal_ipn():
 
     return 'OK'
 
+
 @main.route('/mi_perfil')
 @login_required
 def mi_perfil():
@@ -386,12 +389,70 @@ def mi_perfil():
     session['numero_telefono']= f'{ user_data.get("numero_telefono")}'
     session['postal_code']= f'{ user_data.get("postal_code")}'
 
-
-
     session['perfiles_imagenes']= user_data.get('perfiles_imagenes')
     session['negocios_imagenes']= user_data.get('negocios_imagenes')
     session['servicios_imagenes']= user_data.get('servicios_imagenes')
     
-    return redirect('/profile')
+    return redirect('/perfil')
 
-                                  
+
+
+
+@main.route('/update_business_profile', methods=['POST'])
+@login_required
+def update_business_profile():
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+
+    current_user_data = db.child('Negousers').child(user_id).get().val()
+
+    data = {
+        'nombre_negocio': request.form.get('business_name') or current_user_data.get('nombre_negocio'),
+        'negocio_activo': request.form.get('business_state') == 'activado' if request.form.get('business_state') else current_user_data.get('negocio_activo'),
+        'nombre_propietario': request.form.get('owner_name') or current_user_data.get('nombre_propietario'),
+        'direccion_negocio': request.form.get('business_address') or current_user_data.get('direccion_negocio'),
+        'servicios_ofrecidos': request.form.get('services_offered') or current_user_data.get('servicios_ofrecidos'),
+        'horas_trabajo': current_user_data.get('horas_trabajo', {})
+    }
+
+    if request.form.get('opening_time_1') and request.form.get('closing_time_1'):
+        data['horas_trabajo']['turno_1'] = f"{request.form.get('opening_time_1')} - {request.form.get('closing_time_1')}"
+    if request.form.get('opening_time_2') and request.form.get('closing_time_2'):
+        data['horas_trabajo']['turno_2'] = f"{request.form.get('opening_time_2')} - {request.form.get('closing_time_2')}"
+
+    try:
+        def upload_image_to_firebase(file, folder):
+            if file and file.filename != '':
+                filename = secure_filename(f"{user_id}_{uuid.uuid4()}.jpg")
+                file_path = os.path.join(folder, filename)
+                storage = firebase.storage()
+                storage.child(file_path).put(file)
+                url = storage.child(file_path).get_url(None)
+                return url
+            return None
+        
+        profile_image = request.files.get('profile-image-upload')
+        profile_image_url = upload_image_to_firebase(profile_image, 'perfiles_imagenes') if profile_image else None
+
+        update_data = {
+            'nombre_negocio': data['nombre_negocio'],
+            'negocio_activo': data['negocio_activo'],
+            'nombre_propietario': data['nombre_propietario'],
+            'direccion_negocio': data['direccion_negocio'],
+            'servicios_ofrecidos': data['servicios_ofrecidos'],
+            'horas_trabajo': data['horas_trabajo']
+        }
+
+        if profile_image_url:
+            update_data['perfiles_imagenes'] = profile_image_url
+
+        db.child('Negousers').child(user_id).update(update_data)
+
+        flash('Perfil del negocio actualizado con éxito', 'success')
+        return redirect('/Authentication/mi_perfil')
+    
+    except Exception as e:
+        print(f"Error al actualizar el perfil del negocio: {e}")
+        flash('Error al actualizar el perfil del negocio', 'error')
+        return redirect('/profile')

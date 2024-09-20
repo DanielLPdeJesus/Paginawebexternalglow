@@ -197,7 +197,7 @@ def accepted_reservations(token=None):
                            pages=pages,
                            total=total)
     
-@main.route('/profile')
+@main.route('/perfil')
 @login_required
 def mi_perfil():
     return render_template('Admin/profile.html')

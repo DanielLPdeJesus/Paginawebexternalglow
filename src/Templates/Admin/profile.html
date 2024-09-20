@@ -1,125 +1,100 @@
 {% extends '/Layouts/navbar.html' %}
-{% block title %}Página Administrativa{% endblock %}
+{% block title %}Información del Negocio{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styleInfo.css') }}">
-<div class="content">
-    <div class="agenda">
-        <div class="content-wrapper">
-            <div class="header">
-                <h1>Información del Negocio</h1>
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        
+        <div class="bg-pink-50 p-8 flex flex-col items-center">
+            <div class="w-full flex justify-end mb-4"> <!-- Añado 'justify-end' para mover el botón a la derecha -->
+              <button class="text-white py-3 px-6 uppercase rounded bg-gray-700 hover:bg-gray-800 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5 mt-4">
+                <a href="/update_profile">Editar Perfil</a> 
+              </button>
             </div>
-            <div>
-                <button type="submit" class="btn btn-check"><a href="/update_profile">Enviar</a></button>
+            
+            <div class="w-32 h-32 bg-pink-200 rounded-full flex items-center justify-center mb-4">
+              {% if session.get('perfiles_imagenes') %}
+              <img src="{{ session['perfiles_imagenes'] }}" alt="Foto de perfil" class="w-28 h-28 rounded-full object-cover">
+              {% else %}
+              <svg class="w-16 h-16 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+              </svg>
+              {% endif %}
             </div>
-
-            <div class="profile-details">
-                <div class="profile-pic">
-                    {% if session.get('perfiles_imagenes') %}
-                    <img src="{{ session['perfiles_imagenes'] }}" alt="Foto de perfil">
+            
+            <h1 class="text-2xl font-bold text-gray-800">{{ session['nombre_negocio'] }}</h1>
+            <p class="text-sm text-gray-600 mt-1">{{ session['direccion_negocio'] }}</p>
+            
+            <div class="mt-4 flex space-x-2">
+              <span class="px-3 py-1 bg-{{ 'green' if session.get('negocio_activo') else 'red' }}-100 text-{{ 'green' if session.get('negocio_activo') else 'red' }}-800 rounded-full text-xs font-semibold">
+                {{ 'Activo' if session['negocio_activo'] else 'Inactivo' }}
+              </span>
+              <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">
+                {{ 'Premium' if session['pagado'] else 'Free' }}
+              </span>
+            </div>
+          </div>
+          
+        
+        <div class="p-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-700 mb-2">Información General</h3>
+                    <ul class="space-y-2">
+                        <li><span class="text-gray-600">Propietario:</span> {{ session['nombre_propietario'] }}</li>
+                        <li><span class="text-gray-600">Servicios:</span> {{ session['servicios_ofrecidos'] }}</li>
+                        <li><span class="text-gray-600">Correo:</span> {{ session['correo'] }}</li>
+                        <li><span class="text-gray-600">Teléfono:</span> {{ session['numero_telefono'] }}</li>
+                        <li><span class="text-gray-600">Código Postal:</span> {{ session['postal_code'] }}</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-700 mb-2">Horario de Atención</h3>
+                    {% if session.get('horas_trabajo') %}
+                    <ul class="space-y-2">
+                        <li><span class="text-gray-600">Turno 1:</span> {{ session['horas_trabajo'].get('turno_1') }}</li>
+                        <li><span class="text-gray-600">Turno 2:</span> {{ session['horas_trabajo'].get('turno_2') }}</li>
+                    </ul>
                     {% else %}
-                    <img src="{{ url_for('static', filename='img/default-profile.jpg') }}"
-                        alt="Foto de perfil por defecto">
+                    <p class="text-gray-600">No disponible</p>
                     {% endif %}
                 </div>
-                <div class="profile-info">
-                    <h2>{{ session['nombre_negocio'] }}</h2>
-                    <span class="status {{ 'status-active' if session.get('negocio_activo') else 'status-inactive' }}">
-                        {{ 'true' if session['negocio_activo'] else 'false' }}
-                    </span>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-700 mb-2">Estadísticas</h3>
+                    <ul class="space-y-2">
+                        <li><span class="text-gray-600">Calificación:</span> {{ session['calificacion_promedio'] }}</li>
+                        <li><span class="text-gray-600">Me gusta:</span> {{ session['numero_gustas'] }}</li>
+                        <li><span class="text-gray-600">Reseñas:</span> {{ session['numero_resenas'] }}</li>
+                        <li><span class="text-gray-600">Reservas Aceptadas:</span> {{ session['reservaAcep'] }}</li>
+                        <li><span class="text-gray-600">Reservas Canceladas:</span> {{ session['reservaCancel'] }}</li>
+                    </ul>
                 </div>
             </div>
-            <div class="business-info">
-                <div class="info-column">
-                    <div class="info-item">
-                        <label>Nombre del Propietario</label>
-                        <p>{{ session['nombre_propietario'] }}</p>
-                    </div>
-                    <div class="info-item">
-                        <label>Dirección</label>
-                        <p>{{ session['direccion_negocio'] }}</p>
-                    </div>
-                    <div class="info-item">
-                        <label>Servicios Ofertados</label>
-                        <p>{{ session['servicios_ofrecidos'] }}</p>
-                    </div>
-                    <div class="info-item">
-                        <label>Correo</label>
-                        <p>{{ session['correo'] }}</p>
-                    </div>
-                    <div class="info-item">
-                        <label>Código Postal</label>
-                        <p>{{ session['postal_code'] }}</p>
-                    </div>
-                </div>
-                <div class="info-column">
-                    <div class="info-item">
-                        <label>Número de Teléfono</label>
-                        <p>{{ session['numero_telefono'] }}</p>
-                    </div>
-                    <div class="info-item">
-                        <label>Horario de Atención</label>
-                        <p>
-                            {% if session.get('horas_trabajo') %}
-                            Turno 1: {{ session['horas_trabajo'].get('turno_1') }}<br>
-                            Turno 2: {{ session['horas_trabajo'].get('turno_2') }}
-                            {% else %}
-                            No disponible
-                            {% endif %}
-                        </p>
-                    </div>
-                    <div class="info-item">
-                        <label>Calificación Promedio</label>
-                        <p>{{ session['calificacion_promedio'] }}</p>
-                    </div>
-                    <div class="info-item">
-                        <label>Número de Me Gusta</label>
-                        <p>{{ session['numero_gustas'] }}</p>
-                    </div>
-                    <div class="info-item">
-                        <label>Número de Reseñas</label>
-                        <p>{{ session['numero_resenas'] }}</p>
-                    </div>
-                </div>
-                <div class="info-column">
-                    <div class="info-item">
-                        <label>Reservas Aceptadas</label>
-                        <p>{{ session['reservaAcep'] }}</p>
-                    </div>
-                    <div class="info-item">
-                        <label>Reservas Canceladas</label>
-                        <p>{{ session['reservaCancel'] }}</p>
-                    </div>
-                    <div class="info-item">
-                        <label>Estado del Pago</label>
-                            <p>{{ 'true' if session['pagado'] else 'false' }}</p>
-
-                    </div>
-                </div>
-            </div>
-            <div class="image-galleries">
-                <h3>Imágenes del Negocio</h3>
-                <div class="gallery">
+            
+            <div class="mt-8">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4">Imágenes del Negocio</h3>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     {% if session.get('negocios_imagenes') %}
                     {% for imagen in session.get('negocios_imagenes') %}
-                    <img src="{{ imagen }}" alt="Imagen del Negocio">
+                    <img src="{{ imagen }}" alt="Imagen del Negocio" class="w-full h-32 object-cover rounded-lg">
                     {% endfor %}
                     {% else %}
-                    <p>No hay imágenes del negocio disponibles.</p>
+                    <p class="text-gray-600 col-span-3">No hay imágenes del negocio disponibles.</p>
                     {% endif %}
                 </div>
-                <h3>Imágenes de Servicios</h3>
-                <div class="gallery">
+            </div>
+            
+            <div class="mt-8">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4">Imágenes de Servicios</h3>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     {% if session.get('servicios_imagenes') %}
                     {% for imagen in session.get('servicios_imagenes') %}
-                    <img src="{{ imagen }}" alt="Imagen de Servicios">
+                    <img src="{{ imagen }}" alt="Imagen de Servicios" class="w-full h-32 object-cover rounded-lg">
                     {% endfor %}
                     {% else %}
-                    <p>No hay imágenes de servicios disponibles.</p>
+                    <p class="text-gray-600 col-span-3">No hay imágenes de servicios disponibles.</p>
                     {% endif %}
                 </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}
