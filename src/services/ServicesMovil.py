@@ -439,4 +439,3 @@ def get_business_details(business_id):
         import traceback
         traceback.print_exc()
         return jsonify({"success": False, "message": "Error al obtener los detalles del negocio.", "error": str(e)}), 500
-    

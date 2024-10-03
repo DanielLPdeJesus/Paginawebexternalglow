@@ -97,9 +97,12 @@ def registrarme():
                 "calificacion_promedio": 0,
                 "numero_resenas": 0,
                 "numero_gustas": 0,
+                "no_me_gustas": 0,
+                "numero_gustas": 0,
                 "postal_code": 29950,
                 "reservaCancel": 0,
                 "reservaAcep": 0,
+                "reserva_activo":False,
             }
 
             business_image_urls = []
