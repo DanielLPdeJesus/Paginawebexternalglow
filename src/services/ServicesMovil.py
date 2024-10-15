@@ -38,8 +38,8 @@ db = firebase.database()
 @cross_origin()
 def api_register():
     if request.method == 'POST':
-        data = request.json 
-        
+        data = request.json
+
         full_name = data.get('fullName')
         last_name = data.get('lastName')
         email = data.get('email')
@@ -47,8 +47,8 @@ def api_register():
         gender = data.get('gender')
         birth_date = data.get('birthDate')
         password = data.get('password')
-        profile_image = data.get('profileImage')  
-        
+        profile_image = data.get('profileImage')
+
         if not profile_image:
             return jsonify({
                 "success": False,
@@ -57,15 +57,15 @@ def api_register():
 
         try:
             user = auth.create_user_with_email_and_password(email, password)
-            
+
             auth.send_email_verification(user['idToken'])
-            
+
             image_data = base64.b64decode(profile_image.split(',')[1])
             file_name = f"perfil_usuarios/{user['localId']}.jpg"
             storage = firebase.storage()
             storage.child(file_name).put(image_data)
             profile_image_url = storage.child(file_name).get_url(None)
-            
+
             user_data = {
                 "nombre_usuario": full_name,
                 "apellidos": last_name,
@@ -78,14 +78,14 @@ def api_register():
                 "perfil_usuarios": profile_image_url,
                 "activo": True
             }
-            
+
             db.child('Usuarios').child(user['localId']).set(user_data)
-            
+
             return jsonify({
                 "success": True,
                 "message": "Registro exitoso. Se ha enviado un correo de verificación."
             }), 200
-        
+
         except Exception as e:
             print(f"Error durante el registro: {str(e)}")
             return jsonify({
@@ -102,29 +102,29 @@ def api_register():
 def api_login():
     if request.method == 'POST':
         data = request.json
-        
+
         email = data.get('email')
         password = data.get('password')
-        
+
         try:
             user = auth.sign_in_with_email_and_password(email, password)
-            
+
             user_info = auth.get_account_info(user['idToken'])
-            
+
             if not user_info['users'][0]['emailVerified']:
                 return jsonify({
                     "success": False,
                     "message": "Por favor, verifica tu correo electrónico antes de iniciar sesión."
                 }), 401
-            
+
             user_data = db.child('Usuarios').child(user['localId']).get().val()
-            
+
             if not user_data.get('activo', False):
                 return jsonify({
                     "success": False,
                     "message": "Tu cuenta está inactiva. Por favor, contacta al administrador."
                 }), 403
-            
+
             response_data = {
                 "success": True,
                 "message": "Inicio de sesión exitoso",
@@ -142,16 +142,16 @@ def api_login():
                 },
                 "id_token": user['idToken']
             }
-            
+
             return jsonify(response_data), 200
-            
+
         except Exception as e:
             print(f"Error durante el inicio de sesión: {str(e)}")
             return jsonify({
                 "success": False,
                 "message": "Error durante el inicio de sesión. Por favor, verifica tus credenciales e inténtalo de nuevo.",
             }), 401
-    
+
     return jsonify({"success": False, "message": "Método no permitido"}), 405
 
 
@@ -246,7 +246,7 @@ def update_profile():
     if request.method == 'PUT':
         data = request.json
         user_id = data.get('userId')
-        
+
         if not user_id:
             return jsonify({
                 "success": False,
@@ -255,7 +255,7 @@ def update_profile():
 
         try:
             current_user_data = db.child('Usuarios').child(user_id).get().val()
-            
+
             if not current_user_data:
                 return jsonify({
                     "success": False,
@@ -270,12 +270,12 @@ def update_profile():
                 elif field in current_user_data:
                     user_data[field] = current_user_data[field]
             db.child('Usuarios').child(user_id).update(user_data)
-            
+
             return jsonify({
                 "success": True,
                 "message": "Perfil actualizado exitosamente."
             }), 200
-        
+
         except Exception as e:
             print(f"Error al actualizar el perfil: {str(e)}")
             return jsonify({
@@ -312,24 +312,24 @@ def update_profile_image():
     if file:
         try:
             filename = secure_filename(f"{user_id}_perfil_{uuid.uuid4()}.jpg")
-            
+
             temp_path = os.path.join('/tmp', filename)
             file.save(temp_path)
-            
+
             storage = firebase.storage()
             storage.child(f"perfil_usuarios/{filename}").put(temp_path)
             profile_image_url = storage.child(f"perfil_usuarios/{filename}").get_url(None)
-            
+
             db.child('Usuarios').child(user_id).update({"perfil_usuarios": profile_image_url})
-            
+
             os.remove(temp_path)
-            
+
             return jsonify({
                 "success": True,
                 "message": "Imagen de perfil actualizada exitosamente.",
                 "profile_image_url": profile_image_url
             }), 200
-        
+
         except Exception as e:
             print(f"Error al actualizar la imagen de perfil: {str(e)}")
             return jsonify({
@@ -371,9 +371,9 @@ def get_user_profile():
             "success": False,
             "message": "Error al obtener el perfil del usuario.",
             "error": str(e)
-        }), 500 
-        
-        
+        }), 500
+
+
 @main.route('/api/businesses', methods=['GET'])
 @cross_origin()
 def get_all_businesses():
@@ -390,7 +390,7 @@ def get_all_businesses():
     except Exception as e:
         print(f"Error al obtener los negocios: {str(e)}")
         return jsonify({"success": False, "message": "Error al obtener los negocios.", "error": str(e)}), 500
-    
+
 
 @main.route('/api/business/<string:business_id>', methods=['GET'])
 @cross_origin()
@@ -400,7 +400,7 @@ def get_business_details(business_id):
         if business:
             if business.get('negocio_aceptado', False) is True:
                 business['id'] = business_id
-                
+
                 business_details = {
                     'id': business_id,
                     'business_name': business.get('nombre_negocio'),
@@ -414,9 +414,10 @@ def get_business_details(business_id):
                     'opening_hours': business.get('horas_trabajo', {}),
                     'calificacion_promedio': business.get('calificacion_promedio', 0),
                     'numero_gustas': business.get('numero_gustas', 0),
+                    'no_me_gustas': business.get('no_me_gustas', 0),
                     'numero_resenas': business.get('numero_resenas', 0)
                 }
-                
+
                 # Obtener promociones
                 promotions = db.child('promociones').child(business_id).get().val()
                 active_promotions = []
@@ -425,9 +426,9 @@ def get_business_details(business_id):
                         if promo_data.get('estado') == 'activa' and promo_data.get('activa_movil') == 'true':
                             promo_data['id'] = promo_id
                             active_promotions.append(promo_data)
-                
+
                 business_details['promotions'] = active_promotions
-                
+
                 # Obtener reseñas
                 try:
                     reviews = db.child('Reviews').order_by_child('business_id').equal_to(business_id).get().val()
@@ -440,7 +441,7 @@ def get_business_details(business_id):
                     print(f"Error al obtener reseñas: {str(review_error)}")
                     business_details['reviews'] = []
                     business_details['no_reviews_message'] = "No se pudieron cargar las reseñas en este momento."
-                
+
                 return jsonify({"success": True, "business": business_details}), 200
             else:
                 return jsonify({"success": False, "message": "El negocio no está activo."}), 404
@@ -452,157 +453,48 @@ def get_business_details(business_id):
         traceback.print_exc()
         return jsonify({"success": False, "message": "Error al obtener los detalles del negocio.", "error": str(e)}), 500
 
-@main.route('/api/like', methods=['POST'])
+
+
+@main.route('/api/user-reservations/<string:user_id>', methods=['GET'])
 @cross_origin()
-def like_business():
-    data = request.json
-    business_id = data.get('businessId')
-    user_id = data.get('userId')
-
-    if not business_id or not user_id:
-        return jsonify({"success": False, "message": "Se requieren businessId y userId"}), 400
-
+def get_user_reservations(user_id):
     try:
-        business_ref = db.child('Negousers').child(business_id)
-        interaction_ref = db.child('BusinessInteractions').child(business_id).child(user_id)
+        reservations = db.child('reservaciones').order_by_child('id_usuario').equal_to(user_id).get()
 
-        business_data = business_ref.get().val()
-        interaction_data = interaction_ref.get().val()
-
-        if interaction_data and interaction_data.get('disliked'):
-            business_ref.update({'no_me_gustas': business_data.get('no_me_gustas', 0) - 1})
-
-        if not interaction_data or not interaction_data.get('liked'):
-            business_ref.update({'numero_gustas': business_data.get('numero_gustas', 0) + 1})
-            interaction_ref.set({'liked': True, 'disliked': False})
-        else:
-            business_ref.update({'numero_gustas': max(0, business_data.get('numero_gustas', 0) - 1)})
-            interaction_ref.set({'liked': False, 'disliked': False})
-
-        return jsonify({"success": True, "message": "Interacción actualizada exitosamente"}), 200
-
-    except Exception as e:
-        print(f"Error al actualizar el me gusta: {str(e)}")
-        return jsonify({"success": False, "message": "Error al actualizar la interacción", "error": str(e)}), 500
-
-@main.route('/api/dislike', methods=['POST'])
-@cross_origin()
-def dislike_business():
-    data = request.json
-    business_id = data.get('businessId')
-    user_id = data.get('userId')
-
-    if not business_id or not user_id:
-        return jsonify({"success": False, "message": "Se requieren businessId y userId"}), 400
-
-    try:
-        business_ref = db.child('Negousers').child(business_id)
-        interaction_ref = db.child('BusinessInteractions').child(business_id).child(user_id)
-
-        business_data = business_ref.get().val()
-        interaction_data = interaction_ref.get().val()
-
-        if interaction_data and interaction_data.get('liked'):
-            business_ref.update({'numero_gustas': max(0, business_data.get('numero_gustas', 0) - 1)})
-
-        if not interaction_data or not interaction_data.get('disliked'):
-            business_ref.update({'no_me_gustas': business_data.get('no_me_gustas', 0) + 1})
-            interaction_ref.set({'liked': False, 'disliked': True})
-        else:
-            business_ref.update({'no_me_gustas': max(0, business_data.get('no_me_gustas', 0) - 1)})
-            interaction_ref.set({'liked': False, 'disliked': False})
-
-        return jsonify({"success": True, "message": "Interacción actualizada exitosamente"}), 200
-
-    except Exception as e:
-        print(f"Error al actualizar el no me gusta: {str(e)}")
-        return jsonify({"success": False, "message": "Error al actualizar la interacción", "error": str(e)}), 500
-
-@main.route('/api/comment', methods=['POST'])
-@cross_origin()
-def add_comment():
-    data = request.json
-    business_id = data.get('businessId')
-    user_id = data.get('userId')
-    comment = data.get('comment')
-
-    if not business_id or not user_id or not comment:
-        return jsonify({"success": False, "message": "Se requieren businessId, userId y comment"}), 400
-
-    try:
-        business_ref = db.child('Negousers').child(business_id)
-        comments_ref = db.child('BusinessComments').child(business_id)
-        user_ref = db.child('Usuarios').child(user_id)
-
-        user_data = user_ref.get().val()
-        if not user_data:
-            return jsonify({"success": False, "message": "Usuario no encontrado"}), 404
-
-        new_comment = {
-            'userId': user_id,
-            'userName': user_data.get('nombre_usuario', 'Usuario Anónimo'),
-            'comment': comment,
-            'timestamp': datetime.now().isoformat()
-        }
-
-        new_comment_ref = comments_ref.push(new_comment)
-
-        business_data = business_ref.get().val()
-        current_reviews = business_data.get('numero_resenas', 0)
-        business_ref.update({'numero_resenas': current_reviews + 1})
+        reservation_list = []
+        if reservations.each():
+            for reservation in reservations.each():
+                reservation_data = reservation.val()
+                reservation_data['id'] = reservation.key()
+                reservation_list.append(reservation_data)
 
         return jsonify({
             "success": True,
-            "message": "Comentario agregado exitosamente",
-            "commentId": new_comment_ref['name']
+            "reservations": reservation_list
         }), 200
-
     except Exception as e:
-        print(f"Error al agregar el comentario: {str(e)}")
-        return jsonify({"success": False, "message": "Error al agregar el comentario", "error": str(e)}), 500
-
-@main.route('/api/get-interactions', methods=['GET'])
-@cross_origin()
-def get_interactions():
-    business_id = request.args.get('businessId')
-    user_id = request.args.get('userId')
-
-    if not business_id or not user_id:
-        return jsonify({"success": False, "message": "Se requieren businessId y userId"}), 400
-
-    try:
-        interaction_ref = db.child('BusinessInteractions').child(business_id).child(user_id)
-        interaction_data = interaction_ref.get().val()
-
-        if interaction_data is None:
-            interaction_data = {'liked': False, 'disliked': False}
-
+        print(f"Error al obtener las reservaciones del usuario: {str(e)}")
         return jsonify({
-            "success": True,
-            "interactions": interaction_data
-        }), 200
+            "success": False,
+            "message": "Error al obtener las reservaciones del usuario.",
+            "error": str(e)
+        }), 500
 
-    except Exception as e:
-        print(f"Error al obtener las interacciones: {str(e)}")
-        return jsonify({"success": False, "message": "Error al obtener las interacciones", "error": str(e)}), 500
-    
-    
-    
-    
-    
+
+
 @main.route('/api/promotions/<string:business_id>', methods=['GET'])
 @cross_origin()
 def get_business_promotions(business_id):
     try:
         promotions = db.child('promociones').child(business_id).get().val()
-        
+
         if promotions:
             active_promotions = []
             for promo_id, promo_data in promotions.items():
                 if promo_data.get('estado') == 'activa' and promo_data.get('activa_movil') == 'true':
                     promo_data['id'] = promo_id
                     active_promotions.append(promo_data)
-            
+
             return jsonify({
                 "success": True,
                 "promotions": active_promotions
