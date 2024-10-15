@@ -417,6 +417,18 @@ def get_business_details(business_id):
                     'numero_resenas': business.get('numero_resenas', 0)
                 }
                 
+                # Obtener promociones
+                promotions = db.child('promociones').child(business_id).get().val()
+                active_promotions = []
+                if promotions:
+                    for promo_id, promo_data in promotions.items():
+                        if promo_data.get('estado') == 'activa' and promo_data.get('activa_movil') == 'true':
+                            promo_data['id'] = promo_id
+                            active_promotions.append(promo_data)
+                
+                business_details['promotions'] = active_promotions
+                
+                # Obtener reseñas
                 try:
                     reviews = db.child('Reviews').order_by_child('business_id').equal_to(business_id).get().val()
                     if reviews:
@@ -439,3 +451,171 @@ def get_business_details(business_id):
         import traceback
         traceback.print_exc()
         return jsonify({"success": False, "message": "Error al obtener los detalles del negocio.", "error": str(e)}), 500
+
+@main.route('/api/like', methods=['POST'])
+@cross_origin()
+def like_business():
+    data = request.json
+    business_id = data.get('businessId')
+    user_id = data.get('userId')
+
+    if not business_id or not user_id:
+        return jsonify({"success": False, "message": "Se requieren businessId y userId"}), 400
+
+    try:
+        business_ref = db.child('Negousers').child(business_id)
+        interaction_ref = db.child('BusinessInteractions').child(business_id).child(user_id)
+
+        business_data = business_ref.get().val()
+        interaction_data = interaction_ref.get().val()
+
+        if interaction_data and interaction_data.get('disliked'):
+            business_ref.update({'no_me_gustas': business_data.get('no_me_gustas', 0) - 1})
+
+        if not interaction_data or not interaction_data.get('liked'):
+            business_ref.update({'numero_gustas': business_data.get('numero_gustas', 0) + 1})
+            interaction_ref.set({'liked': True, 'disliked': False})
+        else:
+            business_ref.update({'numero_gustas': max(0, business_data.get('numero_gustas', 0) - 1)})
+            interaction_ref.set({'liked': False, 'disliked': False})
+
+        return jsonify({"success": True, "message": "Interacción actualizada exitosamente"}), 200
+
+    except Exception as e:
+        print(f"Error al actualizar el me gusta: {str(e)}")
+        return jsonify({"success": False, "message": "Error al actualizar la interacción", "error": str(e)}), 500
+
+@main.route('/api/dislike', methods=['POST'])
+@cross_origin()
+def dislike_business():
+    data = request.json
+    business_id = data.get('businessId')
+    user_id = data.get('userId')
+
+    if not business_id or not user_id:
+        return jsonify({"success": False, "message": "Se requieren businessId y userId"}), 400
+
+    try:
+        business_ref = db.child('Negousers').child(business_id)
+        interaction_ref = db.child('BusinessInteractions').child(business_id).child(user_id)
+
+        business_data = business_ref.get().val()
+        interaction_data = interaction_ref.get().val()
+
+        if interaction_data and interaction_data.get('liked'):
+            business_ref.update({'numero_gustas': max(0, business_data.get('numero_gustas', 0) - 1)})
+
+        if not interaction_data or not interaction_data.get('disliked'):
+            business_ref.update({'no_me_gustas': business_data.get('no_me_gustas', 0) + 1})
+            interaction_ref.set({'liked': False, 'disliked': True})
+        else:
+            business_ref.update({'no_me_gustas': max(0, business_data.get('no_me_gustas', 0) - 1)})
+            interaction_ref.set({'liked': False, 'disliked': False})
+
+        return jsonify({"success": True, "message": "Interacción actualizada exitosamente"}), 200
+
+    except Exception as e:
+        print(f"Error al actualizar el no me gusta: {str(e)}")
+        return jsonify({"success": False, "message": "Error al actualizar la interacción", "error": str(e)}), 500
+
+@main.route('/api/comment', methods=['POST'])
+@cross_origin()
+def add_comment():
+    data = request.json
+    business_id = data.get('businessId')
+    user_id = data.get('userId')
+    comment = data.get('comment')
+
+    if not business_id or not user_id or not comment:
+        return jsonify({"success": False, "message": "Se requieren businessId, userId y comment"}), 400
+
+    try:
+        business_ref = db.child('Negousers').child(business_id)
+        comments_ref = db.child('BusinessComments').child(business_id)
+        user_ref = db.child('Usuarios').child(user_id)
+
+        user_data = user_ref.get().val()
+        if not user_data:
+            return jsonify({"success": False, "message": "Usuario no encontrado"}), 404
+
+        new_comment = {
+            'userId': user_id,
+            'userName': user_data.get('nombre_usuario', 'Usuario Anónimo'),
+            'comment': comment,
+            'timestamp': datetime.now().isoformat()
+        }
+
+        new_comment_ref = comments_ref.push(new_comment)
+
+        business_data = business_ref.get().val()
+        current_reviews = business_data.get('numero_resenas', 0)
+        business_ref.update({'numero_resenas': current_reviews + 1})
+
+        return jsonify({
+            "success": True,
+            "message": "Comentario agregado exitosamente",
+            "commentId": new_comment_ref['name']
+        }), 200
+
+    except Exception as e:
+        print(f"Error al agregar el comentario: {str(e)}")
+        return jsonify({"success": False, "message": "Error al agregar el comentario", "error": str(e)}), 500
+
+@main.route('/api/get-interactions', methods=['GET'])
+@cross_origin()
+def get_interactions():
+    business_id = request.args.get('businessId')
+    user_id = request.args.get('userId')
+
+    if not business_id or not user_id:
+        return jsonify({"success": False, "message": "Se requieren businessId y userId"}), 400
+
+    try:
+        interaction_ref = db.child('BusinessInteractions').child(business_id).child(user_id)
+        interaction_data = interaction_ref.get().val()
+
+        if interaction_data is None:
+            interaction_data = {'liked': False, 'disliked': False}
+
+        return jsonify({
+            "success": True,
+            "interactions": interaction_data
+        }), 200
+
+    except Exception as e:
+        print(f"Error al obtener las interacciones: {str(e)}")
+        return jsonify({"success": False, "message": "Error al obtener las interacciones", "error": str(e)}), 500
+    
+    
+    
+    
+    
+@main.route('/api/promotions/<string:business_id>', methods=['GET'])
+@cross_origin()
+def get_business_promotions(business_id):
+    try:
+        promotions = db.child('promociones').child(business_id).get().val()
+        
+        if promotions:
+            active_promotions = []
+            for promo_id, promo_data in promotions.items():
+                if promo_data.get('estado') == 'activa' and promo_data.get('activa_movil') == 'true':
+                    promo_data['id'] = promo_id
+                    active_promotions.append(promo_data)
+            
+            return jsonify({
+                "success": True,
+                "promotions": active_promotions
+            }), 200
+        else:
+            return jsonify({
+                "success": True,
+                "promotions": []
+            }), 200
+    except Exception as e:
+        print(f"Error al obtener las promociones: {str(e)}")
+        return jsonify({
+            "success": False,
+            "message": "Error al obtener las promociones",
+            "error": str(e)
+        }), 500
