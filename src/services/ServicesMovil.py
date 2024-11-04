@@ -383,7 +383,8 @@ def get_all_businesses():
         if businesses.each():
             for business in businesses.each():
                 business_data = business.val()
-                if business_data.get('negocio_aceptado', False) is True:
+                if (business_data.get('negocio_aceptado', False) is True and
+                    business_data.get('negocio_activo', False) is True):
                     business_data['id'] = business.key()
                     business_list.append(business_data)
         return jsonify({"success": True, "businesses": business_list}), 200
@@ -455,32 +456,6 @@ def get_business_details(business_id):
 
 
 
-@main.route('/api/user-reservations/<string:user_id>', methods=['GET'])
-@cross_origin()
-def get_user_reservations(user_id):
-    try:
-        reservations = db.child('reservaciones').order_by_child('id_usuario').equal_to(user_id).get()
-
-        reservation_list = []
-        if reservations.each():
-            for reservation in reservations.each():
-                reservation_data = reservation.val()
-                reservation_data['id'] = reservation.key()
-                reservation_list.append(reservation_data)
-
-        return jsonify({
-            "success": True,
-            "reservations": reservation_list
-        }), 200
-    except Exception as e:
-        print(f"Error al obtener las reservaciones del usuario: {str(e)}")
-        return jsonify({
-            "success": False,
-            "message": "Error al obtener las reservaciones del usuario.",
-            "error": str(e)
-        }), 500
-
-
 
 @main.route('/api/promotions/<string:business_id>', methods=['GET'])
 @cross_origin()
@@ -509,5 +484,59 @@ def get_business_promotions(business_id):
         return jsonify({
             "success": False,
             "message": "Error al obtener las promociones",
+            "error": str(e)
+        }), 500
+        
+        
+
+@main.route('/api/user-reservations/<string:user_id>', methods=['GET'])
+@cross_origin()
+def get_user_reservations(user_id):
+    try:
+        # Usar shallow=True para obtener solo las claves primero
+        all_reservations_ref = db.child('reservaciones')
+        all_reservations = all_reservations_ref.get()
+        
+        user_reservations = []
+        
+        if all_reservations.each():
+            for reservation_snapshot in all_reservations.each():
+                # Obtener cada reservación individualmente para evitar caché
+                reservation_data = db.child('reservaciones').child(reservation_snapshot.key()).get().val()
+                
+                if reservation_data and reservation_data.get('id_usuario') == user_id:
+                    # Crear un nuevo diccionario con los datos
+                    formatted_reservation = {
+                        "comentarios": reservation_data.get('comentarios', ''),
+                        "comentariosnego": reservation_data.get('comentariosnego', ''),
+                        "estado": reservation_data.get('estado', ''),
+                        "fecha": reservation_data.get('fecha', ''),
+                        "fecha_actualizacion": reservation_data.get('fecha_actualizacion', ''),
+                        "fecha_creacion": reservation_data.get('fecha_creacion', ''),
+                        "hora_seleccionada": reservation_data.get('hora_seleccionada', ''),
+                        "id_negocio": reservation_data.get('id_negocio', ''),
+                        "id_usuario": reservation_data.get('id_usuario', ''),
+                        "imagen_url": reservation_data.get('imagen_url', ''),
+                        "peticion": reservation_data.get('peticion', ''),
+                        "tipo_de_servicio": reservation_data.get('tipo_de_servicio', '')
+                    }
+                    user_reservations.append(formatted_reservation)
+
+        # Agregar headers para evitar caché
+        response = jsonify({
+            "success": True,
+            "reservations": user_reservations
+        })
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+        
+        return response, 200
+
+    except Exception as e:
+        print(f"Error al obtener las reservaciones del usuario: {str(e)}")
+        return jsonify({
+            "success": False,
+            "message": "Error al obtener las reservaciones del usuario.",
             "error": str(e)
         }), 500
