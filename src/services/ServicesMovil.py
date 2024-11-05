@@ -457,6 +457,7 @@ def get_business_details(business_id):
 
 
 
+
 @main.route('/api/promotions/<string:business_id>', methods=['GET'])
 @cross_origin()
 def get_business_promotions(business_id):
@@ -486,8 +487,8 @@ def get_business_promotions(business_id):
             "message": "Error al obtener las promociones",
             "error": str(e)
         }), 500
-        
-        
+
+
 
 @main.route('/api/user-reservations/<string:user_id>', methods=['GET'])
 @cross_origin()
@@ -496,17 +497,18 @@ def get_user_reservations(user_id):
         # Usar shallow=True para obtener solo las claves primero
         all_reservations_ref = db.child('reservaciones')
         all_reservations = all_reservations_ref.get()
-        
+
         user_reservations = []
-        
+
         if all_reservations.each():
             for reservation_snapshot in all_reservations.each():
                 # Obtener cada reservación individualmente para evitar caché
                 reservation_data = db.child('reservaciones').child(reservation_snapshot.key()).get().val()
-                
+
+                # En get_user_reservations, modifica el formatted_reservation para incluir el ID
                 if reservation_data and reservation_data.get('id_usuario') == user_id:
-                    # Crear un nuevo diccionario con los datos
                     formatted_reservation = {
+                        "id": reservation_snapshot.key(),  # Añade esta línea para incluir el ID
                         "comentarios": reservation_data.get('comentarios', ''),
                         "comentariosnego": reservation_data.get('comentariosnego', ''),
                         "estado": reservation_data.get('estado', ''),
@@ -530,7 +532,7 @@ def get_user_reservations(user_id):
         response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
         response.headers["Pragma"] = "no-cache"
         response.headers["Expires"] = "0"
-        
+
         return response, 200
 
     except Exception as e:
@@ -538,5 +540,47 @@ def get_user_reservations(user_id):
         return jsonify({
             "success": False,
             "message": "Error al obtener las reservaciones del usuario.",
+            "error": str(e)
+        }), 500
+
+@main.route('/api/cancel-reservation/<string:reservation_id>', methods=['PUT'])
+@cross_origin()
+def cancel_reservation(reservation_id):
+    try:
+        data = request.json
+        user_id = data.get('userId')
+        token = data.get('token')  # Obtener el token del body
+
+        if not user_id:
+            return jsonify({
+                "success": False,
+                "message": "Usuario no autenticado."
+            }), 401
+
+        try:
+            # Actualizar el estado sin verificación adicional
+            db.child('reservaciones').child(reservation_id).update({
+                'estado': 'cancelado',
+                'fecha_actualizacion': datetime.now().isoformat()
+            })
+
+            return jsonify({
+                "success": True,
+                "message": "Reservación cancelada exitosamente."
+            }), 200
+
+        except Exception as e:
+            print(f"Error al actualizar la reservación: {str(e)}")
+            return jsonify({
+                "success": False,
+                "message": "Error al cancelar la reservación.",
+                "error": str(e)
+            }), 500
+
+    except Exception as e:
+        print(f"Error general: {str(e)}")
+        return jsonify({
+            "success": False,
+            "message": "Error al procesar la solicitud.",
             "error": str(e)
         }), 500
