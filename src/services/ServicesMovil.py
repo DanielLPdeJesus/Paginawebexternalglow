@@ -6,6 +6,7 @@ from flask_cors import CORS, cross_origin
 import logging
 import uuid
 import base64
+import requests
 from werkzeug.utils import secure_filename
 from datetime import datetime
 
@@ -584,3 +585,95 @@ def cancel_reservation(reservation_id):
             "message": "Error al procesar la solicitud.",
             "error": str(e)
         }), 500
+        
+        
+        
+@main.route('/api/process-hairstyle', methods=['POST'])
+@cross_origin()
+def process_hairstyle():
+    try:
+        data = request.json
+        base64_image = data.get('image')
+        hair_style = data.get('hair_style')
+        user_id = data.get('userId')
+
+        if not all([base64_image, hair_style, user_id]):
+            return jsonify({
+                "success": False,
+                "message": "Faltan datos requeridos"
+            }), 400
+
+        # Guardar la imagen base64 como archivo temporal
+        image_data = base64.b64decode(base64_image.split(',')[1])
+        temp_path = f"/tmp/{user_id}_temp.jpg"
+        with open(temp_path, 'wb') as f:
+            f.write(image_data)
+
+        # Llamar a la API de hairstyle
+        url = "https://www.ailabapi.com/api/portrait/effects/hairstyle-editor-pro"
+        api_key = 'SoAgTaxfJcsb5fYtGl87WpEvnC1e66rKihVmPgsiD1Ijezn4jJESXbPwLOyZy4Zo'
+        payload = {'task_type': 'async', 'auto': '1', 'hair_style': hair_style}
+        files = [('image', ('file', open(temp_path, 'rb'), 'application/octet-stream'))]
+        headers = {'ailabapi-api-key': api_key}
+
+        response = requests.post(url, headers=headers, data=payload, files=files)
+        os.remove(temp_path)  # Limpiar archivo temporal
+
+        if response.status_code == 200:
+            task_data = response.json()
+            return jsonify({
+                "success": True,
+                "task_id": task_data.get('task_id')
+            }), 200
+        else:
+            return jsonify({
+                "success": False,
+                "message": "Error al procesar la imagen"
+            }), 400
+
+    except Exception as e:
+        print(f"Error en process_hairstyle: {str(e)}")
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
+
+@main.route('/api/check-hairstyle-status/<task_id>', methods=['GET'])
+@cross_origin()
+def check_hairstyle_status(task_id):
+    try:
+        url = "https://www.ailabapi.com/api/common/query-async-task-result"
+        headers = {'ailabapi-api-key': 'SoAgTaxfJcsb5fYtGl87WpEvnC1e66rKihVmPgsiD1Ijezn4jJESXbPwLOyZy4Zo'}
+        params = {'task_id': task_id}
+        
+        response = requests.get(url, headers=headers, params=params)
+        
+        if response.status_code == 200:
+            result = response.json()
+            
+            # Si el procesamiento está completo, guardar la imagen en Firebase
+            if result.get('task_status') == 2 and result.get('data', {}).get('images'):
+                image_url = result['data']['images'][0]
+                # Descargar la imagen y guardarla en Firebase
+                image_response = requests.get(image_url)
+                if image_response.status_code == 200:
+                    storage = firebase.storage()
+                    file_name = f"hairstyles/{task_id}.jpg"
+                    storage.child(file_name).put(image_response.content)
+                    firebase_url = storage.child(file_name).get_url(None)
+                    result['firebase_url'] = firebase_url
+
+            return jsonify(result), 200
+        
+        return jsonify({
+            "success": False,
+            "message": "Error al verificar el estado"
+        }), 400
+
+    except Exception as e:
+        print(f"Error en check_hairstyle_status: {str(e)}")
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
+        
