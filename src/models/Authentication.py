@@ -47,6 +47,7 @@ def registrarme():
         password = request.form['password']
         phone_number = request.form['phone_number']
         business_address = request.form['business_address']
+        plus_code = request.form['plus_code']
         services_offered = request.form['services_offered']
         
         # Nuevo manejo de horarios
@@ -86,6 +87,7 @@ def registrarme():
                 "correo": email,
                 "numero_telefono": phone_number,
                 "direccion_negocio": business_address,
+                "plus_code": plus_code,
                 "servicios_ofrecidos": services_offered,
                 "horas_trabajo": opening_hours,
                 "rol": "cliente",
