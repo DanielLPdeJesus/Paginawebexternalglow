@@ -899,3 +899,219 @@ def fix_review_counts():
             "success": False,
             "message": str(e)
         }), 500
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@main.route('/api/business-interactions', methods=['POST'])
+@cross_origin()
+def update_business_interaction():
+    try:
+        data = request.json
+        business_id = data.get('business_id')
+        user_id = data.get('user_id')
+        interaction_type = data.get('type')
+
+        if not all([business_id, user_id, interaction_type]):
+            return jsonify({
+                "success": False,
+                "message": "Faltan datos requeridos"
+            }), 400
+
+        # 1. Obtener datos actuales del negocio
+        business_ref = db.child('Negousers').child(business_id)
+        business_data = business_ref.get().val()
+
+        if not business_data:
+            return jsonify({
+                "success": False,
+                "message": "Negocio no encontrado"
+            }), 404
+
+        # Asegurar que los contadores existan y sean números
+        current_likes = int(business_data.get('numero_gustas', 0))
+        current_dislikes = int(business_data.get('no_me_gustas', 0))
+
+        # 2. Buscar interacción existente
+        existing_interaction = None
+        interactions = db.child('BusinessInteractions').get()
+
+        if interactions.each():
+            for interaction in interactions.each():
+                interaction_data = interaction.val()
+                if (interaction_data.get('business_id') == business_id and
+                    interaction_data.get('user_id') == user_id):
+                    existing_interaction = {
+                        'id': interaction.key(),
+                        'data': interaction_data
+                    }
+                    break
+
+        try:
+            # 3. Procesar la interacción y actualizar contadores
+            if interaction_type == 'remove':
+                if existing_interaction:
+                    # Eliminar la interacción existente
+                    db.child('BusinessInteractions').child(existing_interaction['id']).remove()
+
+                    # Actualizar contador según el tipo anterior
+                    if existing_interaction['data']['type'] == 'like':
+                        db.child('Negousers').child(business_id).update({
+                            'numero_gustas': max(0, current_likes - 1)
+                        })
+                    else:
+                        db.child('Negousers').child(business_id).update({
+                            'no_me_gustas': max(0, current_dislikes - 1)
+                        })
+            else:
+                # Datos de la nueva interacción
+                new_interaction_data = {
+                    'business_id': business_id,
+                    'user_id': user_id,
+                    'type': interaction_type,
+                    'created_at': datetime.now().isoformat()
+                }
+
+                if existing_interaction:
+                    old_type = existing_interaction['data']['type']
+                    # Actualizar la interacción existente
+                    db.child('BusinessInteractions').child(existing_interaction['id']).update(new_interaction_data)
+
+                    # Actualizar contadores si el tipo cambió
+                    if old_type != interaction_type:
+                        if old_type == 'like':
+                            db.child('Negousers').child(business_id).update({
+                                'numero_gustas': max(0, current_likes - 1),
+                                'no_me_gustas': current_dislikes + 1
+                            })
+                        else:
+                            db.child('Negousers').child(business_id).update({
+                                'no_me_gustas': max(0, current_dislikes - 1),
+                                'numero_gustas': current_likes + 1
+                            })
+                else:
+                    # Crear nueva interacción
+                    db.child('BusinessInteractions').push(new_interaction_data)
+
+                    # Incrementar el contador correspondiente
+                    if interaction_type == 'like':
+                        db.child('Negousers').child(business_id).update({
+                            'numero_gustas': current_likes + 1
+                        })
+                    else:
+                        db.child('Negousers').child(business_id).update({
+                            'no_me_gustas': current_dislikes + 1
+                        })
+
+            # 4. Obtener y retornar datos actualizados
+            updated_business = business_ref.get().val()
+
+            return jsonify({
+                "success": True,
+                "message": "Interacción actualizada exitosamente",
+                "data": {
+                    "numero_gustas": int(updated_business.get('numero_gustas', 0)),
+                    "no_me_gustas": int(updated_business.get('no_me_gustas', 0))
+                }
+            }), 200
+
+        except Exception as update_error:
+            print(f"Error en la actualización: {str(update_error)}")
+            return jsonify({
+                "success": False,
+                "message": f"Error al actualizar los contadores: {str(update_error)}"
+            }), 500
+
+    except Exception as e:
+        print(f"Error general: {str(e)}")
+        return jsonify({
+            "success": False,
+            "message": f"Error al procesar la interacción: {str(e)}"
+        }), 500
+
+# Endpoint para corregir/inicializar contadores
+@main.route('/api/fix-interaction-counts', methods=['POST'])
+@cross_origin()
+def fix_interaction_counts():
+    try:
+        # Obtener todos los negocios
+        businesses = db.child('Negousers').get()
+
+        for business in businesses.each():
+            business_id = business.key()
+
+            # Contar likes y dislikes
+            likes = 0
+            dislikes = 0
+
+            interactions = db.child('BusinessInteractions').get()
+            if interactions.each():
+                for interaction in interactions.each():
+                    interaction_data = interaction.val()
+                    if interaction_data.get('business_id') == business_id:
+                        if interaction_data.get('type') == 'like':
+                            likes += 1
+                        elif interaction_data.get('type') == 'dislike':
+                            dislikes += 1
+
+            # Actualizar contadores
+            db.child('Negousers').child(business_id).update({
+                'numero_gustas': likes,
+                'no_me_gustas': dislikes
+            })
+
+        return jsonify({
+            "success": True,
+            "message": "Contadores actualizados correctamente"
+        }), 200
+
+    except Exception as e:
+        print(f"Error fixing counters: {str(e)}")
+        return jsonify({
+            "success": False,
+            "message": f"Error al actualizar contadores: {str(e)}"
+        }), 500
+
+
+
+@main.route('/api/business-interactions/<string:business_id>/<string:user_id>', methods=['GET'])
+@cross_origin()
+def get_business_interaction(business_id, user_id):
+    try:
+        # Buscar la interacción de manera más simple
+        interactions = db.child('BusinessInteractions').get()
+
+        user_interaction = None
+        if interactions.each():
+            for interaction in interactions.each():
+                interaction_data = interaction.val()
+                if (interaction_data.get('business_id') == business_id and
+                    interaction_data.get('user_id') == user_id):
+                    user_interaction = {
+                        'id': interaction.key(),
+                        'type': interaction_data.get('type')
+                    }
+                    break
+
+        return jsonify({
+            "success": True,
+            "interaction": user_interaction
+        }), 200
+
+    except Exception as e:
+        print(f"Error getting interaction: {str(e)}")
+        return jsonify({
+            "success": False,
+            "message": "Error al obtener la interacción",
+            "error": str(e)
+        }), 500
