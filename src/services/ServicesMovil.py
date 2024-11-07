@@ -407,6 +407,7 @@ def get_business_details(business_id):
                     'id': business_id,
                     'business_name': business.get('nombre_negocio'),
                     'business_address': business.get('direccion_negocio'),
+                    'plus_code': business.get('plus_code'),
                     'owner_name': business.get('nombre_propietario'),
                     'email': business.get('correo'),
                     'phone_number': business.get('numero_telefono'),
@@ -585,9 +586,9 @@ def cancel_reservation(reservation_id):
             "message": "Error al procesar la solicitud.",
             "error": str(e)
         }), 500
-        
-        
-        
+
+
+
 @main.route('/api/process-hairstyle', methods=['POST'])
 @cross_origin()
 def process_hairstyle():
@@ -611,7 +612,7 @@ def process_hairstyle():
 
         # Llamar a la API de hairstyle
         url = "https://www.ailabapi.com/api/portrait/effects/hairstyle-editor-pro"
-        api_key = 'SoAgTaxfJcsb5fYtGl87WpEvnC1e66rKihVmPgsiD1Ijezn4jJESXbPwLOyZy4Zo'
+        api_key = '9JVu7RaXNAlQyIrB8c1pPxjAzQEHI6npSihk0BqWTLwvsD3RvMkamZCc9NVy6u8Y'
         payload = {'task_type': 'async', 'auto': '1', 'hair_style': hair_style}
         files = [('image', ('file', open(temp_path, 'rb'), 'application/octet-stream'))]
         headers = {'ailabapi-api-key': api_key}
@@ -643,14 +644,14 @@ def process_hairstyle():
 def check_hairstyle_status(task_id):
     try:
         url = "https://www.ailabapi.com/api/common/query-async-task-result"
-        headers = {'ailabapi-api-key': 'SoAgTaxfJcsb5fYtGl87WpEvnC1e66rKihVmPgsiD1Ijezn4jJESXbPwLOyZy4Zo'}
+        headers = {'ailabapi-api-key': '9JVu7RaXNAlQyIrB8c1pPxjAzQEHI6npSihk0BqWTLwvsD3RvMkamZCc9NVy6u8Y'}
         params = {'task_id': task_id}
-        
+
         response = requests.get(url, headers=headers, params=params)
-        
+
         if response.status_code == 200:
             result = response.json()
-            
+
             # Si el procesamiento está completo, guardar la imagen en Firebase
             if result.get('task_status') == 2 and result.get('data', {}).get('images'):
                 image_url = result['data']['images'][0]
@@ -664,7 +665,7 @@ def check_hairstyle_status(task_id):
                     result['firebase_url'] = firebase_url
 
             return jsonify(result), 200
-        
+
         return jsonify({
             "success": False,
             "message": "Error al verificar el estado"
@@ -676,4 +677,225 @@ def check_hairstyle_status(task_id):
             "success": False,
             "message": str(e)
         }), 500
-        
+
+
+
+
+
+
+
+
+
+
+
+
+# Versión corregida de la API de comentarios
+
+@main.route('/api/comments/<string:business_id>', methods=['GET'])
+@cross_origin()
+def get_business_comments(business_id):
+    try:
+        # Obtener todos los comentarios del negocio
+        comments_ref = db.child('ComentariosUser').order_by_child('business_id').equal_to(business_id).get()
+
+        comments_list = []
+        if comments_ref.each():
+            for comment in comments_ref.each():
+                comment_data = comment.val()
+                # Obtener información del usuario que comentó
+                user_data = db.child('Usuarios').child(comment_data['user_id']).get().val()
+
+                formatted_comment = {
+                    'id': comment.key(),
+                    'comment_text': comment_data.get('comment_text', ''),
+                    'created_at': comment_data.get('created_at', ''),
+                    'user_id': comment_data.get('user_id', ''),
+                    'user_name': f"{user_data.get('nombre_usuario', '')} {user_data.get('apellidos', '')}",
+                    'user_image': user_data.get('perfil_usuarios', ''),
+                    'business_id': comment_data.get('business_id', '')
+                }
+                comments_list.append(formatted_comment)
+
+        # Ordenar comentarios por fecha de creación (más recientes primero)
+        comments_list.sort(key=lambda x: x['created_at'], reverse=True)
+
+        return jsonify({
+            "success": True,
+            "comments": comments_list
+        }), 200
+
+    except Exception as e:
+        print(f"Error al obtener los comentarios: {str(e)}")
+        return jsonify({
+            "success": False,
+            "message": "Error al obtener los comentarios.",
+            "error": str(e)
+        }), 500
+
+@main.route('/api/comments', methods=['POST'])
+@cross_origin()
+def add_comment():
+    if request.method == 'POST':
+        try:
+            data = request.json
+            business_id = data.get('business_id')
+            user_id = data.get('user_id')
+            comment_text = data.get('comment_text')
+
+            if not all([business_id, user_id, comment_text]):
+                return jsonify({
+                    "success": False,
+                    "message": "Faltan datos requeridos."
+                }), 400
+
+            # Verificar y obtener datos del negocio primero
+            business_ref = db.child('Negousers').child(business_id)
+            business_data = business_ref.get().val()
+
+            if not business_data:
+                return jsonify({
+                    "success": False,
+                    "message": "Negocio no encontrado."
+                }), 404
+
+            # Crear el comentario
+            comment_data = {
+                'business_id': business_id,
+                'user_id': user_id,
+                'comment_text': comment_text,
+                'created_at': datetime.now().isoformat(),
+                'active': True
+            }
+
+            # Guardar el comentario
+            new_comment = db.child('ComentariosUser').push(comment_data)
+
+            if not new_comment:
+                raise Exception("Error al crear el comentario")
+
+            # Actualizar el contador de reseñas directamente
+            current_reviews = int(business_data.get('numero_resenas', 0))
+
+            # Usar transaction para actualizar el contador
+            try:
+                db.child('Negousers').child(business_id).update({
+                    'numero_resenas': current_reviews + 1
+                })
+            except Exception as update_error:
+                print(f"Error al actualizar contador: {str(update_error)}")
+                # Aunque falle la actualización del contador, continuamos
+
+            # Obtener datos del usuario para la respuesta
+            try:
+                user_data = db.child('Usuarios').child(user_id).get().val()
+                formatted_comment = {
+                    'id': new_comment['name'],
+                    'comment_text': comment_text,
+                    'created_at': comment_data['created_at'],
+                    'user_id': user_id,
+                    'user_name': f"{user_data.get('nombre_usuario', '')} {user_data.get('apellidos', '')}",
+                    'user_image': user_data.get('perfil_usuarios', ''),
+                    'business_id': business_id
+                }
+            except Exception as user_error:
+                print(f"Error al obtener datos del usuario: {str(user_error)}")
+                formatted_comment = {
+                    'id': new_comment['name'],
+                    'comment_text': comment_text,
+                    'created_at': comment_data['created_at'],
+                    'user_id': user_id,
+                    'business_id': business_id
+                }
+
+            # Verificar el contador actualizado
+            updated_business = db.child('Negousers').child(business_id).get().val()
+            print(f"Contador actualizado: {updated_business.get('numero_resenas')}")
+
+            return jsonify({
+                "success": True,
+                "message": "Comentario agregado exitosamente.",
+                "comment": formatted_comment,
+                "updated_review_count": updated_business.get('numero_resenas')
+            }), 200
+
+        except Exception as e:
+            print(f"Error general: {str(e)}")
+            return jsonify({
+                "success": False,
+                "message": "Error al procesar la solicitud.",
+                "error_details": str(e)
+            }), 500
+
+    return jsonify({"success": False, "message": "Método no permitido"}), 405
+
+
+@main.route('/api/comments/<string:comment_id>', methods=['DELETE'])
+@cross_origin()
+def delete_comment(comment_id):
+    try:
+        # Obtener datos del comentario
+        comment_ref = db.child('ComentariosUser').child(comment_id)
+        comment_data = comment_ref.get().val()
+
+        if not comment_data:
+            return jsonify({
+                "success": False,
+                "message": "Comentario no encontrado."
+            }), 404
+
+        business_id = comment_data.get('business_id')
+
+        # Eliminar el comentario
+        comment_ref.remove()
+
+        if business_id:
+            # Actualizar el contador de reseñas
+            business_ref = db.child('Negousers').child(business_id)
+            business_data = business_ref.get().val()
+            current_reviews = business_data.get('numero_resenas', 1)
+            # Asegurar que no sea menor que 0
+            business_ref.update({'numero_resenas': max(0, current_reviews - 1)})
+
+        return jsonify({
+            "success": True,
+            "message": "Comentario eliminado exitosamente."
+        }), 200
+
+    except Exception as e:
+        print(f"Error al eliminar el comentario: {str(e)}")
+        return jsonify({
+            "success": False,
+            "message": "Error al eliminar el comentario.",
+            "error": str(e)
+        }), 500
+
+# Endpoint para inicializar/corregir los contadores de reseñas
+@main.route('/api/fix-review-counts', methods=['POST'])
+@cross_origin()
+def fix_review_counts():
+    try:
+        # Obtener todos los negocios
+        businesses = db.child('Negousers').get()
+
+        for business in businesses.each():
+            business_id = business.key()
+
+            # Contar comentarios existentes
+            comments = db.child('ComentariosUser').order_by_child('business_id').equal_to(business_id).get()
+            comment_count = len([c for c in comments.each()]) if comments.each() else 0
+
+            # Actualizar el contador
+            db.child('Negousers').child(business_id).update({
+                'numero_resenas': comment_count
+            })
+
+        return jsonify({
+            "success": True,
+            "message": "Contadores actualizados correctamente"
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
