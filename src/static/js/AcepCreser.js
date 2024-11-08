@@ -51,6 +51,39 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    window.showFinishModal = function(reservationId, fecha, hora) {
+        currentReservationId = reservationId;
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: `¿Confirmas que has finalizado el servicio con el usuario del ${fecha} a las ${hora}?`,
+            icon: 'question',
+            input: 'textarea',
+            inputLabel: 'Comentario final',
+            inputPlaceholder: 'Escribe un comentario de despedida (ej: Gracias por su visita, lo esperamos pronto)',
+            showCancelButton: true,
+            confirmButtonColor: '#EAB308',
+            cancelButtonColor: '#6B7280',
+            confirmButtonText: 'Sí, finalizar',
+            cancelButtonText: 'No, mantener',
+            inputValidator: (value) => {
+                if (!value) {
+                    return '¡Debes escribir un comentario!';
+                }
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var comment = result.value;
+                updateReservationStatus(currentReservationId, 'concluido', comment);
+                
+                Swal.fire(
+                    'Finalizado',
+                    'El servicio ha sido marcado como concluido.',
+                    'success'
+                );
+            }
+        });
+    }
+
     window.showCancelModal = function(reservationId, fecha, hora, reservationTime) {
         const reservationDateTime = new Date(`${fecha}T${hora}`);
         const currentDateTime = new Date();
@@ -88,7 +121,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }).then((result) => {
             if (result.isConfirmed) {
                 var reason = result.value;
-    
                 updateReservationStatus(currentReservationId, 'cancelada', reason);
     
                 Swal.fire(
@@ -151,6 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Error al actualizar el estado de la reservación');
         });
     }
+
     window.onclick = function(event) {
         if (event.target.classList.contains('modal')) {
             event.target.classList.add('hidden');
