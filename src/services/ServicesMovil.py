@@ -562,7 +562,7 @@ def cancel_reservation(reservation_id):
         try:
             # Actualizar el estado sin verificación adicional
             db.child('reservaciones').child(reservation_id).update({
-                'estado': 'cancelado',
+                'estado': 'cancelada',
                 'fecha_actualizacion': datetime.now().isoformat()
             })
 
@@ -612,7 +612,7 @@ def process_hairstyle():
 
         # Llamar a la API de hairstyle
         url = "https://www.ailabapi.com/api/portrait/effects/hairstyle-editor-pro"
-        api_key = '9JVu7RaXNAlQyIrB8c1pPxjAzQEHI6npSihk0BqWTLwvsD3RvMkamZCc9NVy6u8Y'
+        api_key = 'h1oJMGVV9THBtyvR2wpiqs0dgJvWerzftUCFXAK7FNcbwGDOxak4Yx1LRZuSbQBK'
         payload = {'task_type': 'async', 'auto': '1', 'hair_style': hair_style}
         files = [('image', ('file', open(temp_path, 'rb'), 'application/octet-stream'))]
         headers = {'ailabapi-api-key': api_key}
@@ -644,7 +644,7 @@ def process_hairstyle():
 def check_hairstyle_status(task_id):
     try:
         url = "https://www.ailabapi.com/api/common/query-async-task-result"
-        headers = {'ailabapi-api-key': '9JVu7RaXNAlQyIrB8c1pPxjAzQEHI6npSihk0BqWTLwvsD3RvMkamZCc9NVy6u8Y'}
+        headers = {'ailabapi-api-key': 'h1oJMGVV9THBtyvR2wpiqs0dgJvWerzftUCFXAK7FNcbwGDOxak4Yx1LRZuSbQBK'}
         params = {'task_id': task_id}
 
         response = requests.get(url, headers=headers, params=params)
@@ -1113,5 +1113,83 @@ def get_business_interaction(business_id, user_id):
         return jsonify({
             "success": False,
             "message": "Error al obtener la interacción",
+            "error": str(e)
+        }), 500
+
+
+
+
+
+
+
+
+
+
+
+
+@main.route('/api/reservation-details/<string:reservation_id>', methods=['GET'])
+@cross_origin()
+def get_reservation_details(reservation_id):
+    try:
+        # 1. Obtener los detalles de la reservación
+        reservation_data = db.child('reservaciones').child(reservation_id).get().val()
+
+        if not reservation_data:
+            return jsonify({
+                "success": False,
+                "message": "Reservación no encontrada"
+            }), 404
+
+        # 2. Obtener los detalles del negocio asociado
+        business_id = reservation_data.get('id_negocio')
+        business_data = db.child('Negousers').child(business_id).get().val()
+
+        if not business_data:
+            return jsonify({
+                "success": False,
+                "message": "Negocio no encontrado"
+            }), 404
+
+        # 3. Formatear la respuesta combinando ambos datos
+        formatted_response = {
+            "reservation": {
+                "id": reservation_id,
+                "estado": reservation_data.get('estado', ''),
+                "fecha": reservation_data.get('fecha', ''),
+                "hora_seleccionada": reservation_data.get('hora_seleccionada', ''),
+                "tipo_de_servicio": reservation_data.get('tipo_de_servicio', ''),
+                "peticion": reservation_data.get('peticion', ''),
+                "comentarios": reservation_data.get('comentarios', ''),
+                "comentariosnego": reservation_data.get('comentariosnego', ''),
+                "fecha_creacion": reservation_data.get('fecha_creacion', ''),
+                "fecha_actualizacion": reservation_data.get('fecha_actualizacion', ''),
+                "imagen_url": reservation_data.get('imagen_url', '')
+            },
+            "business": {
+                "id": business_id,
+                "nombre": business_data.get('nombre_negocio', ''),
+                "direccion": business_data.get('direccion_negocio', ''),
+                "telefono": business_data.get('numero_telefono', ''),
+                "correo": business_data.get('correo', ''),
+                "logo_url": business_data.get('perfiles_imagenes', ''),
+                "calificacion_promedio": business_data.get('calificacion_promedio', 0),
+                "numero_gustas": business_data.get('numero_gustas', 0),
+                "numero_resenas": business_data.get('numero_resenas', 0),
+                "horas_trabajo": business_data.get('horas_trabajo', {}),
+                "plus_code": business_data.get('plus_code', ''),
+                "nombre_propietario": business_data.get('nombre_propietario', '')
+            }
+        }
+
+        return jsonify({
+            "success": True,
+            "data": formatted_response
+        }), 200
+
+    except Exception as e:
+        print(f"Error al obtener los detalles: {str(e)}")
+        return jsonify({
+            "success": False,
+            "message": "Error al obtener los detalles de la reservación",
             "error": str(e)
         }), 500
