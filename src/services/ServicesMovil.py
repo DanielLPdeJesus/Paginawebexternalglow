@@ -177,7 +177,6 @@ def recuperar_password():
 def api_reservation():
     if request.method == 'POST':
         data = request.json
-
         business_id = data.get('businessId')
         selected_time = data.get('selectedTime')
         date = data.get('date')
@@ -188,12 +187,12 @@ def api_reservation():
         image = data.get('image')
         user_id = data.get('userId')
 
+        # Validación básica
         if not terms_accepted:
             return jsonify({
                 "success": False,
                 "message": "Debes aceptar los términos y condiciones."
             }), 400
-
         if not user_id:
             return jsonify({
                 "success": False,
@@ -201,6 +200,30 @@ def api_reservation():
             }), 401
 
         try:
+            # Consulta específica para verificar duplicados
+            reservations_ref = db.child('reservaciones')
+            # Utilizamos orderByChild y equalTo para filtrar las reservaciones
+            query = reservations_ref.order_by_child('fecha').equal_to(date)
+            existing_reservations = query.get()
+
+            if existing_reservations:
+                for reservation in existing_reservations:
+                    reservation_data = reservation.val()
+                    # Verificación más estricta de duplicados
+                    is_duplicate = (
+                        str(reservation_data.get('id_usuario')) == str(user_id) and
+                        str(reservation_data.get('id_negocio')) == str(business_id) and
+                        reservation_data.get('hora_seleccionada') == selected_time and
+                        reservation_data.get('estado') not in ['cancelada', 'rechazada']
+                    )
+
+                    if is_duplicate:
+                        return jsonify({
+                            "success": False,
+                            "message": "Ya tienes una reservación activa para esta fecha y hora en este negocio."
+                        }), 409
+
+            # Si no hay duplicados, crear la reservación
             reservation_data = {
                 "id_negocio": business_id,
                 "hora_seleccionada": selected_time,
@@ -215,6 +238,7 @@ def api_reservation():
                 "fecha_actualizacion": datetime.now().isoformat()
             }
 
+            # Procesar imagen si existe
             if image:
                 image_data = base64.b64decode(image.split(',')[1])
                 file_name = f"reservacion_imagenes/{uuid.uuid4()}.jpg"
@@ -223,6 +247,7 @@ def api_reservation():
                 image_url = storage.child(file_name).get_url(None)
                 reservation_data['imagen_url'] = image_url
 
+            # Crear la nueva reservación
             new_reservation = db.child('reservaciones').push(reservation_data)
 
             return jsonify({
@@ -610,9 +635,12 @@ def process_hairstyle():
         with open(temp_path, 'wb') as f:
             f.write(image_data)
 
-        # Llamar a la API de hairstyle
         url = "https://www.ailabapi.com/api/portrait/effects/hairstyle-editor-pro"
-        api_key = 'h1oJMGVV9THBtyvR2wpiqs0dgJvWerzftUCFXAK7FNcbwGDOxak4Yx1LRZuSbQBK'
+        api_key = os.getenv('AILAB_API_KEY') 
+        
+        if not api_key:
+            raise Exception("API key no configurada")
+            
         payload = {'task_type': 'async', 'auto': '1', 'hair_style': hair_style}
         files = [('image', ('file', open(temp_path, 'rb'), 'application/octet-stream'))]
         headers = {'ailabapi-api-key': api_key}
@@ -644,7 +672,12 @@ def process_hairstyle():
 def check_hairstyle_status(task_id):
     try:
         url = "https://www.ailabapi.com/api/common/query-async-task-result"
-        headers = {'ailabapi-api-key': 'h1oJMGVV9THBtyvR2wpiqs0dgJvWerzftUCFXAK7FNcbwGDOxak4Yx1LRZuSbQBK'}
+        api_key = os.getenv('AILAB_API_KEY') 
+        
+        if not api_key:
+            raise Exception("API key no configurada")
+            
+        headers = {'ailabapi-api-key': api_key}
         params = {'task_id': task_id}
 
         response = requests.get(url, headers=headers, params=params)
@@ -652,10 +685,8 @@ def check_hairstyle_status(task_id):
         if response.status_code == 200:
             result = response.json()
 
-            # Si el procesamiento está completo, guardar la imagen en Firebase
             if result.get('task_status') == 2 and result.get('data', {}).get('images'):
                 image_url = result['data']['images'][0]
-                # Descargar la imagen y guardarla en Firebase
                 image_response = requests.get(image_url)
                 if image_response.status_code == 200:
                     storage = firebase.storage()
@@ -677,8 +708,6 @@ def check_hairstyle_status(task_id):
             "success": False,
             "message": str(e)
         }), 500
-
-
 
 
 
@@ -928,7 +957,6 @@ def update_business_interaction():
                 "message": "Faltan datos requeridos"
             }), 400
 
-        # 1. Obtener datos actuales del negocio
         business_ref = db.child('Negousers').child(business_id)
         business_data = business_ref.get().val()
 
@@ -938,11 +966,9 @@ def update_business_interaction():
                 "message": "Negocio no encontrado"
             }), 404
 
-        # Asegurar que los contadores existan y sean números
         current_likes = int(business_data.get('numero_gustas', 0))
         current_dislikes = int(business_data.get('no_me_gustas', 0))
 
-        # 2. Buscar interacción existente
         existing_interaction = None
         interactions = db.child('BusinessInteractions').get()
 
@@ -958,13 +984,10 @@ def update_business_interaction():
                     break
 
         try:
-            # 3. Procesar la interacción y actualizar contadores
             if interaction_type == 'remove':
                 if existing_interaction:
-                    # Eliminar la interacción existente
                     db.child('BusinessInteractions').child(existing_interaction['id']).remove()
 
-                    # Actualizar contador según el tipo anterior
                     if existing_interaction['data']['type'] == 'like':
                         db.child('Negousers').child(business_id).update({
                             'numero_gustas': max(0, current_likes - 1)
@@ -974,7 +997,6 @@ def update_business_interaction():
                             'no_me_gustas': max(0, current_dislikes - 1)
                         })
             else:
-                # Datos de la nueva interacción
                 new_interaction_data = {
                     'business_id': business_id,
                     'user_id': user_id,
@@ -984,10 +1006,8 @@ def update_business_interaction():
 
                 if existing_interaction:
                     old_type = existing_interaction['data']['type']
-                    # Actualizar la interacción existente
                     db.child('BusinessInteractions').child(existing_interaction['id']).update(new_interaction_data)
 
-                    # Actualizar contadores si el tipo cambió
                     if old_type != interaction_type:
                         if old_type == 'like':
                             db.child('Negousers').child(business_id).update({
@@ -1000,10 +1020,8 @@ def update_business_interaction():
                                 'numero_gustas': current_likes + 1
                             })
                 else:
-                    # Crear nueva interacción
                     db.child('BusinessInteractions').push(new_interaction_data)
 
-                    # Incrementar el contador correspondiente
                     if interaction_type == 'like':
                         db.child('Negousers').child(business_id).update({
                             'numero_gustas': current_likes + 1
@@ -1013,7 +1031,6 @@ def update_business_interaction():
                             'no_me_gustas': current_dislikes + 1
                         })
 
-            # 4. Obtener y retornar datos actualizados
             updated_business = business_ref.get().val()
 
             return jsonify({
@@ -1191,5 +1208,39 @@ def get_reservation_details(reservation_id):
         return jsonify({
             "success": False,
             "message": "Error al obtener los detalles de la reservación",
+            "error": str(e)
+        }), 500
+
+
+
+@main.route('/api/business-reservations/<string:business_id>/<string:date>', methods=['GET'])
+@cross_origin()
+def get_business_reservations(business_id, date):
+    try:
+        reservations_ref = db.child('reservaciones')
+        query = reservations_ref.order_by_child('fecha').equal_to(date)
+        reservations = query.get()
+
+        business_reservations = []
+        if reservations.each():
+            for reservation in reservations.each():
+                reservation_data = reservation.val()
+                if reservation_data.get('id_negocio') == business_id:
+                    business_reservations.append({
+                        'id': reservation.key(),
+                        'hora_seleccionada': reservation_data.get('hora_seleccionada'),
+                        'estado': reservation_data.get('estado')
+                    })
+
+        return jsonify({
+            "success": True,
+            "reservations": business_reservations
+        }), 200
+
+    except Exception as e:
+        print(f"Error al obtener las reservaciones: {str(e)}")
+        return jsonify({
+            "success": False,
+            "message": "Error al obtener las reservaciones.",
             "error": str(e)
         }), 500
