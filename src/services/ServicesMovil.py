@@ -1244,3 +1244,33 @@ def get_business_reservations(business_id, date):
             "message": "Error al obtener las reservaciones.",
             "error": str(e)
         }), 500
+        
+@main.route('/api/businnes-acept-admin-jaydey-external', methods=['GET'])
+@cross_origin()
+def get_all_businnes_acept_jaydey():
+    try:
+        business_acept = db.child('Negousers').get()
+        business_list_acept = []
+        
+        if business_acept.each():
+            for business in business_acept.each():
+                business_data = business.val()
+                if (business_data.get('negocio_aceptado', True) is False and 
+                    business_data.get('terminos_aceptados', False) is True):
+                    business_data['id'] = business.key()
+                    business_list_acept.append(business_data)
+
+        return jsonify({
+            "success": True, 
+            "pending_businesses": business_list_acept,
+            "total_pending": len(business_list_acept),
+            "message": "Negocios pendientes de aceptación con términos aceptados"
+        }), 200
+        
+    except Exception as e:
+        print(f"Error al obtener los negocios pendientes: {str(e)}")
+        return jsonify({
+            "success": False, 
+            "message": "Error al obtener los negocios pendientes de aceptación.", 
+            "error": str(e)
+        }), 500
