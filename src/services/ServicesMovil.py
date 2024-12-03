@@ -10,7 +10,7 @@ import requests
 from werkzeug.utils import secure_filename
 from datetime import datetime
 
-project_folder = os.path.expanduser('~/external')
+project_folder = os.path.expanduser('~/Paginawebexternalglow')
 logging.warning(project_folder)
 load_dotenv(os.path.join(project_folder, '.env'))
 

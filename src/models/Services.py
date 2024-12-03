@@ -6,7 +6,7 @@ import os
 from flask_cors import CORS
 from cryptography.fernet import Fernet
 
-project_folder = os.path.expanduser('~/external')
+project_folder = os.path.expanduser('~/Paginawebexternalglow')
 logging.warning(project_folder)
 load_dotenv(os.path.join(project_folder, '.env'))
 

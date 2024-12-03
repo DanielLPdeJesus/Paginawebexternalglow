@@ -12,7 +12,7 @@ from werkzeug.utils import secure_filename
 import uuid
 
 
-project_folder = os.path.expanduser('~/external')
+project_folder = os.path.expanduser('~/Paginawebexternalglow')
 logging.warning(project_folder)
 load_dotenv(os.path.join(project_folder, '.env'))
 
