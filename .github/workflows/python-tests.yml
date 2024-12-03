@@ -1,4 +1,4 @@
-name: Python Tests
+name: Python CI/CD
 
 on:
   push:
@@ -44,14 +44,25 @@ jobs:
       run: |
         pytest tests/ -v
 
-    - name: Check test results
-      if: always()
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Deploy to PythonAnywhere
+      env:
+        PYTHONANYWHERE_HOST: ${{ secrets.PYTHONANYWHERE_HOST }}
+        PYTHONANYWHERE_USERNAME: ${{ secrets.PYTHONANYWHERE_USERNAME }}
+        PYTHONANYWHERE_TOKEN: ${{ secrets.PYTHONANYWHERE_TOKEN }}
       run: |
-        EXIT_CODE=$?
-        if [ $EXIT_CODE -eq 0 ]; then
-          echo "Tests passed successfully"
-          exit 0
-        else
-          echo "Tests failed"
-          exit 1
-        fi
+        # Install PythonAnywhere CLI tool
+        pip install pythonanywhere
+
+        # Pull latest changes and restart web app
+        curl -v -X POST \
+          -H "Authorization: Token ${PYTHONANYWHERE_TOKEN}" \
+          -H "Content-Type: application/json" \
+          https://www.pythonanywhere.com/api/v0/user/${PYTHONANYWHERE_USERNAME}/webapps/${PYTHONANYWHERE_USERNAME}.pythonanywhere.com/reload/
