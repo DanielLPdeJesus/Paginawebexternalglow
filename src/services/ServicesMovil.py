@@ -635,12 +635,9 @@ def process_hairstyle():
         with open(temp_path, 'wb') as f:
             f.write(image_data)
 
+        # Llamar a la API de hairstyle
         url = "https://www.ailabapi.com/api/portrait/effects/hairstyle-editor-pro"
-        api_key = os.getenv('AILAB_API_KEY') 
-        
-        if not api_key:
-            raise Exception("API key no configurada")
-            
+        api_key = 'wyKbRRuW9qIDGlm2TLy1fYx9amOgF7z2D8FPeXzBiZcWS67MXVJqnNAvorcwuTfC'
         payload = {'task_type': 'async', 'auto': '1', 'hair_style': hair_style}
         files = [('image', ('file', open(temp_path, 'rb'), 'application/octet-stream'))]
         headers = {'ailabapi-api-key': api_key}
@@ -672,12 +669,7 @@ def process_hairstyle():
 def check_hairstyle_status(task_id):
     try:
         url = "https://www.ailabapi.com/api/common/query-async-task-result"
-        api_key = os.getenv('AILAB_API_KEY') 
-        
-        if not api_key:
-            raise Exception("API key no configurada")
-            
-        headers = {'ailabapi-api-key': api_key}
+        headers = {'ailabapi-api-key': 'wyKbRRuW9qIDGlm2TLy1fYx9amOgF7z2D8FPeXzBiZcWS67MXVJqnNAvorcwuTfC'}
         params = {'task_id': task_id}
 
         response = requests.get(url, headers=headers, params=params)
@@ -685,8 +677,10 @@ def check_hairstyle_status(task_id):
         if response.status_code == 200:
             result = response.json()
 
+            # Si el procesamiento está completo, guardar la imagen en Firebase
             if result.get('task_status') == 2 and result.get('data', {}).get('images'):
                 image_url = result['data']['images'][0]
+                # Descargar la imagen y guardarla en Firebase
                 image_response = requests.get(image_url)
                 if image_response.status_code == 200:
                     storage = firebase.storage()
@@ -708,6 +702,8 @@ def check_hairstyle_status(task_id):
             "success": False,
             "message": str(e)
         }), 500
+
+
 
 
 
@@ -957,6 +953,7 @@ def update_business_interaction():
                 "message": "Faltan datos requeridos"
             }), 400
 
+        # 1. Obtener datos actuales del negocio
         business_ref = db.child('Negousers').child(business_id)
         business_data = business_ref.get().val()
 
@@ -966,9 +963,11 @@ def update_business_interaction():
                 "message": "Negocio no encontrado"
             }), 404
 
+        # Asegurar que los contadores existan y sean números
         current_likes = int(business_data.get('numero_gustas', 0))
         current_dislikes = int(business_data.get('no_me_gustas', 0))
 
+        # 2. Buscar interacción existente
         existing_interaction = None
         interactions = db.child('BusinessInteractions').get()
 
@@ -984,10 +983,13 @@ def update_business_interaction():
                     break
 
         try:
+            # 3. Procesar la interacción y actualizar contadores
             if interaction_type == 'remove':
                 if existing_interaction:
+                    # Eliminar la interacción existente
                     db.child('BusinessInteractions').child(existing_interaction['id']).remove()
 
+                    # Actualizar contador según el tipo anterior
                     if existing_interaction['data']['type'] == 'like':
                         db.child('Negousers').child(business_id).update({
                             'numero_gustas': max(0, current_likes - 1)
@@ -997,6 +999,7 @@ def update_business_interaction():
                             'no_me_gustas': max(0, current_dislikes - 1)
                         })
             else:
+                # Datos de la nueva interacción
                 new_interaction_data = {
                     'business_id': business_id,
                     'user_id': user_id,
@@ -1006,8 +1009,10 @@ def update_business_interaction():
 
                 if existing_interaction:
                     old_type = existing_interaction['data']['type']
+                    # Actualizar la interacción existente
                     db.child('BusinessInteractions').child(existing_interaction['id']).update(new_interaction_data)
 
+                    # Actualizar contadores si el tipo cambió
                     if old_type != interaction_type:
                         if old_type == 'like':
                             db.child('Negousers').child(business_id).update({
@@ -1020,8 +1025,10 @@ def update_business_interaction():
                                 'numero_gustas': current_likes + 1
                             })
                 else:
+                    # Crear nueva interacción
                     db.child('BusinessInteractions').push(new_interaction_data)
 
+                    # Incrementar el contador correspondiente
                     if interaction_type == 'like':
                         db.child('Negousers').child(business_id).update({
                             'numero_gustas': current_likes + 1
@@ -1031,6 +1038,7 @@ def update_business_interaction():
                             'no_me_gustas': current_dislikes + 1
                         })
 
+            # 4. Obtener y retornar datos actualizados
             updated_business = business_ref.get().val()
 
             return jsonify({
@@ -1217,6 +1225,7 @@ def get_reservation_details(reservation_id):
 @cross_origin()
 def get_business_reservations(business_id, date):
     try:
+        # Buscar todas las reservaciones para este negocio en esta fecha
         reservations_ref = db.child('reservaciones')
         query = reservations_ref.order_by_child('fecha').equal_to(date)
         reservations = query.get()
@@ -1244,33 +1253,251 @@ def get_business_reservations(business_id, date):
             "message": "Error al obtener las reservaciones.",
             "error": str(e)
         }), 500
-        
+
+
+
+
+
+
+
+@main.route('/api/admin/login', methods=['POST'])
+@cross_origin()
+def admin_login():
+    if request.method == 'POST':
+        try:
+            data = request.json
+            email = data.get('email')
+            password = data.get('password')
+
+            if not email or not password:
+                return jsonify({
+                    "success": False,
+                    "message": "Email y contraseña son requeridos"
+                }), 400
+
+            try:
+                # Autenticar con Firebase
+                user = auth.sign_in_with_email_and_password(email, password)
+
+                # Obtener información del usuario
+                user_info = auth.get_account_info(user['idToken'])
+                user_uid = user_info['users'][0]['localId']
+
+                # Verificar que el usuario existe en la base de datos
+                user_data = db.child('Usuarios').child(user_uid).get().val()
+
+                if not user_data:
+                    return jsonify({
+                        "success": False,
+                        "message": "Usuario no encontrado"
+                    }), 404
+
+                # Verificar que el usuario es administrador
+                if user_data.get('rol') != 'Administrador':
+                    return jsonify({
+                        "success": False,
+                        "message": "Acceso no autorizado"
+                    }), 403
+
+                # Verificar que el usuario está activo
+                if not user_data.get('activo', False):
+                    return jsonify({
+                        "success": False,
+                        "message": "Usuario inactivo"
+                    }), 403
+
+                # Verificar email verificado
+                if not user_info['users'][0].get('emailVerified', False):
+                    auth.send_email_verification(user['idToken'])
+                    return jsonify({
+                        "success": False,
+                        "message": "Por favor verifica tu correo electrónico antes de iniciar sesión"
+                    }), 401
+
+                response_data = {
+                    "success": True,
+                    "message": "Login exitoso",
+                    "user": {
+                        "id": user_uid,
+                        "email": email,
+                        "nombre": user_data.get('nombre_usuario'),
+                        "apellidos": user_data.get('apellidos'),
+                        "rol": user_data.get('rol'),
+                        "id_token": user['idToken'],
+                        "profile_image": user_data.get('perfil_usuarios')
+                    }
+                }
+
+                return jsonify(response_data), 200
+
+            except Exception as auth_error:
+                print(f"Error de autenticación: {str(auth_error)}")
+                return jsonify({
+                    "success": False,
+                    "message": "Credenciales inválidas"
+                }), 401
+
+        except Exception as e:
+            print(f"Error en login: {str(e)}")
+            return jsonify({
+                "success": False,
+                "message": "Error al procesar la solicitud",
+                "error": str(e)
+            }), 500
+
+    return jsonify({
+        "success": False,
+        "message": "Método no permitido"
+    }), 405
+
+
+
+
+
 @main.route('/api/businnes-acept-admin-jaydey-external', methods=['GET'])
 @cross_origin()
 def get_all_businnes_acept_jaydey():
     try:
         business_acept = db.child('Negousers').get()
         business_list_acept = []
-        
+
         if business_acept.each():
             for business in business_acept.each():
                 business_data = business.val()
-                if (business_data.get('negocio_aceptado', True) is False and 
+                # Filtrar solo negocios no aceptados pero con términos aceptados
+                if (business_data.get('negocio_aceptado', True) is False and
                     business_data.get('terminos_aceptados', False) is True):
                     business_data['id'] = business.key()
                     business_list_acept.append(business_data)
 
         return jsonify({
-            "success": True, 
+            "success": True,
             "pending_businesses": business_list_acept,
-            "total_pending": len(business_list_acept),
-            "message": "Negocios pendientes de aceptación con términos aceptados"
+            "total_pending": len(business_list_acept)
         }), 200
-        
+
     except Exception as e:
         print(f"Error al obtener los negocios pendientes: {str(e)}")
         return jsonify({
-            "success": False, 
-            "message": "Error al obtener los negocios pendientes de aceptación.", 
+            "success": False,
+            "message": "Error al obtener los negocios pendientes de aceptación.",
             "error": str(e)
         }), 500
+
+
+@main.route('/api/business-details-admin/<string:business_id>', methods=['GET'])
+@cross_origin()
+def get_business_details_admin(business_id):
+    try:
+        business = db.child('Negousers').child(business_id).get().val()
+
+        if not business:
+            return jsonify({
+                "success": False,
+                "message": "Negocio no encontrado"
+            }), 404
+
+        business_details = {
+            'id': business_id,
+            'nombre_negocio': business.get('nombre_negocio'),
+            'nombre_propietario': business.get('nombre_propietario'),
+            'correo': business.get('correo'),
+            'direccion_negocio': business.get('direccion_negocio'),
+            'numero_telefono': business.get('numero_telefono'),
+            'servicios_ofrecidos': business.get('servicios_ofrecidos'),
+            'horas_trabajo': business.get('horas_trabajo', {}),
+            'fecha_registro': business.get('fecha_registro'),
+            'plus_code': business.get('plus_code'),
+            'postal_code': business.get('postal_code'),
+            'negocios_imagenes': business.get('negocios_imagenes', []),
+            'servicios_imagenes': business.get('servicios_imagenes', []),
+            'perfiles_imagenes': business.get('perfiles_imagenes'),
+            'negocio_aceptado': business.get('negocio_aceptado', False),
+            'negocio_activo': business.get('negocio_activo', False),
+            'negocio_rechazado': business.get('negocio_rechazado', False)
+        }
+
+        return jsonify({
+            "success": True,
+            "business": business_details
+        }), 200
+
+    except Exception as e:
+        print(f"Error al obtener detalles del negocio: {str(e)}")
+        return jsonify({
+            "success": False,
+            "message": "Error al obtener detalles del negocio",
+            "error": str(e)
+        }), 500
+
+
+@main.route('/api/business-accept/<string:business_id>', methods=['PUT'])
+@cross_origin()
+def accept_business(business_id):
+    try:
+        business_ref = db.child('Negousers').child(business_id)
+        business_data = business_ref.get().val()
+
+        if not business_data:
+            return jsonify({
+                "success": False,
+                "message": "Negocio no encontrado"
+            }), 404
+
+        updates = {
+            'negocio_aceptado': True,
+            'negocio_activo': True,
+            'fecha_aceptacion': datetime.now().isoformat()
+        }
+
+        business_ref.update(updates)
+
+        return jsonify({
+            "success": True,
+            "message": "Negocio aceptado exitosamente"
+        }), 200
+
+    except Exception as e:
+        print(f"Error al aceptar el negocio: {str(e)}")
+        return jsonify({
+            "success": False,
+            "message": "Error al aceptar el negocio",
+            "error": str(e)
+        }), 500
+
+
+@main.route('/api/business-reject/<string:business_id>', methods=['PUT'])
+@cross_origin()
+def reject_business(business_id):
+    try:
+        business_ref = db.child('Negousers').child(business_id)
+        business_data = business_ref.get().val()
+
+        if not business_data:
+            return jsonify({
+                "success": False,
+                "message": "Negocio no encontrado"
+            }), 404
+
+        updates = {
+            'negocio_aceptado': False,
+            'negocio_activo': False,
+            'negocio_rechazado': True,
+            'fecha_rechazo': datetime.now().isoformat()
+        }
+
+        business_ref.update(updates)
+
+        return jsonify({
+            "success": True,
+            "message": "Negocio rechazado exitosamente"
+        }), 200
+
+    except Exception as e:
+        print(f"Error al rechazar el negocio: {str(e)}")
+        return jsonify({
+            "success": False,
+            "message": "Error al rechazar el negocio",
+            "error": str(e)
+        }), 500
+
