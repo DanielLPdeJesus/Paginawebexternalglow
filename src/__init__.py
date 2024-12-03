@@ -5,7 +5,7 @@ from .routes import IndexRoutes
 from .models import Authentication, Services
 from .services import ServicesMovil
 from flask_cors import CORS
-
+from monitoring.metrics import init_metrics
 
 app = Flask(__name__)
 CORS(app) 
@@ -19,6 +19,7 @@ def init_app(config):
     app.register_blueprint(Services.main, url_prefix='/Services')
     app.register_blueprint(ServicesMovil.main, url_prefix='/ServicesMovil')
 
+    init_metrics(app)
     return app
 
 @app.errorhandler(404)
