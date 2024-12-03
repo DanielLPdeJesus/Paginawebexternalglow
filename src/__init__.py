@@ -24,5 +24,6 @@ def init_app(config):
 
 @app.errorhandler(404)
 def page_not_found(error):
-    return render_template('Auth/Admin/pagenofount.html', error_message="La página que buscas no se encuentra"), 404
+    return render_template('Auth/Admin/pagenofount.html', error_message="La página que buscas no se encuentra")
+404
     
