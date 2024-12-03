@@ -6,7 +6,7 @@ main = Blueprint('index_blueprint', __name__, url_prefix='/')
 
 @main.route('/')
 def index():
-    return render_template('Users/index.html')
+    return render_template('/Users/index.html')
 
 @main.route('/login')
 def login():
